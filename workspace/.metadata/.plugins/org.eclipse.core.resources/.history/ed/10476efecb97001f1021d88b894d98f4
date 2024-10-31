@@ -1,0 +1,65 @@
+package net.minecraft.client;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.game.level.block.Block;
+
+public final class Session {
+	public static List registeredBlocksList;
+	public String username;
+	public String mpPass;
+	public String sessionId = "eyJraWQiOiJhYzg0YSIsImFsZyI6IkhTMjU2In0.eyJ4dWlkIjoiMjUzNTQxOTcwODUzMDkyMSIsImFnZyI6IkFkdWx0Iiwic3ViIjoiMjkxN2Y3ZjMtNDA1OC00NjgzLWE2YzYtMTMwNzE4NDdkNTcwIiwiYXV0aCI6IlhCT1giLCJucyI6ImRlZmF1bHQiLCJyb2xlcyI6W10sImlzcyI6ImF1dGhlbnRpY2F0aW9uIiwiZmxhZ3MiOlsidHdvZmFjdG9yYXV0aCIsIm1zYW1pZ3JhdGlvbl9zdGFnZTQiLCJvcmRlcnNfMjAyMiIsIm11bHRpcGxheWVyIl0sInByb2ZpbGVzIjp7Im1jIjoiMTRjN2Y4ZTAtYjU1Mi00MDExLTk1OTYtNDE1YThiNmIzM2VlIn0sInBsYXRmb3JtIjoiVU5LTk9XTiIsInl1aWQiOiI5NzdmZmYzMWIwODY0OTFiODIyODVhMTA5NTlkYzAyMCIsIm5iZiI6MTczMDQwODYyNCwiZXhwIjoxNzMwNDk1MDI0LCJpYXQiOjE3MzA0MDg2MjR9.4E4LSFij9aPlOaJhBjL7ysSCldKduO-jZ2pKLrRciSs";
+
+	public Session(String username, String sessionId) {
+		this.username = username;
+		this.sessionId = sessionId;
+	}
+
+	static {
+		(registeredBlocksList = new ArrayList()).add(Block.stone);
+		registeredBlocksList.add(Block.cobblestone);
+		registeredBlocksList.add(Block.brick);
+		registeredBlocksList.add(Block.dirt);
+		registeredBlocksList.add(Block.planks);
+		registeredBlocksList.add(Block.wood);
+		registeredBlocksList.add(Block.leaves);
+		registeredBlocksList.add(Block.torch);
+		registeredBlocksList.add(Block.stairSingle);
+		registeredBlocksList.add(Block.glass);
+		registeredBlocksList.add(Block.cobblestoneMossy);
+		registeredBlocksList.add(Block.sapling);
+		registeredBlocksList.add(Block.plantYellow);
+		registeredBlocksList.add(Block.plantRed);
+		registeredBlocksList.add(Block.mushroomBrown);
+		registeredBlocksList.add(Block.mushroomRed);
+		registeredBlocksList.add(Block.sand);
+		registeredBlocksList.add(Block.gravel);
+		registeredBlocksList.add(Block.sponge);
+		registeredBlocksList.add(Block.clothRed);
+		registeredBlocksList.add(Block.clothOrange);
+		registeredBlocksList.add(Block.clothYellow);
+		registeredBlocksList.add(Block.clothChartreuse);
+		registeredBlocksList.add(Block.clothGreen);
+		registeredBlocksList.add(Block.clothSpringGreen);
+		registeredBlocksList.add(Block.clothCyan);
+		registeredBlocksList.add(Block.clothCapri);
+		registeredBlocksList.add(Block.clothUltramarine);
+		registeredBlocksList.add(Block.clothViolet);
+		registeredBlocksList.add(Block.clothPurple);
+		registeredBlocksList.add(Block.clothMagenta);
+		registeredBlocksList.add(Block.clothRose);
+		registeredBlocksList.add(Block.clothDarkGray);
+		registeredBlocksList.add(Block.clothGray);
+		registeredBlocksList.add(Block.clothWhite);
+		registeredBlocksList.add(Block.oreCoal);
+		registeredBlocksList.add(Block.oreIron);
+		registeredBlocksList.add(Block.oreGold);
+		registeredBlocksList.add(Block.blockSteel);
+		registeredBlocksList.add(Block.blockGold);
+		registeredBlocksList.add(Block.bookShelf);
+		registeredBlocksList.add(Block.tnt);
+		registeredBlocksList.add(Block.obsidian);
+		System.out.println(registeredBlocksList.size());
+	}
+}

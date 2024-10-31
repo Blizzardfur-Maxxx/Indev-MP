@@ -1,0 +1,67 @@
+package net.minecraft.client.gui;
+
+import org.lwjgl.input.Keyboard;
+
+import net.minecraft.client.net.Client;
+import net.minecraft.client.net.Packet;
+
+public class GuiChat extends GuiScreen {
+	private String message = "";
+	private int updateCounter = 0;
+
+	public void initGui() {
+		Keyboard.enableRepeatEvents(true);
+	}
+
+	public void onGuiClosed() {
+		Keyboard.enableRepeatEvents(false);
+	}
+
+	public void updateScreen() {
+		++this.updateCounter;
+	}
+
+	protected final void keyPressed(char eventCharacter, int eventKey) {
+		if(eventKey == 1) {
+			this.mc.displayGuiScreen((GuiScreen)null);
+		} else if(eventKey == 28) {
+			Client client10000 = this.mc.networkClient;
+			String eventKey1 = this.message.trim();
+			Client eventCharacter1 = client10000;
+			if((eventKey1 = eventKey1.trim()).length() > 0) {
+				eventCharacter1.serverConnection.sendPacket(Packet.CHAT_MESSAGE, new Object[]{-1, eventKey1});
+			}
+
+			this.mc.displayGuiScreen((GuiScreen)null);
+		} else {
+			if(eventKey == 14 && this.message.length() > 0) {
+				this.message = this.message.substring(0, this.message.length() - 1);
+			}
+
+			if("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:-_\'*!\\\"#%/()=+?[]{}<>@|$;".indexOf(eventCharacter) >= 0 && this.message.length() < 64 - (this.mc.session.username.length() + 2)) {
+				this.message = this.message + eventCharacter;
+			}
+
+		}
+	}
+
+	public void drawScreen(int mouseX, int mouseY, float renderPartialTick) {
+		this.drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
+		this.drawString(this.fontRenderer, "> " + this.message + (this.updateCounter / 6 % 2 == 0 ? "_" : ""), 4, this.height - 12, 14737632);
+	}
+
+	protected void mouseClicked(int i1, int i2, int i3) {
+		if(i3 == 0 && this.mc.ingameGUI.testMessage != null) {
+			if(this.message.length() > 0 && !this.message.endsWith(" ")) {
+				this.message = this.message + " ";
+			}
+
+			this.message = this.message + this.mc.ingameGUI.testMessage;
+			byte b4 = 100;
+			if(this.message.length() > b4) {
+				this.message = this.message.substring(0, b4);
+			}
+		}
+
+	}
+}
