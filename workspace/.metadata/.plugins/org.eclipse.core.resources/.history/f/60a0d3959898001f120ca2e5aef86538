@@ -9,6 +9,10 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.HumanoidMob;
+import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.client.render.RenderEngine;
+
 
 public class NetworkPlayer extends EntityLiving {
 	public static final long serialVersionUID = 77479605454997290L;
@@ -22,7 +26,7 @@ public class NetworkPlayer extends EntityLiving {
 	public String name;
 	public String displayName;
 	int tickCount = 0;
-	private Textures Textures;
+	private RenderEngine RenderEngine;
 
 	public NetworkPlayer(Minecraft minecraft, int id, String username, int posX, int posY, int posZ, float rotationPitch, float rotationYaw) {
 		super(minecraft.theWorld);
@@ -75,8 +79,8 @@ public class NetworkPlayer extends EntityLiving {
 	}
 
 
-	public void bindTexture(Textures Textures) {
-		this.Textures = Textures;
+	public void bindTexture(RenderEngine RenderEngine) {
+		this.RenderEngine = RenderEngine;
 		if(this.newTexture != null) {
 			BufferedImage bufferedImage2 = this.newTexture;
 			int[] i3 = new int[512];
@@ -99,18 +103,18 @@ public class NetworkPlayer extends EntityLiving {
 			}
 
 			this.hasHair = z10001;
-			this.texture = Textures.loadTexture(this.newTexture);
+			this.texture = RenderEngine.getTexture("/char.png");
 			this.newTexture = null;
 		}
 
 		if(this.texture < 0) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, Textures.loadTexture("/char.png"));
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, RenderEngine.getTexture("/char.png"));
 		} else {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture);
 		}
 	}
 
-	public void renderHover(Textures Textures1, float f2) {
+	public void renderHover(RenderEngine Textures1, float f2) {
 		FontRenderer font3 = this.minecraft.fontRenderer;
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.prevPosX + (this.posX - this.prevPosX) * f2, this.prevPosY + (this.posY - this.prevPosY) * f2 + 0.8F + this.renderYawOffset, this.prevPosZ + (this.posZ - this.prevPosZ) * f2);
@@ -233,15 +237,15 @@ public class NetworkPlayer extends EntityLiving {
 	}
 
 	public void clear() {
-		if(this.texture >= 0 && this.Textures != null) {
-			Textures Textures10000 = this.Textures;
+		if(this.texture >= 0 && this.RenderEngine != null) {
+			RenderEngine Textures10000 = this.RenderEngine;
 			int i1 = this.texture;
-			Textures Textures2 = this.Textures;
-			Textures10000.pixelsMap.remove(i1);
-			Textures2.ib.clear();
-			Textures2.ib.put(i1);
-			Textures2.ib.flip();
-			GL11.glDeleteTextures(Textures2.ib);
+			RenderEngine Textures2 = this.RenderEngine;
+			Textures10000.textureContentsMap.remove(i1);
+			Textures2.singleIntBuffer.clear();
+			Textures2.singleIntBuffer.put(i1);
+			Textures2.singleIntBuffer.flip();
+			GL11.glDeleteTextures(Textures2.singleIntBuffer);
 		}
 
 	}

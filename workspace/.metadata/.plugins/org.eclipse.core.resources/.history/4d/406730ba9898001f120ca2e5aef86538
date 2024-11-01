@@ -8,9 +8,11 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.HumanoidMob;
+import net.minecraft.game.entity.player.EntityPlayer;
 
-public class NetworkPlayer extends EntityLiving {
+
+public class NetworkPlayer extends EntityPlayer {
 	public static final long serialVersionUID = 77479605454997290L;
 	private List moveQueue = new LinkedList();
 	private Minecraft minecraft;
