@@ -1,0 +1,12 @@
+uniform sampler2D sampler0;  // Main color texture
+
+void main() {
+    // Sample the base color from the texture and ignore any lighting or depth effects
+    vec4 baseColor = texture2D(sampler0, gl_TexCoord[0].st);
+
+    // Set the output color to be the texture color with full brightness
+    gl_FragColor = baseColor;
+
+    // Ensure full alpha if it’s less than 1 (opaque); else, retain transparency
+    gl_FragColor.a = baseColor.a;
+}

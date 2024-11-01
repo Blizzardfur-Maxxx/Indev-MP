@@ -1,0 +1,22 @@
+// Shader to brighten only dark pixels
+#version 120  // or adjust if using a different GLSL version
+
+uniform sampler2D sampler0;
+uniform float brightnessThreshold; // Define threshold for "dark" pixels
+uniform float brightnessBoost;     // Define how much to brighten dark pixels
+
+void main() {
+    // Sample the color from the texture
+    vec4 baseColor = texture2D(sampler0, gl_TexCoord[0].st);
+    
+    // Calculate luminance (brightness) of the pixel
+    float luminance = dot(baseColor.rgb, vec3(0.299, 0.587, 0.114));
+
+    // If pixel is below the brightness threshold, boost its brightness
+    if (luminance < brightnessThreshold) {
+        baseColor.rgb *= brightnessBoost; // Apply boost to dark pixels
+    }
+
+    // Set the fragment color to the modified base color
+    gl_FragColor = vec4(baseColor.rgb, baseColor.a); // Keep original alpha
+}

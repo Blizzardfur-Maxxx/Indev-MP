@@ -1,0 +1,12 @@
+// Fullbright Shader
+#version 120  // or higher if needed
+
+uniform sampler2D sampler0;
+
+void main() {
+    // Sample the color from the texture at full brightness
+    vec4 baseColor = texture2D(sampler0, gl_TexCoord[0].st);
+
+    // Set the output color to the sampled texture color
+    gl_FragColor = vec4(baseColor.rgb, baseColor.a); // Keep the alpha as it is
+}

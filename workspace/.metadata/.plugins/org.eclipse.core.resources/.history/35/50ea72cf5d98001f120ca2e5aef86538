@@ -1,0 +1,7 @@
+uniform sampler2D sampler0;
+
+varying vec4 vertColor;
+
+void main() {
+	gl_FragColor = texture2D(sampler0, gl_TexCoord[0].st) * vertColor;
+}

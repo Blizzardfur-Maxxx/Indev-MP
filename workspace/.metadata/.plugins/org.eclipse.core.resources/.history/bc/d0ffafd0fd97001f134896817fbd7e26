@@ -1,0 +1,198 @@
+package net.minecraft.client.gui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.RenderHelper;
+import net.minecraft.client.render.RenderEngine;
+import net.minecraft.client.render.entity.RenderItem;
+import net.minecraft.game.entity.player.InventoryPlayer;
+import net.minecraft.game.item.Item;
+import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.level.block.Block;
+
+public class GuiCreativeInventory extends GuiScreen {
+	
+	/*
+	 * Simple GUI for creative mode (Creative inventory)
+	 * Item list is created dynamically with everything in Block.blocksList & Item.itemsList.
+	 * Scrolls using cursors or mouse wheel.
+	 * Select target inventory slot using keys 1-9
+	 * 
+	 * Created for a1.1.1, but should work in other Alpha/Beta versions with minimal changes.
+	 * 
+	 * By na_th_an
+	 * Use freely, credit if you wish. Make mods.
+	 */
+	
+	public List<ItemStack> itemsList = new ArrayList<ItemStack>();
+	private static RenderItem itemRenderer = new RenderItem();
+	public int firstElement;
+	public int lastElement;
+	public int selectedItem = -1;
+	public int selectedItemX = 0, selectedItemY = 0;
+	public int lastPossibleFirstElement;
+	private Minecraft mc;
+	
+	public GuiCreativeInventory (Minecraft mc, int showFrom) {
+		this.mc = mc;
+		
+		// Fill blocks
+		for (int i = 0; i < Block.blocksList.length; i ++) {
+			Block block = Block.blocksList[i];
+			if (block != null) {
+					this.itemsList.add(new ItemStack (block.blockID));
+		}
+		
+		// Fill items
+		for (int i1 = 0; i1 < Item.itemsList.length; i1 ++) {
+			Item item = Item.itemsList[i1];
+			if (item != null) {
+				// There are some items which may have several subtypes (damage):
+				// In my mod I have dyes via ItemCloth & itemDamage.
+	
+				this.itemsList.add(new ItemStack (item.shiftedIndex));
+				
+			}
+		}
+		
+		// Paging 
+		this.firstElement = showFrom;
+		this.calculatePaging();
+		this.lastPossibleFirstElement = 9 * (this.itemsList.size() / 9 - 4);
+		}
+	}
+	
+	private void calculatePaging() {		
+		this.lastElement = this.firstElement + 44; 
+		if (this.lastElement > this.itemsList.size() - 1) this.lastElement = this.itemsList.size() - 1; 
+	}
+	
+	public void updateSelectedItem(int mouseX, int mouseY) {		
+		// calculates which item is under the mouse cursor
+		if (
+			mouseX >= this.width / 2 - 108 && mouseX <= this.width / 2 + 107 &&
+			mouseY >= this.height / 2 - 70 && mouseY <= this.height / 2 + 49
+		) {
+			int x = (mouseX - (this.width / 2 - 108)) / 24;
+			int y = (mouseY - (this.height / 2 - 70)) / 24;
+			this.selectedItem = this.firstElement + x + y * 9;
+			this.selectedItemX = x * 24 + this.width / 2 - 108;
+			this.selectedItemY = y * 24 + this.height / 2 - 70;
+		} else {
+			this.selectedItem = -1;
+		}
+	}
+	
+	public void drawScreen(int mouseX, int mouseY, float renderPartialTick) {
+		this.calculatePaging();
+		this.updateSelectedItem(mouseX, mouseY);
+		
+		int x0 = this.width / 2 - 118; 
+		int y0 = this.height / 2 - 100;
+		this.drawGradientRect(x0, y0, x0 + 235, y0 + 179, 0x90000000, 0xC00000FF);
+		this.drawCenteredString(this.fontRenderer, "Select a block or item", this.width / 2, y0 + 10, 0xFFFFFF);
+		this.drawCenteredString(this.fontRenderer, "Showing " + (1 + this.firstElement) + "-" + (1 + this.lastElement) + " of " + this.itemsList.size(), this.width/2, y0 + 160, 0xFFFFFF);
+		
+		RenderEngine renderEngine = this.mc.renderEngine;
+		
+		// Selected item, if any
+		if (this.selectedItem != -1) {
+			this.drawRect(this.selectedItemX, this.selectedItemY, this.selectedItemX + 23, this.selectedItemY + 23, 0x80CCCCCC);
+		}
+		
+		// Draw 9x5 grid. This code is dumb and assumes this.firstElement is a multiple of 9!
+		int showingIndex = 0;
+		for (int i = this.firstElement; i <= this.lastElement; i ++) {			
+			int x = x0 + 10 + 24 * (showingIndex % 9) + 4;
+			int y = y0 + 30 + 24 * (showingIndex / 9) + 4;
+			
+			GL11.glPushMatrix();
+			GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+			RenderHelper.enableStandardItemLighting();
+			GL11.glPopMatrix();
+			GL11.glPushMatrix();
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+			GL11.glTranslatef(0, 0, 32.0F);
+			
+			itemRenderer.renderItemIntoGUI(this.fontRenderer, renderEngine, this.itemsList.get(i), x, y);
+			
+			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+			RenderHelper.disableStandardItemLighting();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glPopMatrix();
+			
+			++showingIndex;
+		}
+		
+		super.drawScreen(mouseX, mouseY, renderPartialTick);
+	}
+	
+	public void handleMouseInput() {
+		super.handleMouseInput();
+		int wheel;
+		if (0 != (wheel = Mouse.getEventDWheel())) {			
+			
+			// Safe way to do it. I could've added / substracted 9 but this is more safe.
+			if (wheel > 0) {
+				this.scrollUp();	
+			} else {
+				this.scrollDown();
+			}
+		}
+	}
+	
+	private void scrollUp () {
+		if (this.firstElement > 0) this.firstElement = ((this.firstElement / 9) - 1) * 9; 
+	}
+	
+	private void scrollDown () {
+		if (this.firstElement < this.lastPossibleFirstElement) this.firstElement = ((this.firstElement / 9) + 1) * 9;
+	}
+	
+	protected void mouseClicked (int x, int y, int b) {		
+		if (b == 0) {
+			if (this.selectedItem != -1) {
+				InventoryPlayer inventory = this.mc.thePlayer.inventory;
+				int stackSize = 1;
+				Item item = this.itemsList.get(this.selectedItem).getItem();
+				
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+					stackSize = item.getItemStackLimit();
+				}
+				
+				inventory.mainInventory[inventory.currentItem] = new ItemStack(item, stackSize + 63);
+				this.mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+			}
+		}
+	}
+	
+	protected void keyTyped(char c, int key) {
+		if (key == 1) {
+			this.mc.displayGuiScreen((GuiScreen)null);
+		} else if (key == Keyboard.KEY_UP) {
+			this.scrollUp();
+		} else if (key == Keyboard.KEY_DOWN) {
+			this.scrollDown();
+		} else {
+			for(int i = 0; i < 9; ++i) {
+				if(Keyboard.getEventKey() == Keyboard.KEY_1 + i) {
+					this.mc.thePlayer.inventory.currentItem = i;
+				}
+			}
+		}
+	}
+	
+	public boolean doesGuiPauseGame() {
+		return false;
+	}
+}

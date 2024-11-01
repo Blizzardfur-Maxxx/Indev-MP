@@ -1,0 +1,102 @@
+// Pseudo depth-of-field implementation for Minecraft by daxnitro.
+
+uniform sampler2D sampler0;
+uniform sampler2D sampler1;
+uniform sampler2D sampler2;
+
+uniform float aspectRatio;
+uniform float near;
+uniform float far;
+uniform int fogMode;
+
+const float dofSpan = 35.0;
+const float blurMagnitude = 0.005;
+
+const int GL_LINEAR = 9729;
+const int GL_EXP = 2048;
+
+float getDepth(vec2 coord);
+
+void main() {
+	vec4 baseColor = texture2D(sampler0, gl_TexCoord[0].st);
+
+	vec4 blurredColor = vec4(0.0);
+	vec2 aspectCorrection = vec2(1.0, aspectRatio) * blurMagnitude;
+
+	// This blur is pretty straight from this guy's shader: http://artmartinsh.blogspot.com/2010/02/glsl-lens-blur-filter-with-bokeh.html
+	
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.0,0.4) * aspectCorrection);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.15,0.37) * aspectCorrection);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.29,0.29) * aspectCorrection);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.37,0.15) * aspectCorrection);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.4,0.0) * aspectCorrection);   
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.37,-0.15) * aspectCorrection);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.29,-0.29) * aspectCorrection);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.15,-0.37) * aspectCorrection);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.0,-0.4) * aspectCorrection); 
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.15,0.37) * aspectCorrection);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.29,0.29) * aspectCorrection);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.37,0.15) * aspectCorrection); 
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.4,0.0) * aspectCorrection); 
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.37,-0.15) * aspectCorrection);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.29,-0.29) * aspectCorrection);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.15,-0.37) * aspectCorrection);
+	
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.15,0.37) * aspectCorrection * 0.9);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.37,0.15) * aspectCorrection * 0.9);           
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.37,-0.15) * aspectCorrection * 0.9);           
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.15,-0.37) * aspectCorrection * 0.9);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.15,0.37) * aspectCorrection * 0.9);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.37,0.15) * aspectCorrection * 0.9);            
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.37,-0.15) * aspectCorrection * 0.9);   
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.15,-0.37) * aspectCorrection * 0.9);   
+	
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.29,0.29) * aspectCorrection * 0.7);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.4,0.0) * aspectCorrection * 0.7);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.29,-0.29) * aspectCorrection * 0.7);   
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.0,-0.4) * aspectCorrection * 0.7);     
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.29,0.29) * aspectCorrection * 0.7);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.4,0.0) * aspectCorrection * 0.7);     
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.29,-0.29) * aspectCorrection * 0.7);   
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.0,0.4) * aspectCorrection * 0.7);
+	
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.29,0.29) * aspectCorrection * 0.4);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.4,0.0) * aspectCorrection * 0.4);       
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.29,-0.29) * aspectCorrection * 0.4);   
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.0,-0.4) * aspectCorrection * 0.4);     
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.29,0.29) * aspectCorrection * 0.4);
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.4,0.0) * aspectCorrection * 0.4);     
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(-0.29,-0.29) * aspectCorrection * 0.4);   
+	blurredColor += texture2D(sampler0, gl_TexCoord[0].xy + vec2(0.0,0.4) * aspectCorrection * 0.4);       
+        
+    blurredColor /= 41.0;
+    
+	float depth = getDepth(gl_TexCoord[0].st);
+	float cursorDepth = getDepth(vec2(0.5, 0.5));
+    
+	if (depth >= far) {
+		// Skybox.
+		gl_FragColor = baseColor;
+	} else {
+		gl_FragColor = mix(baseColor, blurredColor, clamp(abs(depth - cursorDepth) / dofSpan, 0.0, 1.0));
+		if (fogMode == GL_EXP) {
+			gl_FragColor = mix(gl_FragColor, gl_Fog.color, 1.0 - clamp(exp(-gl_Fog.density * depth), 0.0, 1.0));
+		} else if (fogMode == GL_LINEAR) {
+			// Linear fog.
+			gl_FragColor = mix(gl_FragColor, gl_Fog.color, clamp((depth - gl_Fog.start) * gl_Fog.scale, 0.0, 1.0));
+		}
+	}	
+}
+
+float getDepth(vec2 coord) {
+	float depth = texture2D(sampler1, coord).x;
+	float depth2 = texture2D(sampler2, coord).x;
+	if (depth2 < 1.0) {
+		depth = depth2;
+	}
+	
+    depth = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+    
+    return depth;
+}

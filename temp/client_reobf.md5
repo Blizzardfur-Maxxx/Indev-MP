@@ -57,7 +57,7 @@ net/minecraft/client/gui/GuiNameLevel fd250a962e5d04becbb3957f4febad92
 net/minecraft/client/gui/GuiNewLevel 99f5d29c8c51ee2f03499ee7a62ff799
 net/minecraft/client/gui/GuiOptions 426ae1ac9d6090e1314a91c8268e9f65
 net/minecraft/client/gui/GuiSaveLevel 2324e97d2c728026585622004f4ecd4a
-net/minecraft/client/gui/GuiScreen d919b3f7befbac33eed3f81e37bd85ba
+net/minecraft/client/gui/GuiScreen 35f4fff31aaa2327ec8b2e479083b89a
 net/minecraft/client/gui/GuiSmallButton 6bba8a28c0f4e6bd426b3f151804c714
 net/minecraft/client/gui/ScaledResolution 8f8c316b0bd3e91e4490f2d4878a3a86
 net/minecraft/client/GuiMainMenu 05135c454da37e9d738f5b4217b3c21c
@@ -84,7 +84,7 @@ net/minecraft/client/net/Client bca8af5d4ab5ef660ea1879388a49d72
 net/minecraft/client/net/ConnectionThread 40dafcbe8b8c443fbd024e6be2253c3d
 net/minecraft/client/net/DynamicTexture 559aecee04c9172b6d1a93268820cd99
 net/minecraft/client/net/EntityPos 5590258b0f8179780647d6a72695045d
-net/minecraft/client/net/NetworkPlayer 03e4b3ac11525c971caa31fc9274ae6a
+net/minecraft/client/net/NetworkPlayer 6a52cc41e56b7fca78d826d100cd5615
 net/minecraft/client/net/NetworkPlayerTextureLoader 6597044b25fe898ceba156fcd886b09a
 net/minecraft/client/net/Packet c98ec81daa583c474ae4c90dd6cd295f
 net/minecraft/client/net/SocketConnection 107fc86b2475688c4021b8281b6bbc34
@@ -120,7 +120,7 @@ net/minecraft/client/render/RenderBlocks d99a93073af0a85edb26fd16da75133d
 net/minecraft/client/render/RenderEngine 2b3c445e42c66f043dadface6c7b7f71
 net/minecraft/client/render/RenderGlobal 9093a97681cb9230a5f6cb862ee8ad72
 net/minecraft/client/render/RenderSorter cd4c7227e57bdf552e9378d6b8be46a9
-net/minecraft/client/render/Tessellator ed631d7986c8daaf978e3c618048c427
+net/minecraft/client/render/Tessellator fa5c9176854ae8dc61752778b785a1ff
 net/minecraft/client/render/texture/TextureFlamesFX 09099a872980777d24ca428e286966d4
 net/minecraft/client/render/texture/TextureFX 49b81a7df3c8d5b8affabe91c4e2eec0
 net/minecraft/client/render/texture/TextureGearsFX af6f7885dd674fc288e145f0d1d442d5
@@ -143,10 +143,10 @@ net/minecraft/game/entity/animal/EntityPig 1e84e3c3d8e37aa83315315160fba875
 net/minecraft/game/entity/animal/EntitySheep c99a870d9484b5a3278e88c60ab121c4
 net/minecraft/game/entity/Entity 4ecea8e847b1111bfb2fde58e31f13e4
 net/minecraft/game/entity/EntityCreature 5d90b31396fcdb4a4c3af4eb4c69bc6c
-net/minecraft/game/entity/EntityLiving 42f04b359886fbafee8341c7ff217070
+net/minecraft/game/entity/EntityLiving 2314e80263744194f9e0571d32156023
 net/minecraft/game/entity/EntityPainting 11c4103e8645ab1ac9b746e14ef37868
 net/minecraft/game/entity/EnumArt 92dc719cc27bbbe4f99befa4d6f39a02
-net/minecraft/game/entity/HumanoidMob d1ea2a96eeefd088fb9661f4fec11213
+net/minecraft/game/entity/HumanoidMob b265f5f94fe3b52311d70eeaf98aa744
 net/minecraft/game/entity/misc/EntityItem c45ed8430fb05c2c3ee4733fded89cd7
 net/minecraft/game/entity/misc/EntityTNTPrimed eb7f29a2b63a69a347eb76ae77d7e3ce
 net/minecraft/game/entity/monster/EntityCreeper 479d9f97b991a2950d46da1c1fdedbc8

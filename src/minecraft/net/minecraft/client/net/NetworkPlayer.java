@@ -8,11 +8,12 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.HumanoidMob;
 import net.minecraft.game.entity.player.EntityPlayer;
 
 
-public class NetworkPlayer extends HumanoidMob {
+public class NetworkPlayer extends EntityLiving {
 	public static final long serialVersionUID = 77479605454997290L;
 	private List moveQueue = new LinkedList();
 	private Minecraft minecraft;
@@ -56,6 +57,27 @@ public class NetworkPlayer extends HumanoidMob {
 		} while(i1-- > 0 && this.moveQueue.size() > 10);
 
 		this.onGround = true;
+	}
+	
+	protected void updatePlayerActionState() {
+		if(this.rand.nextFloat() < 0.07F) {
+			this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
+			this.moveForward = this.rand.nextFloat() * this.moveSpeed;
+		}
+
+		this.isJumping = this.rand.nextFloat() < 0.01F;
+		if(this.rand.nextFloat() < 0.04F) {
+			this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 60.0F;
+		}
+
+		this.rotationYaw += this.randomYawVelocity;
+		this.rotationPitch = 0.0F;
+		boolean z1 = this.handleWaterMovement();
+		boolean z2 = this.handleLavaMovement();
+		if(z1 || z2) {
+			this.isJumping = this.rand.nextFloat() < 0.8F;
+		}
+
 	}
 
 	public void bindTexture(Textures Textures) {

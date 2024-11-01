@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.lang.reflect.Field"/>
+<fullyQualifiedTypeName name="net.minecraft.game.entity.player.EntityPlayerAcsessor"/>
+<fullyQualifiedTypeName name="net.minecraft.game.level.World"/>
+<fullyQualifiedTypeName name="net.minecraft.game.entity.HumanoidMob"/>
+<fullyQualifiedTypeName name="net.minecraft.client.RenderHelper"/>
+<fullyQualifiedTypeName name="net.minecraft.game.item.ItemStack"/>
+<fullyQualifiedTypeName name="net.minecraft.client.render.entity.RenderItem"/>
+<fullyQualifiedTypeName name="net.minecraft.client.gui.GuiCreativeInventory"/>
+<fullyQualifiedTypeName name="net.minecraft.game.item.Item"/>
+<fullyQualifiedTypeName name="net.minecraft.game.entity.player.InventoryPlayer"/>
+<fullyQualifiedTypeName name="net.minecraft.client.render.RenderEngine"/>
+<fullyQualifiedTypeName name="org.lwjgl.opengl.XRandR.Screen"/>
+<fullyQualifiedTypeName name="net.minecraft.client.net.Textures"/>
+<fullyQualifiedTypeName name="net.minecraft.game.level.block.Block"/>
+<fullyQualifiedTypeName name="net.minecraft.client.Session"/>
+<fullyQualifiedTypeName name="net.minecraft.game.entity.player.EntityPlayer"/>
+<fullyQualifiedTypeName name="net.minecraft.game.entity.monster.EntityMob"/>
 </qualifiedTypeNameHistroy>
