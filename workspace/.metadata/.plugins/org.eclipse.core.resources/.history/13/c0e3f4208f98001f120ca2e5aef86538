@@ -11,7 +11,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.HumanoidMob;
 import net.minecraft.game.entity.player.EntityPlayer;
-import net.minecraft.client.render.RenderEngine;
 
 
 public class NetworkPlayer extends EntityLiving {
@@ -26,7 +25,7 @@ public class NetworkPlayer extends EntityLiving {
 	public String name;
 	public String displayName;
 	int tickCount = 0;
-	private RenderEngine RenderEngine;
+	private Textures Textures;
 
 	public NetworkPlayer(Minecraft minecraft, int id, String username, int posX, int posY, int posZ, float rotationPitch, float rotationYaw) {
 		super(minecraft.theWorld);
@@ -59,28 +58,9 @@ public class NetworkPlayer extends EntityLiving {
 
 		this.onGround = true;
 	}
-	
-	protected void updatePlayerActionState() {
-		if(this.rand.nextFloat() < 0.07F) {
-			this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
-			this.moveForward = this.rand.nextFloat() * this.moveSpeed;
-		}
-		this.isJumping = this.rand.nextFloat() < 0.01F;
-		if(this.rand.nextFloat() < 0.04F) {
-			this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 60.0F;
-		}
-		this.rotationYaw += this.randomYawVelocity;
-		this.rotationPitch = 0.0F;
-		boolean z1 = this.handleWaterMovement();
-		boolean z2 = this.handleLavaMovement();
-		if(z1 || z2) {
-			this.isJumping = this.rand.nextFloat() < 0.8F;
-		}
-	}
 
-
-	public void bindTexture(RenderEngine RenderEngine) {
-		this.RenderEngine = RenderEngine;
+	public void bindTexture(Textures Textures) {
+		this.Textures = Textures;
 		if(this.newTexture != null) {
 			BufferedImage bufferedImage2 = this.newTexture;
 			int[] i3 = new int[512];
@@ -103,18 +83,18 @@ public class NetworkPlayer extends EntityLiving {
 			}
 
 			this.hasHair = z10001;
-			this.texture = RenderEngine.getTexture("/char.png");
+			this.texture = Textures.loadTexture(this.newTexture);
 			this.newTexture = null;
 		}
 
 		if(this.texture < 0) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, RenderEngine.getTexture("/char.png"));
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, Textures.loadTexture("/char.png"));
 		} else {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture);
 		}
 	}
 
-	public void renderHover(RenderEngine Textures1, float f2) {
+	public void renderHover(Textures Textures1, float f2) {
 		FontRenderer font3 = this.minecraft.fontRenderer;
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.prevPosX + (this.posX - this.prevPosX) * f2, this.prevPosY + (this.posY - this.prevPosY) * f2 + 0.8F + this.renderYawOffset, this.prevPosZ + (this.posZ - this.prevPosZ) * f2);
@@ -237,15 +217,15 @@ public class NetworkPlayer extends EntityLiving {
 	}
 
 	public void clear() {
-		if(this.texture >= 0 && this.RenderEngine != null) {
-			RenderEngine Textures10000 = this.RenderEngine;
+		if(this.texture >= 0 && this.Textures != null) {
+			Textures Textures10000 = this.Textures;
 			int i1 = this.texture;
-			RenderEngine Textures2 = this.RenderEngine;
-			Textures10000.textureContentsMap.remove(i1);
-			Textures2.singleIntBuffer.clear();
-			Textures2.singleIntBuffer.put(i1);
-			Textures2.singleIntBuffer.flip();
-			GL11.glDeleteTextures(Textures2.singleIntBuffer);
+			Textures Textures2 = this.Textures;
+			Textures10000.pixelsMap.remove(i1);
+			Textures2.ib.clear();
+			Textures2.ib.put(i1);
+			Textures2.ib.flip();
+			GL11.glDeleteTextures(Textures2.ib);
 		}
 
 	}

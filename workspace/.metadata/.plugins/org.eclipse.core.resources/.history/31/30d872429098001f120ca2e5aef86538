@@ -59,25 +59,6 @@ public class NetworkPlayer extends EntityLiving {
 
 		this.onGround = true;
 	}
-	
-	protected void updatePlayerActionState() {
-		if(this.rand.nextFloat() < 0.07F) {
-			this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
-			this.moveForward = this.rand.nextFloat() * this.moveSpeed;
-		}
-		this.isJumping = this.rand.nextFloat() < 0.01F;
-		if(this.rand.nextFloat() < 0.04F) {
-			this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 60.0F;
-		}
-		this.rotationYaw += this.randomYawVelocity;
-		this.rotationPitch = 0.0F;
-		boolean z1 = this.handleWaterMovement();
-		boolean z2 = this.handleLavaMovement();
-		if(z1 || z2) {
-			this.isJumping = this.rand.nextFloat() < 0.8F;
-		}
-	}
-
 
 	public void bindTexture(RenderEngine RenderEngine) {
 		this.RenderEngine = RenderEngine;
@@ -103,7 +84,7 @@ public class NetworkPlayer extends EntityLiving {
 			}
 
 			this.hasHair = z10001;
-			this.texture = RenderEngine.getTexture("/char.png");
+			this.texture = RenderEngine.getTexture(this.newTexture);
 			this.newTexture = null;
 		}
 

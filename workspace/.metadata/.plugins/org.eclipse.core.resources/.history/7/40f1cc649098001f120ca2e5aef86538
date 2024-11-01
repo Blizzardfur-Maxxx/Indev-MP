@@ -86,6 +86,7 @@ public final class Minecraft implements Runnable {
 	public boolean appletMode = true;
 	public volatile boolean isGamePaused = false;
 	public RenderEngine renderEngine;
+	public Textures textures;
 	public FontRenderer fontRenderer;
 	public GuiScreen currentScreen = null;
 	public LoadingScreenRenderer loadingScreen = new LoadingScreenRenderer(this);
@@ -120,8 +121,8 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = "localhost";
-		this.port = 25565;
+		this.server = null;
+		this.port = 0;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -246,7 +247,7 @@ public final class Minecraft implements Runnable {
 			float f60 = this.timer.renderPartialTicks;
 			float f92 = f60;
 			if(gameRenderer88.pointedEntity != null) {
-				gameRenderer88.pointedEntity.renderHover(gameRenderer88.mc.renderEngine, f92);
+				gameRenderer88.pointedEntity.renderHover(gameRenderer88.mc.textures, f92);
 			}
 
 			GL11.glEnable(GL11.GL_TEXTURE_2D);

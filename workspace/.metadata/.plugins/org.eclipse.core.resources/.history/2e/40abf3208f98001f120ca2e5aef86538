@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderEngine {
 	private HashMap textureMap = new HashMap();
 	public HashMap textureContentsMap = new HashMap();
-	public IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
+	private IntBuffer singleIntBuffer = BufferUtils.createIntBuffer(1);
 	public ByteBuffer imageData = BufferUtils.createByteBuffer(262144);
 	private List textureList = new ArrayList();
 	private Map urlToImageDataMap = new HashMap();
