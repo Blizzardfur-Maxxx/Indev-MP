@@ -1,0 +1,133 @@
+package net.minecraft.game.entity.player;
+
+import com.mojang.nbt.NBTTagCompound;
+
+import java.util.List;
+
+import net.minecraft.game.IInventory;
+import net.minecraft.game.entity.Entity;
+import net.minecraft.game.entity.EntityLiving;
+import net.minecraft.game.entity.misc.EntityItem;
+import net.minecraft.game.entity.monster.EntityMob;
+import net.minecraft.game.entity.projectile.EntityArrow;
+import net.minecraft.game.item.Item;
+import net.minecraft.game.item.ItemArmor;
+import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.level.World;
+import net.minecraft.game.level.block.Block;
+import net.minecraft.game.level.block.tileentity.TileEntityFurnace;
+import net.minecraft.game.level.material.Material;
+
+import util.MathHelper;
+
+public class EntityPlayerAcsessor extends EntityLiving {
+	public byte unusedByte = 0;
+	public int getScore = 0;
+	public float prevCameraYaw;
+	public float cameraYaw;
+	public byte userType = 0;
+
+	public EntityPlayerAcsessor(World world1) {
+		super(world1);
+		if(world1 != null) {
+			world1.playerEntity = this;
+			world1.releaseEntitySkin(this);
+		}
+
+		this.setPositionAndRotation((float)world1.xSpawn, (float)world1.ySpawn, (float)world1.zSpawn, 0.0F, 0.0F);
+		this.yOffset = 1.62F;
+		this.health = 20;
+		this.fireResistance = 20;
+		this.texture = "/char.png";
+	}
+
+	public final void preparePlayerToSpawn() {
+		this.yOffset = 1.62F;
+		this.setSize(0.6F, 1.8F);
+		super.preparePlayerToSpawn();
+		if(this.worldObj != null) {
+			this.worldObj.playerEntity = this;
+		}
+
+		this.health = 20;
+		this.deathTime = 0;
+	}
+
+	public void onLivingUpdate() {
+		this.prevCameraYaw = this.cameraYaw;
+		super.onLivingUpdate();
+		float f1 = MathHelper.sqrt_float(this.motionX * this.motionX + this.motionZ * this.motionZ);
+		float f2 = (float)Math.atan((double)(-this.motionY * 0.2F)) * 15.0F;
+		if(this.onGround || this.health <= 0) {
+			f2 = 0.0F;
+		}
+
+		this.cameraYaw += (f1 - this.cameraYaw) * 0.4F;
+		this.cameraPitch += (f2 - this.cameraPitch) * 0.8F;
+	}
+
+	public final void onDeath(Entity entity) {
+		this.setSize(0.2F, 0.2F);
+		this.setPosition(this.posX, this.posY, this.posZ);
+		this.motionY = 0.1F;
+		if(entity != null) {
+			this.motionX = -MathHelper.cos((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F;
+			this.motionZ = -MathHelper.sin((this.attackedAtYaw + this.rotationYaw) * (float)Math.PI / 180.0F) * 0.1F;
+		} else {
+			this.motionX = this.motionZ = 0.0F;
+		}
+
+		this.yOffset = 0.1F;
+	}
+
+	public final void setEntityDead() {
+	}
+
+	public final void dropPlayerItem(ItemStack itemStack) {
+		this.dropPlayerItemWithRandomChoice(itemStack, false);
+	}
+
+	public final void dropPlayerItemWithRandomChoice(ItemStack itemStack, boolean z2) {
+		if(itemStack != null) {
+			EntityItem itemStack1;
+			(itemStack1 = new EntityItem(this.worldObj, this.posX, this.posY - 0.3F, this.posZ, itemStack)).delayBeforeCanPickup = 40;
+			itemStack1.motionX = -MathHelper.sin(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F;
+			itemStack1.motionZ = MathHelper.cos(this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F;
+			itemStack1.motionY = -MathHelper.sin(this.rotationPitch / 180.0F * (float)Math.PI) * 0.3F + 0.1F;
+			float f3 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
+			float f5 = 0.02F * this.rand.nextFloat();
+			itemStack1.motionX = (float)((double)itemStack1.motionX + Math.cos((double)f3) * (double)f5);
+			itemStack1.motionY += (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F;
+			itemStack1.motionZ = (float)((double)itemStack1.motionZ + Math.sin((double)f3) * (double)f5);
+			this.worldObj.spawnEntityInWorld(itemStack1);
+		}
+	}
+
+	protected void readEntityFromNBT(NBTTagCompound nbtTagCompound) {
+		super.readEntityFromNBT(nbtTagCompound);
+	}
+
+	protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {
+		super.writeEntityToNBT(nbtTagCompound);
+	}
+
+	protected String getEntityString() {
+		return null;
+	}
+
+	public void displayGUIChest(IInventory iInventory) {
+	}
+
+	public void displayWorkbenchGUI() {
+	}
+
+	public void onItemPickup(Entity entity) {
+	}
+
+	protected final float getEyeHeight() {
+		return 0.12F;
+	}
+
+	public void displayGUIFurnace(TileEntityFurnace furnace) {
+	}
+}

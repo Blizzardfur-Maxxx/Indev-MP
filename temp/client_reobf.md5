@@ -84,13 +84,13 @@ net/minecraft/client/net/Client bca8af5d4ab5ef660ea1879388a49d72
 net/minecraft/client/net/ConnectionThread 40dafcbe8b8c443fbd024e6be2253c3d
 net/minecraft/client/net/DynamicTexture 559aecee04c9172b6d1a93268820cd99
 net/minecraft/client/net/EntityPos 5590258b0f8179780647d6a72695045d
-net/minecraft/client/net/NetworkPlayer 40357508f13617eca0d45fefd35a9068
+net/minecraft/client/net/NetworkPlayer be2257cfa724557e3ed4a8473a019812
 net/minecraft/client/net/NetworkPlayerTextureLoader 6597044b25fe898ceba156fcd886b09a
 net/minecraft/client/net/Packet c98ec81daa583c474ae4c90dd6cd295f
 net/minecraft/client/net/SocketConnection 107fc86b2475688c4021b8281b6bbc34
 net/minecraft/client/net/Textures 5219810fec2120e863470d20cc6863e6
 net/minecraft/client/OpenGlCapsChecker 0c89148dc684b14f0f92cb12506ee30d
-net/minecraft/client/player/EntityPlayerSP b0b44380a96bb3daed3280163c4a47a0
+net/minecraft/client/player/EntityPlayerSP 51490b07c78237a60ac85df5ffdbdcce
 net/minecraft/client/player/MovementInput 0a2ddc8e00f309a6d46274ff53b194fc
 net/minecraft/client/player/MovementInputFromOptions d915463f8101240ea6d13d8874b62b5e
 net/minecraft/client/PlayerLoader 6247cd1d054f8e70646181a1fdb63d07
@@ -155,6 +155,7 @@ net/minecraft/game/entity/monster/EntitySkeleton 71bd85e4a06342d985e6eb4f71de1af
 net/minecraft/game/entity/monster/EntitySpider cfc7cc8623ed0db400681c1840058231
 net/minecraft/game/entity/monster/EntityZombie 8fbcc21ff0f46d6a6ea47c7599d2807a
 net/minecraft/game/entity/player/EntityPlayer 76733e80ac121fb4bd4f6a6121211466
+net/minecraft/game/entity/player/EntityPlayerAcsessor 6c39af9ffe8bed38e7ecec5115201f53
 net/minecraft/game/entity/player/InventoryPlayer b63922207aace087db94b7f73b1b4f8b
 net/minecraft/game/entity/projectile/EntityArrow c8eb2516c3f070192ff0569acc6a28e4
 net/minecraft/game/IInventory 610ec0be470212e667066740e5db14e4

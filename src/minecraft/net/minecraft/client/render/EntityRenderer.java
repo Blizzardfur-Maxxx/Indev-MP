@@ -38,12 +38,12 @@ import org.lwjgl.util.glu.GLU;
 import util.MathHelper;
 
 public final class EntityRenderer {
-	private Minecraft mc;
+	public Minecraft mc;
 	private boolean anaglyphEnable = false;
 	private float farPlaneDistance = 0.0F;
 	public ItemRenderer itemRenderer;
 	private int rendererUpdateCount;
-	private Entity pointedEntity = null;
+	public Entity pointedEntity = null;
 	private int entityRendererInt1;
 	private int entityRendererInt2;
 	private DecimalFormat entityDecimalFormat = new DecimalFormat("0000");

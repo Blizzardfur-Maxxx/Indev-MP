@@ -32,6 +32,7 @@ import net.minecraft.client.net.Client;
 import net.minecraft.client.net.NetworkPlayer;
 import net.minecraft.client.net.Packet;
 import net.minecraft.client.net.SocketConnection;
+import net.minecraft.client.net.Textures;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
@@ -85,6 +86,7 @@ public final class Minecraft implements Runnable {
 	public boolean appletMode = true;
 	public volatile boolean isGamePaused = false;
 	public RenderEngine renderEngine;
+	public Textures textures;
 	public FontRenderer fontRenderer;
 	public GuiScreen currentScreen = null;
 	public LoadingScreenRenderer loadingScreen = new LoadingScreenRenderer(this);
@@ -238,6 +240,14 @@ public final class Minecraft implements Runnable {
 				Controllers.create();
 			} catch (Exception exception15) {
 				exception15.printStackTrace();
+			}
+			EntityRenderer gameRenderer54 = this.entityRenderer;
+
+			EntityRenderer gameRenderer88 = gameRenderer54;
+			float f60 = this.timer.renderPartialTicks;
+			float f92 = f60;
+			if(gameRenderer88.pointedEntity != null) {
+				gameRenderer88.pointedEntity.renderHover(gameRenderer88.mc.textures, f92);
 			}
 
 			GL11.glEnable(GL11.GL_TEXTURE_2D);

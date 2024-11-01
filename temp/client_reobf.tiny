@@ -2525,3 +2525,4 @@ c	net/minecraft/game/item/ItemSword	net/minecraft/a/b/c
 		p	1	itemID	
 		p	2	damage	
 c	net/minecraft/client/gui/GuiChat	net/minecraft/client/c/GuiChat
+c	net/minecraft/game/entity/player/EntityPlayerAcsessor	net/minecraft/a/c/e/EntityPlayerAcsessor
