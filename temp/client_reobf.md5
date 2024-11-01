@@ -63,7 +63,7 @@ net/minecraft/client/gui/ScaledResolution 8f8c316b0bd3e91e4490f2d4878a3a86
 net/minecraft/client/GuiMainMenu 05135c454da37e9d738f5b4217b3c21c
 net/minecraft/client/KeyBinding 7e4d0af02eb601f58d1a9820d45080fc
 net/minecraft/client/LoadingScreenRenderer 359447830ee3085b0b72b15b9c92d9b5
-net/minecraft/client/Minecraft b9364d5af5626d992045066b2fbaa53a
+net/minecraft/client/Minecraft 36d9da7d2edfa6b229e81e89fbb402d5
 net/minecraft/client/MinecraftApplet fe82ff849201c463f4af9151fc7f7478
 net/minecraft/client/MinecraftError 23bc75652b3ea8d47c68028bc6824699
 net/minecraft/client/model/ModelBase 1a3320ce0f908ee32a4370a0fd60faa6

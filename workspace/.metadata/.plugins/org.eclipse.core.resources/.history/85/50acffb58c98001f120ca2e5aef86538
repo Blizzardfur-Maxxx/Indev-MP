@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.render.RenderEngine;
 import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.HumanoidMob;
 import net.minecraft.game.entity.player.EntityPlayer;
@@ -59,7 +60,7 @@ public class NetworkPlayer extends EntityLiving {
 		this.onGround = true;
 	}
 
-	public void bindTexture(Textures Textures) {
+	public void bindTexture(RenderEngine Textures) {
 		this.Textures = Textures;
 		if(this.newTexture != null) {
 			BufferedImage bufferedImage2 = this.newTexture;
