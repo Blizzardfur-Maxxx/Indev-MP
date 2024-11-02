@@ -812,7 +812,10 @@ public final class Minecraft implements Runnable {
 				    int i23 = (int)(player31.posX * 32.0F);
 				    i41 = (int)(player31.posY * 32.0F);
 				    i38 = (int)(player31.posZ * 32.0F);
+				
+				    // Adjust rotationYaw by 180 degrees to face the opposite direction
 				    i46 = (int)((player31.rotationYaw + 180.0F) * 256.0F / 360.0F) & 255;
+				    
 				    i47 = (int)(player31.rotationPitch * 256.0F / 360.0F) & 255;
 				    client18.serverConnection.sendPacket(Packet.PLAYER_TELEPORT, new Object[]{-1, i23, i41, i38, i46, i47});
 				}
