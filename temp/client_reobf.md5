@@ -63,7 +63,7 @@ net/minecraft/client/gui/ScaledResolution 8f8c316b0bd3e91e4490f2d4878a3a86
 net/minecraft/client/GuiMainMenu 05135c454da37e9d738f5b4217b3c21c
 net/minecraft/client/KeyBinding 7e4d0af02eb601f58d1a9820d45080fc
 net/minecraft/client/LoadingScreenRenderer 359447830ee3085b0b72b15b9c92d9b5
-net/minecraft/client/Minecraft 7fe700e7d2d0d0099950166c4fd12d11
+net/minecraft/client/Minecraft b9364d5af5626d992045066b2fbaa53a
 net/minecraft/client/MinecraftApplet fe82ff849201c463f4af9151fc7f7478
 net/minecraft/client/MinecraftError 23bc75652b3ea8d47c68028bc6824699
 net/minecraft/client/model/ModelBase 1a3320ce0f908ee32a4370a0fd60faa6
@@ -84,7 +84,7 @@ net/minecraft/client/net/Client bca8af5d4ab5ef660ea1879388a49d72
 net/minecraft/client/net/ConnectionThread 40dafcbe8b8c443fbd024e6be2253c3d
 net/minecraft/client/net/DynamicTexture 559aecee04c9172b6d1a93268820cd99
 net/minecraft/client/net/EntityPos 5590258b0f8179780647d6a72695045d
-net/minecraft/client/net/NetworkPlayer 0b1f4f8734561ecc53b5ac1c22f7a474
+net/minecraft/client/net/NetworkPlayer 1262ba23d7b90ee4950546bbb7b25943
 net/minecraft/client/net/NetworkPlayerTextureLoader 6597044b25fe898ceba156fcd886b09a
 net/minecraft/client/net/Packet c98ec81daa583c474ae4c90dd6cd295f
 net/minecraft/client/net/SocketConnection 107fc86b2475688c4021b8281b6bbc34
@@ -141,7 +141,7 @@ net/minecraft/client/Timer 348c70fe6d52fd6043bbaf2e3fa69184
 net/minecraft/game/entity/animal/EntityAnimal 5a6f6153baeadfd9c5ef05335a420057
 net/minecraft/game/entity/animal/EntityPig 1e84e3c3d8e37aa83315315160fba875
 net/minecraft/game/entity/animal/EntitySheep c99a870d9484b5a3278e88c60ab121c4
-net/minecraft/game/entity/Entity a25e6bdc02844e960ea86c5ccd3a75db
+net/minecraft/game/entity/Entity 1b823e8dc97a629d727110d07f09b6f3
 net/minecraft/game/entity/EntityCreature 5d90b31396fcdb4a4c3af4eb4c69bc6c
 net/minecraft/game/entity/EntityLiving 2314e80263744194f9e0571d32156023
 net/minecraft/game/entity/EntityPainting 11c4103e8645ab1ac9b746e14ef37868

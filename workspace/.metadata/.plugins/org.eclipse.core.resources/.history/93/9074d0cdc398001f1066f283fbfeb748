@@ -8,9 +8,9 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.EntityLiving;
 
-public class NetworkPlayer extends EntityPlayer {
+public class NetworkPlayer extends EntityLiving {
 	public static final long serialVersionUID = 77479605454997290L;
 	private List moveQueue = new LinkedList();
 	private Minecraft minecraft;
@@ -44,7 +44,7 @@ public class NetworkPlayer extends EntityPlayer {
 		this.allowAlpha = false;
 	}
 
-	public void aiStep() {
+	public void onLivingUpdate() {
 		int i1 = 5;
 
 		do {
@@ -55,6 +55,25 @@ public class NetworkPlayer extends EntityPlayer {
 
 		this.onGround = true;
 	}
+	
+	protected void updatePlayerActionState() {
+		if(this.rand.nextFloat() < 0.07F) {
+			this.moveStrafing = (this.rand.nextFloat() - 0.5F) * this.moveSpeed;
+			this.moveForward = this.rand.nextFloat() * this.moveSpeed;
+		}
+		this.isJumping = this.rand.nextFloat() < 0.01F;
+		if(this.rand.nextFloat() < 0.04F) {
+			this.randomYawVelocity = (this.rand.nextFloat() - 0.5F) * 60.0F;
+		}
+		this.rotationYaw += this.randomYawVelocity;
+		this.rotationPitch = 0.0F;
+		boolean z1 = this.handleWaterMovement();
+		boolean z2 = this.handleLavaMovement();
+		if(z1 || z2) {
+			this.isJumping = this.rand.nextFloat() < 0.8F;
+		}
+	}
+
 
 	public void bindTexture(Textures Textures) {
 		this.Textures = Textures;
@@ -95,17 +114,17 @@ public class NetworkPlayer extends EntityPlayer {
 		FontRenderer font3 = this.minecraft.fontRenderer;
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.prevPosX + (this.posX - this.prevPosX) * f2, this.prevPosY + (this.posY - this.prevPosY) * f2 + 0.8F + this.renderYawOffset, this.prevPosZ + (this.posZ - this.prevPosZ) * f2);
-		GL11.glRotatef(-this.minecraft.player.rotationPitch, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(-this.minecraft.thePlayer.rotationPitch, 0.0F, 1.0F, 0.0F);
 		f2 = 0.05F;
 		GL11.glScalef(0.05F, -f2, f2);
-		GL11.glTranslatef((float)(-font3.width(this.displayName)) / 2.0F, 0.0F, 0.0F);
+		GL11.glTranslatef((float)(-font3.getStringWidth(this.displayName)) / 2.0F, 0.0F, 0.0F);
 		GL11.glNormal3f(1.0F, -1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_LIGHT0);
 		if(this.name.equalsIgnoreCase("Notch")) {
-			font3.renderString(this.displayName, 0, 0, 16776960, true);
+			font3.drawString(this.displayName, 0, 0, 16776960);
 		} else {
-			font3.renderString(this.displayName, 0, 0, 0xFFFFFF, true);
+			font3.drawString(this.displayName, 0, 0, 0xFFFFFF);
 		}
 
 		GL11.glDepthFunc(GL11.GL_GREATER);
@@ -113,12 +132,12 @@ public class NetworkPlayer extends EntityPlayer {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.8F);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		font3.renderString(this.displayName, 0, 0, 0xFFFFFF, true);
+		font3.drawString(this.displayName, 0, 0, 0xFFFFFF);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDepthMask(true);
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glTranslatef(1.0F, 1.0F, -0.05F);
-		font3.renderString(this.name, 0, 0, 5263440, true);
+		font3.drawString(this.name, 0, 0, 5263440);
 		GL11.glEnable(GL11.GL_LIGHT0);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();

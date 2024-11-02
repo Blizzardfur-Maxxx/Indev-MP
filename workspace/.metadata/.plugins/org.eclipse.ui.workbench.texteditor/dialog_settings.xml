@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="mc"/>
+		<item key="selection" value=""/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="textures"/>
+			<item value="Textures"/>
 			<item value="Session"/>
 			<item value="minecraft"/>
 			<item value="creativeTiles"/>
@@ -22,6 +24,7 @@
 			<item value="server !="/>
 		</list>
 		<list key="replacehistory">
+			<item value="RenderEngine"/>
 			<item value="mc"/>
 			<item value="registeredBlocksList"/>
 			<item value="Tessellator"/>
