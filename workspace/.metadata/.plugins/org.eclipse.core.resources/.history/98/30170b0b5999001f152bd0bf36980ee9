@@ -122,8 +122,8 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = null;
-		this.port = 0;
+		this.server = "localhost";
+		this.port = 25565;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -1067,23 +1067,8 @@ public final class Minecraft implements Runnable {
 
 	    if (world != null) {
 	        world.load();
-	        
-            if (world.networkMode) {
-                this.playerController = new PlayerControllerCreative(this);
-            } else {
-                this.playerController = new PlayerControllerSP(this);
-            }
-            
-    		try {
-    			BufferedReader bufferedReader2;
-    			Integer.parseInt((bufferedReader2 = new BufferedReader(new InputStreamReader((new URL(this.mcApplet.getDocumentBase() + "?n=" + this.session.username + "&i=" + this.session.sessionId)).openStream()))).readLine());
-    			bufferedReader2.close();
-    			if(this.mcApplet.getDocumentBase().toString().startsWith("http://www.minecraft.net/") || this.mcApplet.getDocumentBase().toString().startsWith("http://minecraft.net/")) {
-    				this.theWorld = world;
-    			}
-    		} catch (Throwable throwable3) {
-    		}
 
+	        // Initialize playerController based on network mode
 	        if (world.networkMode) {
 	            this.playerController = new PlayerControllerCreative(this);
 	        } else {
