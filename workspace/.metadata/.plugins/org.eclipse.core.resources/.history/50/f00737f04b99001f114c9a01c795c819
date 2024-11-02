@@ -3,6 +3,8 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.InventoryPlayer;
+import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.StepSound;
@@ -30,7 +32,7 @@ public class PlayerController {
 		boolean z7 = world4.setBlockWithNotify(i1, i2, i3, 0);
 		if(block5 != null && z7) {
 			if(this.mc.isOnlineClient()) {
-				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, this.mc.thePlayer.inventoryclassic.getSelected());
+				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, InventoryPlayer.getSelected());
 			}
 			SoundManager soundManager10000 = this.mc.sndManager;
 			String string10001 = block5.stepSound.stepSoundDir();
@@ -51,8 +53,7 @@ public class PlayerController {
 		return true;
 	}
 
-	
-	public boolean removeResource(EntityPlayer player, int quantity) {
+	public boolean removeResource(EntityPlayer player, ItemStack i8) {
 		return false;
 	}
 
