@@ -63,7 +63,7 @@ net/minecraft/client/gui/ScaledResolution 8f8c316b0bd3e91e4490f2d4878a3a86
 net/minecraft/client/GuiMainMenu 05135c454da37e9d738f5b4217b3c21c
 net/minecraft/client/KeyBinding 7e4d0af02eb601f58d1a9820d45080fc
 net/minecraft/client/LoadingScreenRenderer 359447830ee3085b0b72b15b9c92d9b5
-net/minecraft/client/Minecraft b9364d5af5626d992045066b2fbaa53a
+net/minecraft/client/Minecraft 36d9da7d2edfa6b229e81e89fbb402d5
 net/minecraft/client/MinecraftApplet fe82ff849201c463f4af9151fc7f7478
 net/minecraft/client/MinecraftError 23bc75652b3ea8d47c68028bc6824699
 net/minecraft/client/model/ModelBase 1a3320ce0f908ee32a4370a0fd60faa6
@@ -233,7 +233,7 @@ net/minecraft/game/level/generator/noise/NoiseGeneratorOctaves f8f2cd4befae253f8
 net/minecraft/game/level/generator/noise/NoiseGeneratorPerlin 05e74d966fc70d82aaa4ed9e396bade8
 net/minecraft/game/level/IWorldAccess 2e34a35186f1ae443c6ad80ce79f4036
 net/minecraft/game/level/LevelLoader 0ca4b6d8ef52d516ecba0d67c480db14
-net/minecraft/game/level/Light 2095280a7bf0d37ad00f397dc21d35b3
+net/minecraft/game/level/Light 647ff132b3b53cc49504b78e9dd03565
 net/minecraft/game/level/material/Material 80b1ce19736220ed9667dd716bd66733
 net/minecraft/game/level/material/MaterialLiquid a7759fe2919a132b808827e0699a7e30
 net/minecraft/game/level/material/MaterialLogic 58f518e22be466494c067df85b844024
@@ -245,7 +245,7 @@ net/minecraft/game/level/path/Path 4555b9c7349865e3f22f6bbe6b43daae
 net/minecraft/game/level/path/PathEntity d0bf00b9f500f17307cbfefadcb9b085
 net/minecraft/game/level/path/Pathfinder 98818aa08ced6f893a6ee60426f365c1
 net/minecraft/game/level/path/PathPoint 817323ff8b3e0bcb640005b1eae6eb02
-net/minecraft/game/level/World 4a539b59224bda9e1a63dfa212dfba1d
+net/minecraft/game/level/World 13e3829565c9270f96ec619cb46929c6
 net/minecraft/game/physics/AxisAlignedBB bbd94332f1ccf3131bba0b98a2b65c53
 net/minecraft/game/physics/MovingObjectPosition 7f6efbbcb2eed23861062009cb0d51e3
 net/minecraft/game/physics/Vec3D 128676c7046b1ef72ce40cec22a77be8

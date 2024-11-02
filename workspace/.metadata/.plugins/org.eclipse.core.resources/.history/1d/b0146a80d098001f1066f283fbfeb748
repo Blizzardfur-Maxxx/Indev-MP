@@ -522,11 +522,11 @@ public final class World {
 		}
 
 		int i1 = this.getSkyBrightness();
-		if(this.skylightSubtracted > i1  &&! networkMode == true) {
+		if(this.skylightSubtracted > i1) {
 			this.updateChunkLight(this.skylightSubtracted - 1);
 		}
 
-		if(this.skylightSubtracted < i1&&! networkMode == true) {
+		if(this.skylightSubtracted < i1) {
 			this.updateChunkLight(this.skylightSubtracted + 1);
 		}
 

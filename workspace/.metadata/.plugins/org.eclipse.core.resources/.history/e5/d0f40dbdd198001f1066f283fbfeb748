@@ -526,7 +526,7 @@ public final class World {
 			this.updateChunkLight(this.skylightSubtracted - 1);
 		}
 
-		if(this.skylightSubtracted < i1&&! networkMode == true) {
+		if(this.skylightSubtracted < i1) {
 			this.updateChunkLight(this.skylightSubtracted + 1);
 		}
 
