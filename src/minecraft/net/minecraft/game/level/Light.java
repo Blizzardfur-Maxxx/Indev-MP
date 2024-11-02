@@ -146,241 +146,234 @@ public final class Light {
 	}
 
 	public final void updateLight() {
-		if(worldObj.networkMode == true)	{
-			for(int i0 = 0; i0 <= 15; ++i0) {
-	        	World.lightBrightnessTable[i0] = 1.0F;
-	        }
-	        World.floodFillCounter = 0;
+		if(this.lightingUpdateList2.size() > 0) {
+			this.lightingUpdateList2.remove(this.lightingUpdateList2.size() - 1);
+		}
+
+		int i1 = 5;
+
+		while(this.skyLightList.size() > 0 && i1-- > 0) {
+			MetadataChunkBlock metadataChunkBlock2 = (MetadataChunkBlock)this.skyLightList.remove(0);
+
+			for(int i3 = 0; i3 < this.worldObj.worldAccesses.size(); ++i3) {
+				((IWorldAccess)this.worldObj.worldAccesses.get(i3)).markBlockRangeNeedsUpdate(metadataChunkBlock2.x, metadataChunkBlock2.y, metadataChunkBlock2.z, metadataChunkBlock2.maxX, metadataChunkBlock2.maxY, metadataChunkBlock2.maxZ);
+			}
+		}
+
+		if(this.metadataChunkBlock != null) {
+			this.updateLight(8);
 		} else {
-			if(this.lightingUpdateList2.size() > 0) {
-				this.lightingUpdateList2.remove(this.lightingUpdateList2.size() - 1);
-			}
-	
-			int i1 = 5;
-	
-			while(this.skyLightList.size() > 0 && i1-- > 0) {
-				MetadataChunkBlock metadataChunkBlock2 = (MetadataChunkBlock)this.skyLightList.remove(0);
-	
-				for(int i3 = 0; i3 < this.worldObj.worldAccesses.size(); ++i3) {
-					((IWorldAccess)this.worldObj.worldAccesses.get(i3)).markBlockRangeNeedsUpdate(metadataChunkBlock2.x, metadataChunkBlock2.y, metadataChunkBlock2.z, metadataChunkBlock2.maxX, metadataChunkBlock2.maxY, metadataChunkBlock2.maxZ);
+			for(int i19 = 0; i19 < 16; ++i19) {
+				boolean z20 = false;
+				MetadataChunkBlock metadataChunkBlock21;
+				if(this.blockLightList.size() > 0) {
+					z20 = true;
+					metadataChunkBlock21 = (MetadataChunkBlock)this.blockLightList.remove(0);
+					this.updateLists(metadataChunkBlock21.x, metadataChunkBlock21.y, metadataChunkBlock21.z, metadataChunkBlock21.maxX, metadataChunkBlock21.maxY, metadataChunkBlock21.maxZ);
 				}
-			}
-	
-			if(this.metadataChunkBlock != null) {
-				this.updateLight(8);
-			} else {
-				for(int i19 = 0; i19 < 16; ++i19) {
-					boolean z20 = false;
-					MetadataChunkBlock metadataChunkBlock21;
-					if(this.blockLightList.size() > 0) {
-						z20 = true;
-						metadataChunkBlock21 = (MetadataChunkBlock)this.blockLightList.remove(0);
-						this.updateLists(metadataChunkBlock21.x, metadataChunkBlock21.y, metadataChunkBlock21.z, metadataChunkBlock21.maxX, metadataChunkBlock21.maxY, metadataChunkBlock21.maxZ);
-					}
-	
-					int i4;
-					int i5;
-					int i6;
-					int i7;
-					int i8;
-					int i9;
-					int i10;
-					int i11;
-					int i12;
-					int i13;
-					Light light22;
-					if(this.lightingUpdateList1.size() > 0) {
-						z20 = true;
-						metadataChunkBlock21 = (MetadataChunkBlock)this.lightingUpdateList1.remove(0);
-						i7 = metadataChunkBlock21.maxY;
-						i6 = metadataChunkBlock21.maxX;
-						i5 = metadataChunkBlock21.y;
-						i4 = metadataChunkBlock21.x;
-						light22 = this;
-	
-						for(i8 = i4; i8 < i4 + i6; ++i8) {
-							for(i9 = i5; i9 < i5 + i7; ++i9) {
-								i10 = light22.heightMap[i8 + i9 * light22.worldWidth];
-	
-								for(i11 = light22.worldHeight - 1; i11 > 0 && Block.lightOpacity[light22.blocks[(i11 * light22.worldLength + i9) * light22.worldWidth + i8]] == 0; --i11) {
-								}
-	
-								light22.heightMap[i8 + i9 * light22.worldWidth] = i11 + 1;
-								if(i10 != i11) {
-									i12 = i10 < i11 ? i10 : i11;
-									i13 = i10 > i11 ? i10 : i11;
-									light22.updateLists(i8, i12, i9, i8 + 1, i13, i9 + 1);
-								}
-							}
-						}
-					}
-	
+
+				int i4;
+				int i5;
+				int i6;
+				int i7;
+				int i8;
+				int i9;
+				int i10;
+				int i11;
+				int i12;
+				int i13;
+				Light light22;
+				if(this.lightingUpdateList1.size() > 0) {
+					z20 = true;
+					metadataChunkBlock21 = (MetadataChunkBlock)this.lightingUpdateList1.remove(0);
+					i7 = metadataChunkBlock21.maxY;
+					i6 = metadataChunkBlock21.maxX;
+					i5 = metadataChunkBlock21.y;
+					i4 = metadataChunkBlock21.x;
 					light22 = this;
-					i4 = this.worldObj.skylightSubtracted;
-					i5 = -999;
-					i6 = -999;
-					i7 = -999;
-					i8 = -999;
-					i9 = -999;
-					i10 = -999;
-					i11 = 1024;
-					i12 = 0;
-	
-					while(i11-- > 0 && (light22.lightingUpdateCounter > 0 || light22.lightingUpdateList.size() > 0)) {
-						++i12;
-						if(light22.lightingUpdateCounter == 0) {
-							if(light22.lightingUpdateList3 != null) {
-								int[] i23 = light22.lightingUpdateList3;
-								light22.lightingUpdateList2.add(i23);
+
+					for(i8 = i4; i8 < i4 + i6; ++i8) {
+						for(i9 = i5; i9 < i5 + i7; ++i9) {
+							i10 = light22.heightMap[i8 + i9 * light22.worldWidth];
+
+							for(i11 = light22.worldHeight - 1; i11 > 0 && Block.lightOpacity[light22.blocks[(i11 * light22.worldLength + i9) * light22.worldWidth + i8]] == 0; --i11) {
 							}
-	
-							light22.lightingUpdateList3 = (int[])light22.lightingUpdateList.remove(light22.lightingUpdateList.size() - 1);
-							light22.lightingUpdateCounter = light22.lightingUpdateList3[light22.lightingUpdateList3.length - 1];
-						}
-	
-						if(light22.lightingUpdateCounter > light22.lightingUpdateList3.length - 32) {
-							i13 = light22.lightingUpdateList3[--light22.lightingUpdateCounter];
-							light22.lightingUpdateList3[light22.lightingUpdateList3.length - 1] = light22.lightingUpdateCounter;
-							light22.lightingUpdateList.add(light22.lightingUpdateList3);
-							light22.lightingUpdateList3 = light22.getLightingUpdates();
-							light22.lightingUpdateCounter = 1;
-							light22.lightingUpdateList3[0] = i13;
-						} else {
-							i1 = (i13 = light22.lightingUpdateList3[--light22.lightingUpdateCounter]) % light22.worldWidth;
-							int i14 = i13 / light22.worldWidth % light22.worldHeight;
-							int i15 = i13 / light22.worldWidth / light22.worldHeight % light22.worldLength;
-							light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] ^ 1 << (i13 & 7));
-							i13 = light22.heightMap[i1 + i15 * light22.worldWidth];
-							int i16 = i14 >= i13 ? i4 : 0;
-							byte b24 = light22.blocks[(i14 * light22.worldLength + i15) * light22.worldWidth + i1];
-							int i17;
-							if((i17 = Block.lightOpacity[b24]) > 100) {
-								i16 = 0;
-							} else if(i16 < 15) {
-								if((i17 = i17) == 0) {
-									i17 = 1;
-								}
-	
-								int i18;
-								if(i1 > 0 && (i18 = (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + (i1 - 1)] & 15) - i17) > i16) {
-									i16 = i18;
-								}
-	
-								if(i1 < light22.worldWidth - 1 && (i18 = (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1 + 1] & 15) - i17) > i16) {
-									i16 = i18;
-								}
-	
-								if(i14 > 0 && (i18 = (light22.data[((i14 - 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) - i17) > i16) {
-									i16 = i18;
-								}
-	
-								if(i14 < light22.worldHeight - 1 && (i18 = (light22.data[((i14 + 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) - i17) > i16) {
-									i16 = i18;
-								}
-	
-								if(i15 > 0 && (i18 = (light22.data[(i14 * light22.worldLength + (i15 - 1)) * light22.worldWidth + i1] & 15) - i17) > i16) {
-									i16 = i18;
-								}
-	
-								if(i15 < light22.worldLength - 1 && (i18 = (light22.data[(i14 * light22.worldLength + i15 + 1) * light22.worldWidth + i1] & 15) - i17) > i16) {
-									i16 = i18;
-								}
-							}
-	
-							if(i16 < Block.lightValue[b24]) {
-								i16 = Block.lightValue[b24];
-							}
-	
-							if((light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1] & 15) != i16) {
-								light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1] = (byte)((light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1] & 240) + i16);
-								if(i1 > 0 && (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + (i1 - 1)] & 15) != i16 - 1) {
-									i13 = i1 - 1 + i14 * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
-									if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
-										light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
-										light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
-									}
-								}
-	
-								if(i1 < light22.worldWidth - 1 && (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1 + 1] & 15) != i16 - 1) {
-									i13 = i1 + 1 + i14 * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
-									if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
-										light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
-										light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
-									}
-								}
-	
-								if(i14 > 0 && (light22.data[((i14 - 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) != i16 - 1) {
-									i13 = i1 + (i14 - 1) * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
-									if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
-										light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
-										light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
-									}
-								}
-	
-								if(i14 < light22.worldHeight - 1 && (light22.data[((i14 + 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) != i16 - 1) {
-									i13 = i1 + (i14 + 1) * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
-									if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
-										light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
-										light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
-									}
-								}
-	
-								if(i15 > 0 && (light22.data[(i14 * light22.worldLength + (i15 - 1)) * light22.worldWidth + i1] & 15) != i16 - 1) {
-									i13 = i1 + i14 * light22.worldWidth + (i15 - 1) * light22.worldWidth * light22.worldHeight;
-									if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
-										light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
-										light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
-									}
-								}
-	
-								if(i15 < light22.worldLength - 1 && (light22.data[(i14 * light22.worldLength + i15 + 1) * light22.worldWidth + i1] & 15) != i16 - 1) {
-									i13 = i1 + i14 * light22.worldWidth + (i15 + 1) * light22.worldWidth * light22.worldHeight;
-									if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
-										light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
-										light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
-									}
-								}
-	
-								if(i5 == -999) {
-									i5 = i1;
-									i6 = i1;
-									i7 = i14;
-									i8 = i14;
-									i9 = i15;
-									i10 = i15;
-								}
-	
-								if(i1 < i5) {
-									i5 = i1;
-								} else if(i1 > i6) {
-									i6 = i1;
-								}
-	
-								if(i14 > i8) {
-									i8 = i14;
-								} else if(i14 < i7) {
-									i7 = i14;
-								}
-	
-								if(i15 < i9) {
-									i9 = i15;
-								} else if(i15 > i10) {
-									i10 = i15;
-								}
+
+							light22.heightMap[i8 + i9 * light22.worldWidth] = i11 + 1;
+							if(i10 != i11) {
+								i12 = i10 < i11 ? i10 : i11;
+								i13 = i10 > i11 ? i10 : i11;
+								light22.updateLists(i8, i12, i9, i8 + 1, i13, i9 + 1);
 							}
 						}
-					}
-	
-					if(i5 > -999) {
-						light22.skyLightList.add(new MetadataChunkBlock(light22, i5, i7, i9, i6, i8, i10));
-					}
-	
-					if(i12 > 0) {
-						z20 = true;
 					}
 				}
-	
+
+				light22 = this;
+				i4 = this.worldObj.skylightSubtracted;
+				i5 = -999;
+				i6 = -999;
+				i7 = -999;
+				i8 = -999;
+				i9 = -999;
+				i10 = -999;
+				i11 = 1024;
+				i12 = 0;
+
+				while(i11-- > 0 && (light22.lightingUpdateCounter > 0 || light22.lightingUpdateList.size() > 0)) {
+					++i12;
+					if(light22.lightingUpdateCounter == 0) {
+						if(light22.lightingUpdateList3 != null) {
+							int[] i23 = light22.lightingUpdateList3;
+							light22.lightingUpdateList2.add(i23);
+						}
+
+						light22.lightingUpdateList3 = (int[])light22.lightingUpdateList.remove(light22.lightingUpdateList.size() - 1);
+						light22.lightingUpdateCounter = light22.lightingUpdateList3[light22.lightingUpdateList3.length - 1];
+					}
+
+					if(light22.lightingUpdateCounter > light22.lightingUpdateList3.length - 32) {
+						i13 = light22.lightingUpdateList3[--light22.lightingUpdateCounter];
+						light22.lightingUpdateList3[light22.lightingUpdateList3.length - 1] = light22.lightingUpdateCounter;
+						light22.lightingUpdateList.add(light22.lightingUpdateList3);
+						light22.lightingUpdateList3 = light22.getLightingUpdates();
+						light22.lightingUpdateCounter = 1;
+						light22.lightingUpdateList3[0] = i13;
+					} else {
+						i1 = (i13 = light22.lightingUpdateList3[--light22.lightingUpdateCounter]) % light22.worldWidth;
+						int i14 = i13 / light22.worldWidth % light22.worldHeight;
+						int i15 = i13 / light22.worldWidth / light22.worldHeight % light22.worldLength;
+						light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] ^ 1 << (i13 & 7));
+						i13 = light22.heightMap[i1 + i15 * light22.worldWidth];
+						int i16 = i14 >= i13 ? i4 : 0;
+						byte b24 = light22.blocks[(i14 * light22.worldLength + i15) * light22.worldWidth + i1];
+						int i17;
+						if((i17 = Block.lightOpacity[b24]) > 100) {
+							i16 = 0;
+						} else if(i16 < 15) {
+							if((i17 = i17) == 0) {
+								i17 = 1;
+							}
+
+							int i18;
+							if(i1 > 0 && (i18 = (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + (i1 - 1)] & 15) - i17) > i16) {
+								i16 = i18;
+							}
+
+							if(i1 < light22.worldWidth - 1 && (i18 = (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1 + 1] & 15) - i17) > i16) {
+								i16 = i18;
+							}
+
+							if(i14 > 0 && (i18 = (light22.data[((i14 - 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) - i17) > i16) {
+								i16 = i18;
+							}
+
+							if(i14 < light22.worldHeight - 1 && (i18 = (light22.data[((i14 + 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) - i17) > i16) {
+								i16 = i18;
+							}
+
+							if(i15 > 0 && (i18 = (light22.data[(i14 * light22.worldLength + (i15 - 1)) * light22.worldWidth + i1] & 15) - i17) > i16) {
+								i16 = i18;
+							}
+
+							if(i15 < light22.worldLength - 1 && (i18 = (light22.data[(i14 * light22.worldLength + i15 + 1) * light22.worldWidth + i1] & 15) - i17) > i16) {
+								i16 = i18;
+							}
+						}
+
+						if(i16 < Block.lightValue[b24]) {
+							i16 = Block.lightValue[b24];
+						}
+
+						if((light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1] & 15) != i16) {
+							light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1] = (byte)((light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1] & 240) + i16);
+							if(i1 > 0 && (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + (i1 - 1)] & 15) != i16 - 1) {
+								i13 = i1 - 1 + i14 * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
+								if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
+									light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
+									light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
+								}
+							}
+
+							if(i1 < light22.worldWidth - 1 && (light22.data[(i14 * light22.worldLength + i15) * light22.worldWidth + i1 + 1] & 15) != i16 - 1) {
+								i13 = i1 + 1 + i14 * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
+								if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
+									light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
+									light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
+								}
+							}
+
+							if(i14 > 0 && (light22.data[((i14 - 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) != i16 - 1) {
+								i13 = i1 + (i14 - 1) * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
+								if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
+									light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
+									light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
+								}
+							}
+
+							if(i14 < light22.worldHeight - 1 && (light22.data[((i14 + 1) * light22.worldLength + i15) * light22.worldWidth + i1] & 15) != i16 - 1) {
+								i13 = i1 + (i14 + 1) * light22.worldWidth + i15 * light22.worldWidth * light22.worldHeight;
+								if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
+									light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
+									light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
+								}
+							}
+
+							if(i15 > 0 && (light22.data[(i14 * light22.worldLength + (i15 - 1)) * light22.worldWidth + i1] & 15) != i16 - 1) {
+								i13 = i1 + i14 * light22.worldWidth + (i15 - 1) * light22.worldWidth * light22.worldHeight;
+								if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
+									light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
+									light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
+								}
+							}
+
+							if(i15 < light22.worldLength - 1 && (light22.data[(i14 * light22.worldLength + i15 + 1) * light22.worldWidth + i1] & 15) != i16 - 1) {
+								i13 = i1 + i14 * light22.worldWidth + (i15 + 1) * light22.worldWidth * light22.worldHeight;
+								if((light22.chunks[i13 >> 3] & 1 << (i13 & 7)) == 0) {
+									light22.chunks[i13 >> 3] = (byte)(light22.chunks[i13 >> 3] | 1 << (i13 & 7));
+									light22.lightingUpdateList3[light22.lightingUpdateCounter++] = i13;
+								}
+							}
+
+							if(i5 == -999) {
+								i5 = i1;
+								i6 = i1;
+								i7 = i14;
+								i8 = i14;
+								i9 = i15;
+								i10 = i15;
+							}
+
+							if(i1 < i5) {
+								i5 = i1;
+							} else if(i1 > i6) {
+								i6 = i1;
+							}
+
+							if(i14 > i8) {
+								i8 = i14;
+							} else if(i14 < i7) {
+								i7 = i14;
+							}
+
+							if(i15 < i9) {
+								i9 = i15;
+							} else if(i15 > i10) {
+								i10 = i15;
+							}
+						}
+					}
+				}
+
+				if(i5 > -999) {
+					light22.skyLightList.add(new MetadataChunkBlock(light22, i5, i7, i9, i6, i8, i10));
+				}
+
+				if(i12 > 0) {
+					z20 = true;
+				}
 			}
+
 		}
 	}
 

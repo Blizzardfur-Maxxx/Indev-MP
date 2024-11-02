@@ -504,7 +504,7 @@ public final class Minecraft implements Runnable {
 						}
 					} else {
 						int i8;
-						if((i8 = InventoryPlayer.getCurrentItem()) <= 0) {
+						if((i8 = InventoryPlayer.getSelected()) <= 0) {
 							return;
 						}
 						clickState1 = this.thePlayer.inventory.getCurrentItem();

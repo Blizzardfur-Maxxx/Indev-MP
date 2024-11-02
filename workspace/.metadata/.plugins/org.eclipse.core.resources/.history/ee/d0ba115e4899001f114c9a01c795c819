@@ -165,7 +165,6 @@ public final class InventoryPlayer implements IInventory {
 	public final int getSizeInventory() {
 		return this.mainInventory.length + 4;
 	}
-	
 
 	public final ItemStack getStackInSlot(int i1) {
 		ItemStack[] itemStack2 = this.mainInventory;

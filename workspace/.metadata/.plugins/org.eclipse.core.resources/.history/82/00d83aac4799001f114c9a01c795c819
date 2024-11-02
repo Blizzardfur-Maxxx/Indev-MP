@@ -22,6 +22,8 @@ import util.MathHelper;
 
 public class EntityPlayer extends EntityLiving {
 	public InventoryPlayer inventory = new InventoryPlayer(this);
+	public InventoryClassic inventoryclassic = new InventoryClassic();
+
 	public byte unusedByte = 0;
 	public int getScore = 0;
 	public float prevCameraYaw;
