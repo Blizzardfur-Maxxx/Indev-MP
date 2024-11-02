@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="blocksList"/>
+		<item key="selection" value="break"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="break"/>
+			<item value="clickMouse"/>
+			<item value="click"/>
+			<item value="click]"/>
+			<item value="typeOfHit "/>
+			<item value="typeofhit"/>
+			<item value="display"/>
+			<item value="Block.blocksList[i8"/>
+			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)&#x0A;"/>
+			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)&#x0A;\"/>
+			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool"/>
+			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool&apos;"/>
+			<item value="clickState1 = this.thePlayer.inventory.getCurrentItem();&#x0A;"/>
+			<item value="clickState1 = this.thePlayer.inventory.getCurrentItem();"/>
 			<item value="tiles"/>
-			<item value="creativeTiles"/>
-			<item value="registeredBlocksList"/>
-			<item value="Tile"/>
-			<item value="User"/>
-			<item value="textures"/>
-			<item value="Textures"/>
-			<item value="Session"/>
-			<item value="minecraft"/>
-			<item value="font"/>
-			<item value="Tesselator"/>
-			<item value="Screen"/>
-			<item value="bob"/>
-			<item value="bobV"/>
-			<item value="displayName"/>
 		</list>
 		<list key="replacehistory">
 			<item value="blocksList"/>
@@ -40,8 +40,8 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item key="DIALOG_X_ORIGIN" value="826"/>
 		<item key="DIALOG_Y_ORIGIN" value="322"/>
-		<item key="DIALOG_WIDTH" value="284"/>
-		<item key="DIALOG_HEIGHT" value="394"/>
-		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+		<item key="DIALOG_WIDTH" value="336"/>
+		<item key="DIALOG_HEIGHT" value="454"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
 	</section>
 </section>

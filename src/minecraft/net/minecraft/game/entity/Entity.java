@@ -577,6 +577,6 @@ public abstract class Entity {
 		return !this.isDead;
 	}
 	
-	public void renderHover(Textures textures, float t) {
+	public void renderHover(RenderEngine renderEngine, float t) {
 	}
 }

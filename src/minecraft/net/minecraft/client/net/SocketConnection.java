@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
+import net.minecraft.game.item.ItemStack;
+
 public final class SocketConnection {
 	public volatile boolean connected;
 	public SocketChannel socketChannel = SocketChannel.open();
@@ -72,7 +74,15 @@ public final class SocketConnection {
 						} else if(class5 == Short.TYPE) {
 							socketConnection4.writeBuffer.putShort(((Number)object6).shortValue());
 						} else if(class5 == Byte.TYPE) {
-							socketConnection4.writeBuffer.put(((Number)object6).byteValue());
+							if (object6 instanceof ItemStack) {
+							    ItemStack itemStack = (ItemStack) object6;
+							    int itemId = itemStack.getItem().shiftedIndex; // Access `shiftedIndex` as the item ID
+							    socketConnection4.writeBuffer.put((byte) itemId);
+							} else if (object6 instanceof Number) {
+							    socketConnection4.writeBuffer.put(((Number) object6).byteValue());
+							} else {
+							    throw new IllegalArgumentException("Expected ItemStack or Number, but got " + object6.getClass());
+							}
 						} else if(class5 == Double.TYPE) {
 							socketConnection4.writeBuffer.putDouble(((Double)object6).doubleValue());
 						} else if(class5 == Float.TYPE) {
