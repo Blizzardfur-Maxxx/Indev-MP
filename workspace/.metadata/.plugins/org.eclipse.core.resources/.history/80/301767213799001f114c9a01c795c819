@@ -1615,10 +1615,6 @@ public final class World {
 		}
 	}
 	
-	public boolean setTileNoNeighborChange(int x, int y, int z, int id) {
-		return this.networkMode ? false : this.netSetTileNoNeighborChange(x, y, z, id);
-	}
-	
 	public boolean netSetTileNoNeighborChange(int x, int y, int z, int id) {
 		if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.length && z < this.height) {
 			if(id == this.blocks[(y * this.height + z) * this.width + x]) {

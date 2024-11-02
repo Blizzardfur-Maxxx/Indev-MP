@@ -668,7 +668,7 @@ public final class Minecraft implements Runnable {
 									if(packet6 == Packet.LOGIN) {
 										client43.minecraft.loadingScreen.displayProgressMessage(object7[1].toString());
 										client43.minecraft.loadingScreen.displayLoadingString(object7[2].toString());
-										client43.minecraft.thePlayer.userType = ((Byte)object7[3]).byteValue();
+										//client43.minecraft.thePlayer.userType = ((Byte)object7[3]).byteValue();
 									} else if(packet6 == Packet.LEVEL_INITIALIZE) {
 										client43.minecraft.setLevel((World)null);
 										client43.levelBuffer = new ByteArrayOutputStream();

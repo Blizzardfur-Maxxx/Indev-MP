@@ -46,14 +46,6 @@ public class PlayerController {
 
 		return z7;
 	}
-	
-	public boolean removeResource(int quantity) {
-		return true;
-	}
-
-	public boolean removeResource(EntityPlayer player, int quantity) {
-		return false;
-	}
 
 	public void sendBlockRemoving(int i1, int i2, int i3, int i4) {
 	}

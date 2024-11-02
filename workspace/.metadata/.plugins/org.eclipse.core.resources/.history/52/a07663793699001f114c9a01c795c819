@@ -36,7 +36,6 @@ import net.minecraft.client.net.Textures;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
-import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.WorldRenderer;
@@ -55,7 +54,6 @@ import net.minecraft.game.level.LevelLoader;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.generator.LevelGenerator;
-import net.minecraft.game.physics.AxisAlignedBB;
 import net.minecraft.game.physics.MovingObjectPosition;
 
 import org.lwjgl.BufferUtils;
@@ -123,8 +121,8 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = "localhost";
-		this.port = 25565;
+		this.server = null;
+		this.port = 0;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -440,8 +438,7 @@ public final class Minecraft implements Runnable {
 	}
 
 	private void clickMouse(int clickState) {
-		if(clickState != 0 || this.leftClickCounter <= 0) {			
-			ItemRenderer tileRenderer6;
+		if(clickState != 0 || this.leftClickCounter <= 0) {
 			if(clickState == 0) {
 				this.entityRenderer.itemRenderer.equippedItemRender();
 			}
@@ -498,33 +495,12 @@ public final class Minecraft implements Runnable {
 					Block block6 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)];
 					if(clickState == 0) {
 						this.theWorld.extinguishFire(i10, i3, i13, this.objectMouseOver.sideHit);
-						if(block6 != Block.bedrock  || this.thePlayer.userType >= 100) {
+						if(block6 != Block.bedrock) {
 							this.playerController.clickBlock(i10, i3, i13);
 							return;
 						}
 					} else {
-						int i8;
-						if((i8 = this.thePlayer.inventoryclassic.getSelected()) <= 0) {
-							return;
-						}
 						clickState1 = this.thePlayer.inventory.getCurrentItem();
-						Block tile9 = null;
-						AxisAlignedBB aABB10;
-						if(((block6 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear1(aABB10)))) {
-							if(!this.playerController.removeResource(thePlayer, i8)) {
-								return;
-							}
-
-							if(this.isOnlineClient()) {
-								this.networkClient.sendTileUpdated(i10, i3, i13, clickState, i8);
-							}
-
-							this.theWorld.netSetTile(i10, i3, i13, i8);
-							tileRenderer6 = this.entityRenderer.itemRenderer;
-							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[i8].onBlockAdded(this.theWorld, i10, i3, i13);
-						}
-					
 						int i16;
 						if((i16 = this.theWorld.getBlockId(i10, i3, i13)) > 0 && Block.blocksList[i16].blockActivated(this.theWorld, i10, i3, i13, this.thePlayer)) {
 							return;
@@ -668,7 +644,7 @@ public final class Minecraft implements Runnable {
 									if(packet6 == Packet.LOGIN) {
 										client43.minecraft.loadingScreen.displayProgressMessage(object7[1].toString());
 										client43.minecraft.loadingScreen.displayLoadingString(object7[2].toString());
-										client43.minecraft.thePlayer.userType = ((Byte)object7[3]).byteValue();
+										//client43.minecraft.thePlayer.userType = ((Byte)object7[3]).byteValue();
 									} else if(packet6 == Packet.LEVEL_INITIALIZE) {
 										client43.minecraft.setLevel((World)null);
 										client43.levelBuffer = new ByteArrayOutputStream();

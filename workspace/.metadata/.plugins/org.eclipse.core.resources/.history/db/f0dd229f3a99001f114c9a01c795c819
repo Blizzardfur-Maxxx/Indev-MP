@@ -508,21 +508,21 @@ public final class Minecraft implements Runnable {
 							return;
 						}
 						clickState1 = this.thePlayer.inventory.getCurrentItem();
-						Block tile9 = null;
+						Block tile9;
 						AxisAlignedBB aABB10;
-						if(((block6 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear1(aABB10)))) {
-							if(!this.playerController.removeResource(thePlayer, i8)) {
+						if(((block6 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)) == null || (this.thePlayer.bb.intersects(aABB10) ? false : this.theWorld.isFree(aABB10)))) {
+							if(!this.playerController.removeResource(i8)) {
 								return;
 							}
 
 							if(this.isOnlineClient()) {
-								this.networkClient.sendTileUpdated(i10, i3, i13, clickState, i8);
+								this.networkClient.sendTileUpdated(i10, i3, i13, id, i8);
 							}
 
 							this.theWorld.netSetTile(i10, i3, i13, i8);
 							tileRenderer6 = this.entityRenderer.itemRenderer;
 							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[i8].onBlockAdded(this.theWorld, i10, i3, i13);
+							Block.blocksList[i8].onPlace(this.theWorld, i10, i3, i13);
 						}
 					
 						int i16;
@@ -668,7 +668,7 @@ public final class Minecraft implements Runnable {
 									if(packet6 == Packet.LOGIN) {
 										client43.minecraft.loadingScreen.displayProgressMessage(object7[1].toString());
 										client43.minecraft.loadingScreen.displayLoadingString(object7[2].toString());
-										client43.minecraft.thePlayer.userType = ((Byte)object7[3]).byteValue();
+										//client43.minecraft.thePlayer.userType = ((Byte)object7[3]).byteValue();
 									} else if(packet6 == Packet.LEVEL_INITIALIZE) {
 										client43.minecraft.setLevel((World)null);
 										client43.levelBuffer = new ByteArrayOutputStream();

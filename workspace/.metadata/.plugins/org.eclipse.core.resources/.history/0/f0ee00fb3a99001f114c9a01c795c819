@@ -3,7 +3,6 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.MobSpawner;
@@ -120,10 +119,6 @@ public final class PlayerControllerSP extends PlayerController {
 	
 	public final boolean removeResource(int quantity) {
 		return this.mc.thePlayer.inventoryclassic.removeResource(quantity);
-	}
-	
-	public final boolean removeResource(EntityPlayer player, int quantity) {
-		return isInTestMode;
 	}
 
 	public final void onUpdate() {

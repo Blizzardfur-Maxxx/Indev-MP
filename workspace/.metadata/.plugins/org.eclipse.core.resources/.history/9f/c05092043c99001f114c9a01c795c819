@@ -128,10 +128,6 @@ public final class AxisAlignedBB {
 			return f2;
 		}
 	}
-	
-	public boolean intersects(AxisAlignedBB c) {
-		return c.maxX > this.minX && c.minX < this.maxX ? (c.maxY > this.minY && c.minY < this.maxY ? c.maxZ > this.minZ && c.minZ < this.maxZ : false) : false;
-	}
 
 	public final boolean intersectsWith(AxisAlignedBB aabb) {
 		return aabb.maxX >= this.minX && aabb.minX <= this.maxX ? (aabb.maxY >= this.minY && aabb.minY <= this.maxY ? aabb.maxZ >= this.minZ && aabb.minZ <= this.maxZ : false) : false;
