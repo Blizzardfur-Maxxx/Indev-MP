@@ -146,10 +146,6 @@ public final class Light {
 	}
 
 	public final void updateLight() {
-		// Check if networkMode is enabled; if so, skip lighting updates
-		if (this.worldObj.networkMode) {
-			return;
-		}
 		if(this.lightingUpdateList2.size() > 0) {
 			this.lightingUpdateList2.remove(this.lightingUpdateList2.size() - 1);
 		}

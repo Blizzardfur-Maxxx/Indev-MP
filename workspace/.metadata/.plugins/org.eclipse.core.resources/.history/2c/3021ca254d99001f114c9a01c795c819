@@ -25,7 +25,7 @@ import net.minecraft.game.physics.Vec3D;
 import util.MathHelper;
 
 public final class World {
-	public static float[] lightBrightnessTable = new float[16];
+	private static float[] lightBrightnessTable = new float[16];
 	public int width;
 	public int length;
 	public int height;
