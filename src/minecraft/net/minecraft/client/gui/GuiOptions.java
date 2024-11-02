@@ -3,45 +3,58 @@ package net.minecraft.client.gui;
 import net.minecraft.client.GameSettings;
 
 public final class GuiOptions extends GuiScreen {
+	
 	private GuiScreen parentScreen;
 	private String screenTitle = "Options";
 	private GameSettings options;
 
-	public GuiOptions(GuiScreen guiScreen1, GameSettings gameSettings2) {
-		this.parentScreen = guiScreen1;
-		this.options = gameSettings2;
+	public GuiOptions(GuiScreen var1, GameSettings var2) {
+		this.parentScreen = var1;
+		this.options = var2;
+	}
+
+	// This method will be called whenever the screen is resized (so the GUI buttons don't break when resizing the window or entering/exiting fullscreen)
+	public void resize(int width, int height) {
+	    this.width = width;
+	    this.height = height;
+	    this.initGui(); // Reinitialize GUI elements with the new size
 	}
 
 	public final void initGui() {
-		for(int i1 = 0; i1 < this.options.numberOfOptions; ++i1) {
-			this.controlList.add(new GuiSmallButton(i1, this.width / 2 - 155 + i1 % 2 * 160, this.height / 6 + 24 * (i1 >> 1), this.options.setOptionString(i1)));
+		// Clear existing controls to avoid duplications
+		this.controlList.clear();
+
+		for(int i = 0; i < this.options.numberOfOptions; i++) {
+			this.controlList.add(new GuiButton(i, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, this.options.setOptionString(i)));
 		}
 
 		this.controlList.add(new GuiButton(100, this.width / 2 - 100, this.height / 6 + 120 + 12, "Controls..."));
 		this.controlList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, "Done"));
 	}
 
-	protected final void actionPerformed(GuiButton guiButton1) {
-		if(guiButton1.enabled) {
-			if(guiButton1.id < 100) {
-				this.options.setOptionValue(guiButton1.id, 1);
-				guiButton1.displayString = this.options.setOptionString(guiButton1.id);
-			}
+	protected final void actionPerformed(GuiButton button) {
+		
+		if (!button.enabled)
+			return;
+			
+		if (button.id < 100) {
+			this.options.setOptionValue(button.id, 1);
+			((GuiButton) button).displayString = this.options.setOptionString(button.id);
+		}
 
-			if(guiButton1.id == 100) {
-				this.mc.displayGuiScreen(new GuiControls(this, this.options));
-			}
+		else if (button.id == 100) {
+			this.mc.displayGuiScreen(new GuiControls(this, this.options));
+		}
 
-			if(guiButton1.id == 200) {
-				this.mc.displayGuiScreen(this.parentScreen);
-			}
-
+		else if (button.id == 200) {
+			this.mc.displayGuiScreen(this.parentScreen);
 		}
 	}
 
-	public final void drawScreen(int xSize_lo, int ySize_lo, float f3) {
+	public final void drawScreen(int mouseX, int mouseY, float f3) {
 		this.drawDefaultBackground();
-		drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 0xFFFFFF);
-		super.drawScreen(xSize_lo, ySize_lo, f3);
+		drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
+		
+		super.drawScreen(mouseX, mouseY, f3);
 	}
 }
