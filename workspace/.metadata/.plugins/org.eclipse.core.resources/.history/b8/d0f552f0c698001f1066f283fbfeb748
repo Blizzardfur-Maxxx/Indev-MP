@@ -1645,9 +1645,11 @@ public final class World {
 	
 	public void setNetworkMode(boolean online) {
 		this.networkMode = online;
+        for(int i0 = 0; i0 <= 15; ++i0) {
+            lightBrightnessTable[i0] = 1.0F;  // Maximum brightness
+        }
+        floodFillCounter = 0;
 	}
-	
-	
 	static {
 		if(networkMode == true) {
 	        for(int i0 = 0; i0 <= 15; ++i0) {
