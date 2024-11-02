@@ -37,6 +37,8 @@ public final class PlayerControllerCreative extends PlayerController {
 	}
 
 	public final void onUpdate() {
-		this.mobSpawner.performSpawning();
+        if (this.mobSpawner != null) {
+            this.mobSpawner.performSpawning();
+        }
 	}
 }

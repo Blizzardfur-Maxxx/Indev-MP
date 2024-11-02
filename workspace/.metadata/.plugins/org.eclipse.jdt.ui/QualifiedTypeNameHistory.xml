@@ -12,11 +12,13 @@
 <fullyQualifiedTypeName name="net.minecraft.game.entity.player.InventoryPlayer"/>
 <fullyQualifiedTypeName name="org.lwjgl.opengl.XRandR.Screen"/>
 <fullyQualifiedTypeName name="net.minecraft.client.net.Textures"/>
-<fullyQualifiedTypeName name="net.minecraft.game.level.block.Block"/>
-<fullyQualifiedTypeName name="net.minecraft.client.Session"/>
-<fullyQualifiedTypeName name="net.minecraft.game.entity.player.EntityPlayer"/>
 <fullyQualifiedTypeName name="net.minecraft.game.entity.monster.EntityMob"/>
 <fullyQualifiedTypeName name="net.minecraft.game.entity.Entity"/>
 <fullyQualifiedTypeName name="net.minecraft.client.render.RenderEngine"/>
 <fullyQualifiedTypeName name="net.minecraft.game.entity.EntityLiving"/>
+<fullyQualifiedTypeName name="net.minecraft.game.entity.player.EntityPlayer"/>
+<fullyQualifiedTypeName name="net.minecraft.game.physics.AxisAlignedBB"/>
+<fullyQualifiedTypeName name="net.minecraft.client.render.ItemRenderer"/>
+<fullyQualifiedTypeName name="net.minecraft.game.level.block.Block"/>
+<fullyQualifiedTypeName name="net.minecraft.client.Session"/>
 </qualifiedTypeNameHistroy>

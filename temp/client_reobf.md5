@@ -14,9 +14,9 @@ GameWindowListener 136ecbb3964227700099c0111a86d9d0
 MinecraftAppletImpl 260a9749dd2abf5afef4297b3b533f9f
 net/minecraft/client/CanvasMinecraftApplet 916c0afa6e717e2197967fc08f2a33e0
 net/minecraft/client/ChatLine e7d22e62da9bf52223b5655b3d8b57b6
-net/minecraft/client/controller/PlayerController f53e4849503f4e81daa118fa92b82f28
-net/minecraft/client/controller/PlayerControllerCreative 881d090c4cc401051fac2b49e5976749
-net/minecraft/client/controller/PlayerControllerSP afe101a60a2a5cbc1d03f478dc9916a3
+net/minecraft/client/controller/PlayerController bcc15f583308f2c8402b9204878be61a
+net/minecraft/client/controller/PlayerControllerCreative ea0c39cd2e7a105f37c5e19486d1bb7a
+net/minecraft/client/controller/PlayerControllerSP 3a4757ebb8aa285bb906ef533a839792
 net/minecraft/client/effect/EffectRenderer 23e37e191fc4cfe6778fec93d940b40e
 net/minecraft/client/effect/EntityBubbleFX 0ebaf85f70fdb7ad04925ceed0ca2b12
 net/minecraft/client/effect/EntityDiggingFX e0409d63af6d4a8f8bf91a54df490eaf
@@ -63,7 +63,7 @@ net/minecraft/client/gui/ScaledResolution 8f8c316b0bd3e91e4490f2d4878a3a86
 net/minecraft/client/GuiMainMenu 05135c454da37e9d738f5b4217b3c21c
 net/minecraft/client/KeyBinding 7e4d0af02eb601f58d1a9820d45080fc
 net/minecraft/client/LoadingScreenRenderer 359447830ee3085b0b72b15b9c92d9b5
-net/minecraft/client/Minecraft 36d9da7d2edfa6b229e81e89fbb402d5
+net/minecraft/client/Minecraft 5e3652c2dd43b6378b47c0996432e502
 net/minecraft/client/MinecraftApplet fe82ff849201c463f4af9151fc7f7478
 net/minecraft/client/MinecraftError 23bc75652b3ea8d47c68028bc6824699
 net/minecraft/client/model/ModelBase 1a3320ce0f908ee32a4370a0fd60faa6
@@ -80,7 +80,7 @@ net/minecraft/client/model/ModelZombie 3b3f66cea21f2052762ffecc5e7d5aab
 net/minecraft/client/model/PositionTextureVertex 444e23c313eba4876ee0240ca0fc69d4
 net/minecraft/client/model/TexturedQuad d52f3f6dbacfec9e992257b5e60a8672
 net/minecraft/client/MouseHelper 0f206228675f667e5abb0539756d4a92
-net/minecraft/client/net/Client bca8af5d4ab5ef660ea1879388a49d72
+net/minecraft/client/net/Client 6390da7719da8530dfab57816f1112bc
 net/minecraft/client/net/ConnectionThread 40dafcbe8b8c443fbd024e6be2253c3d
 net/minecraft/client/net/DynamicTexture 559aecee04c9172b6d1a93268820cd99
 net/minecraft/client/net/EntityPos 5590258b0f8179780647d6a72695045d
@@ -115,7 +115,7 @@ net/minecraft/client/render/entity/RenderTNTPrimed 427252e17c3ec510e5cd6724e7403
 net/minecraft/client/render/EntityRenderer a5a79f2feb6d242ba8e0b8a5bd2e8e2e
 net/minecraft/client/render/EntitySorter 1da24669c9608754fbc158a3cfb4527d
 net/minecraft/client/render/ImageBufferDownload dcf45d88b1f74249138f842454f30c24
-net/minecraft/client/render/ItemRenderer d2d923ca64b16fabd9479c8127af3ae9
+net/minecraft/client/render/ItemRenderer cab582fe81d8930c63ae6da02f8d53c1
 net/minecraft/client/render/RenderBlocks d99a93073af0a85edb26fd16da75133d
 net/minecraft/client/render/RenderEngine e4818f2018d3bf187e5cb0e174fe7cbb
 net/minecraft/client/render/RenderGlobal 9093a97681cb9230a5f6cb862ee8ad72
@@ -155,7 +155,8 @@ net/minecraft/game/entity/monster/EntityMob 9ad30aaab32555c73e731e7b6e026ffc
 net/minecraft/game/entity/monster/EntitySkeleton 71bd85e4a06342d985e6eb4f71de1afa
 net/minecraft/game/entity/monster/EntitySpider cfc7cc8623ed0db400681c1840058231
 net/minecraft/game/entity/monster/EntityZombie 8fbcc21ff0f46d6a6ea47c7599d2807a
-net/minecraft/game/entity/player/EntityPlayer 76733e80ac121fb4bd4f6a6121211466
+net/minecraft/game/entity/player/EntityPlayer 4d9bbf48c2882593704f7715f1eb7b08
+net/minecraft/game/entity/player/InventoryClassic 3ee8b335879cdd9de401fd6d75ce8d5f
 net/minecraft/game/entity/player/InventoryPlayer b63922207aace087db94b7f73b1b4f8b
 net/minecraft/game/entity/projectile/EntityArrow c8eb2516c3f070192ff0569acc6a28e4
 net/minecraft/game/IInventory 610ec0be470212e667066740e5db14e4

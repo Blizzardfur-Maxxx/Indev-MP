@@ -119,6 +119,8 @@ public final class PlayerControllerSP extends PlayerController {
 
 	public final void onUpdate() {
 		this.prevBlockDamage = this.curBlockDamage;
-		this.mobSpawner.performSpawning();
+        if (this.mobSpawner != null) {
+        	this.mobSpawner.performSpawning();
+        }
 	}
 }

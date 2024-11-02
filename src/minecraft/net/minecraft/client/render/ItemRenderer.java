@@ -15,7 +15,7 @@ import util.MathHelper;
 public final class ItemRenderer {
 	private Minecraft mc;
 	private ItemStack itemToRender = null;
-	private float equippedProgress = 0.0F;
+	public float equippedProgress = 0.0F;
 	private float prevEquippedProgress = 0.0F;
 	private int swingProgress = 0;
 	private boolean itemSwingState = false;

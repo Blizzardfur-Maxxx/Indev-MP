@@ -70,7 +70,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
 public final class Minecraft implements Runnable {
-	public PlayerController playerController = new PlayerControllerSP(this);
+	public PlayerController playerController;
 	private boolean fullscreen = false;
 	public int displayWidth;
 	public int displayHeight;
@@ -354,7 +354,9 @@ public final class Minecraft implements Runnable {
 
 					this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
-					this.playerController.setPartialTime(this.timer.renderPartialTicks);
+                    if (this.playerController != null) {
+                    	this.playerController.setPartialTime(this.timer.renderPartialTicks);
+                    }
 					this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
 					if(!Display.isActive()) {
 						if(this.fullscreen) {
@@ -926,7 +928,7 @@ public final class Minecraft implements Runnable {
 
 									z3 = this.currentScreen == null && Mouse.isButtonDown(0) && this.inventoryScreen;
 									boolean z8 = false;
-									if(!this.playerController.isInTestMode && this.leftClickCounter <= 0) {
+									if(this.playerController != null &&!this.playerController.isInTestMode && this.leftClickCounter <= 0) {
 										if(z3 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) {
 											i2 = this.objectMouseOver.blockX;
 											int i7 = this.objectMouseOver.blockY;
@@ -1076,59 +1078,69 @@ public final class Minecraft implements Runnable {
 		World width1 = levelGenerator6.generate(string5, width, depth, height1);
 		this.setLevel(width1);
 	}
+	
+	public final boolean isOnlineClient() {
+		return this.networkClient != null;
+	}
 
 	public final void setLevel(World world) {
-		if(this.theWorld != null) {
-			this.theWorld.setLevel();
-		}
+        if (this.theWorld != null) {
+            this.theWorld.setLevel();
+        }
 
-		try {
-			BufferedReader bufferedReader2;
-			Integer.parseInt((bufferedReader2 = new BufferedReader(new InputStreamReader((new URL(this.mcApplet.getDocumentBase() + "?n=" + this.session.username + "&i=" + this.session.sessionId)).openStream()))).readLine());
-			bufferedReader2.close();
-			if(this.mcApplet.getDocumentBase().toString().startsWith("http://www.minecraft.net/") || this.mcApplet.getDocumentBase().toString().startsWith("http://minecraft.net/")) {
-				this.theWorld = world;
-			}
-		} catch (Throwable throwable3) {
-		}
+        this.theWorld = world;
 
-		if(world != null) {
-			world.load();
-			this.playerController.onWorldChange(world);
-			this.thePlayer = (EntityPlayerSP)world.findSubclassOf(EntityPlayerSP.class);
-			world.playerEntity = this.thePlayer;
-			if(this.thePlayer == null) {
-				this.thePlayer = new EntityPlayerSP(this, world, this.session);
-				this.thePlayer.preparePlayerToSpawn();
-				if(world != null) {
-					world.spawnEntityInWorld(this.thePlayer);
-					world.playerEntity = this.thePlayer;
-				}
-			}
+        if (world != null) {
+            world.load();
 
-			if(this.thePlayer != null) {
-				this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
-				this.playerController.onRespawn(this.thePlayer);
-			}
+            if (world.networkMode) {
+                this.playerController = new PlayerControllerCreative(this);
+            } else {
+                this.playerController = new PlayerControllerSP(this);
+            }
+            
+    		try {
+    			BufferedReader bufferedReader2;
+    			Integer.parseInt((bufferedReader2 = new BufferedReader(new InputStreamReader((new URL(this.mcApplet.getDocumentBase() + "?n=" + this.session.username + "&i=" + this.session.sessionId)).openStream()))).readLine());
+    			bufferedReader2.close();
+    			if(this.mcApplet.getDocumentBase().toString().startsWith("http://www.minecraft.net/") || this.mcApplet.getDocumentBase().toString().startsWith("http://minecraft.net/")) {
+    				this.theWorld = world;
+    			}
+    		} catch (Throwable throwable3) {
+    		}
 
-			if(this.renderGlobal != null) {
-				this.renderGlobal.changeWorld(world);
-			}
+            this.thePlayer = (EntityPlayerSP) world.findSubclassOf(EntityPlayerSP.class);
+            world.playerEntity = this.thePlayer;
 
-			if(this.effectRenderer != null) {
-				this.effectRenderer.clearEffects(world);
-			}
+            if (this.thePlayer == null) {
+                this.thePlayer = new EntityPlayerSP(this, world, this.session);
+                this.thePlayer.preparePlayerToSpawn();
+                world.spawnEntityInWorld(this.thePlayer);
+                world.playerEntity = this.thePlayer;
+            }
 
-			this.textureWaterFX.textureId = 0;
-			this.textureLavaFX.textureId = 0;
-			int i4 = this.renderEngine.getTexture("/water.png");
-			if(world.defaultFluid == Block.waterMoving.blockID) {
-				this.textureWaterFX.textureId = i4;
-			} else {
-				this.textureLavaFX.textureId = i4;
-			}
-		}
+            if (this.thePlayer != null) {
+                this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
+                this.playerController.onRespawn(this.thePlayer);
+            }
 
-		System.gc();
+            if (this.renderGlobal != null) {
+                this.renderGlobal.changeWorld(world);
+            }
+            if (this.effectRenderer != null) {
+                this.effectRenderer.clearEffects(world);
+            }
+
+            this.textureWaterFX.textureId = 0;
+            this.textureLavaFX.textureId = 0;
+            int waterTextureId = this.renderEngine.getTexture("/water.png");
+            if (world.defaultFluid == Block.waterMoving.blockID) {
+                this.textureWaterFX.textureId = waterTextureId;
+            } else {
+                this.textureLavaFX.textureId = waterTextureId;
+            }
+
+        System.gc();
+        }
 	}
 }

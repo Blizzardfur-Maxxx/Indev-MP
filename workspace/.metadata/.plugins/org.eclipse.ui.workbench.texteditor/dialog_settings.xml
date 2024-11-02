@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value=""/>
+		<item key="selection" value="blocksList"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="tiles"/>
+			<item value="creativeTiles"/>
+			<item value="registeredBlocksList"/>
+			<item value="Tile"/>
+			<item value="User"/>
 			<item value="textures"/>
 			<item value="Textures"/>
 			<item value="Session"/>
 			<item value="minecraft"/>
-			<item value="creativeTiles"/>
 			<item value="font"/>
 			<item value="Tesselator"/>
-			<item value="Tile"/>
-			<item value="User"/>
 			<item value="Screen"/>
 			<item value="bob"/>
 			<item value="bobV"/>
 			<item value="displayName"/>
-			<item value="server !="/>
 		</list>
 		<list key="replacehistory">
-			<item value="RenderEngine"/>
-			<item value="mc"/>
+			<item value="blocksList"/>
 			<item value="registeredBlocksList"/>
-			<item value="Tessellator"/>
 			<item value="Block"/>
 			<item value="Session"/>
+			<item value="RenderEngine"/>
+			<item value="mc"/>
+			<item value="Tessellator"/>
 			<item value="GuiScreen"/>
 			<item value="Screen"/>
 			<item value=""/>

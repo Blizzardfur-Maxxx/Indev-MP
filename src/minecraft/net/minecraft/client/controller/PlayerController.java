@@ -29,6 +29,9 @@ public class PlayerController {
 		byte b6 = world4.getBlockMetadata(i1, i2, i3);
 		boolean z7 = world4.setBlockWithNotify(i1, i2, i3, 0);
 		if(block5 != null && z7) {
+			if(this.mc.isOnlineClient()) {
+				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, this.mc.thePlayer.inventoryclassic.getSelected());
+			}
 			SoundManager soundManager10000 = this.mc.sndManager;
 			String string10001 = block5.stepSound.stepSoundDir();
 			float f10002 = (float)i1 + 0.5F;
