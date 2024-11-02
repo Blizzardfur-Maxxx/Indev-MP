@@ -72,7 +72,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
 public final class Minecraft implements Runnable {
-	public PlayerController playerController;
 	private boolean fullscreen = false;
 	public int displayWidth;
 	public int displayHeight;
@@ -88,7 +87,6 @@ public final class Minecraft implements Runnable {
 	public boolean appletMode = true;
 	public volatile boolean isGamePaused = false;
 	public RenderEngine renderEngine;
-	public Textures textures;
 	public FontRenderer fontRenderer;
 	public GuiScreen currentScreen = null;
 	public LoadingScreenRenderer loadingScreen = new LoadingScreenRenderer(this);
@@ -118,12 +116,13 @@ public final class Minecraft implements Runnable {
 	public Client networkClient;
 	String server;
 	int port;
+	public PlayerController playerController;
 	
 	public Minecraft(Canvas canvas, MinecraftApplet minecraftApplet, int tempDisplayWidth, int tempDisplayHeight, boolean fullscreen) {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = "null";
+		this.server = null;
 		this.port = 0;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
@@ -143,14 +142,13 @@ public final class Minecraft implements Runnable {
 		this.fullscreen = fullscreen;
 	}
 
-
 	public final void displayGuiScreen(GuiScreen guiScreen) {
 		if(!(this.currentScreen instanceof GuiErrorScreen)) {
 			if(this.currentScreen != null) {
 				this.currentScreen.onGuiClosed();
 			}
 
-			if(guiScreen == null && this.theWorld == null && !this.theWorld.networkMode) {
+			if(guiScreen == null && this.theWorld == null && !this.isOnlineClient()) {
 				guiScreen = new GuiMainMenu();
 			} else if(guiScreen == null && this.thePlayer.health <= 0) {
 				guiScreen = new GuiGameOver();
@@ -250,7 +248,7 @@ public final class Minecraft implements Runnable {
 			float f60 = this.timer.renderPartialTicks;
 			float f92 = f60;
 			if(gameRenderer88.pointedEntity != null) {
-				gameRenderer88.pointedEntity.renderHover(gameRenderer88.mc.textures, f92);
+				gameRenderer88.pointedEntity.renderHover(gameRenderer88.mc.renderEngine, f92);
 			}
 
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -357,9 +355,9 @@ public final class Minecraft implements Runnable {
 
 					this.sndManager.setListener(this.thePlayer, this.timer.renderPartialTicks);
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    if (this.playerController != null) {
-                    	this.playerController.setPartialTime(this.timer.renderPartialTicks);
-                    }
+					if (this.playerController != null) {
+					    this.playerController.setPartialTime(this.timer.renderPartialTicks);
+					}
 					this.entityRenderer.updateCameraAndRender(this.timer.renderPartialTicks);
 					if(!Display.isActive()) {
 						if(this.fullscreen) {
@@ -441,126 +439,74 @@ public final class Minecraft implements Runnable {
 	}
 
 	private void clickMouse(int clickState) {
-		if(clickState != 0 || this.leftClickCounter <= 0) {			
-			ItemRenderer tileRenderer6;
-			if(clickState == 0) {
-				this.entityRenderer.itemRenderer.equippedItemRender();
-			}
+	    if (clickState != 0 || this.leftClickCounter <= 0) {
+	        if (clickState == 0) {
+	            this.entityRenderer.itemRenderer.equippedItemRender();
+	        }
 
-			ItemStack itemStack2;
-			int i3;
-			World world5;
-			if(clickState == 1 && (itemStack2 = this.thePlayer.inventory.getCurrentItem()) != null) {
-				i3 = itemStack2.stackSize;
-				EntityPlayerSP entityPlayerSP7 = this.thePlayer;
-				world5 = this.theWorld;
-				ItemStack itemStack4;
-				if((itemStack4 = itemStack2.getItem().onItemRightClick(itemStack2, world5, entityPlayerSP7)) != itemStack2 || itemStack4 != null && itemStack4.stackSize != i3) {
-					this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack4;
-					this.entityRenderer.itemRenderer.resetEquippedProgress();
-					if(itemStack4.stackSize == 0) {
-						this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-					}
-				}
-			}
+	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
+	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;  // Initialize initialStackSize here
+	        
+	        if (clickState == 1 && itemStack != null) {
+	            ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
+	            if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
+	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
+	                this.entityRenderer.itemRenderer.resetEquippedProgress();
+	                if (updatedStack != null && updatedStack.stackSize == 0) {
+	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+	                }
+	            }
+	        }
 
-			if(this.objectMouseOver == null) {
-				if(clickState == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
-					this.leftClickCounter = 10;
-				}
+	        if (this.objectMouseOver != null) {
+	            if (this.objectMouseOver.typeOfHit == 1 && clickState == 0) {
+	                Entity entityHit = this.objectMouseOver.entityHit;
+	                int damage = itemStack != null ? Item.itemsList[itemStack.itemID].getDamageVsEntity() : 1;
+	                entityHit.attackEntityFrom(this.thePlayer, damage);
+	                if (itemStack != null && entityHit instanceof EntityLiving) {
+	                    itemStack.getItem().hitEntity(itemStack);
+	                    if (itemStack.stackSize <= 0) {
+	                        this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
+	                    }
+	                }
+	            } else if (this.objectMouseOver.typeOfHit == 0) {
+	                int x = this.objectMouseOver.blockX;
+	                int y = this.objectMouseOver.blockY;
+	                int z = this.objectMouseOver.blockZ;
+	                int sideHit = this.objectMouseOver.sideHit;
+	                Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
 
-			} else {
-				ItemStack clickState1;
-				if(this.objectMouseOver.typeOfHit == 1) {
-					if(clickState == 0) {
-						Entity entity14 = this.objectMouseOver.entityHit;
-						EntityPlayerSP entityPlayerSP12 = this.thePlayer;
-						InventoryPlayer inventoryPlayer11;
-						int i10000 = (clickState1 = (inventoryPlayer11 = this.thePlayer.inventory).getStackInSlot(inventoryPlayer11.currentItem)) != null ? Item.itemsList[clickState1.itemID].getDamageVsEntity() : 1;
-						int i17 = i10000;
-						if(i10000 > 0) {
-							entity14.attackEntityFrom(entityPlayerSP12, i17);
-							if((itemStack2 = entityPlayerSP12.inventory.getCurrentItem()) != null && entity14 instanceof EntityLiving) {
-								EntityLiving entityLiving8 = (EntityLiving)entity14;
-								Item.itemsList[itemStack2.itemID].hitEntity(itemStack2);
-								if(itemStack2.stackSize <= 0) {
-									entityPlayerSP12.destroyCurrentEquippedItem();
-								}
-							}
-						}
+	                if (clickState == 0) {
+	                    this.theWorld.extinguishFire(x, y, z, sideHit);
+	                    if (block != Block.bedrock || this.thePlayer.userType >= 100) {
+	                        this.playerController.clickBlock(x, y, z);
+	                    }
+	                } else if (itemStack != null && itemStack.stackSize > 0) {
+	                    Block blockToPlace = Block.blocksList[itemStack.itemID];
+	                    if (block == null || block.isCollidable()) {
+	                        if (this.theWorld.checkIfAABBIsClear1(blockToPlace.getCollisionBoundingBoxFromPool(x, y, z))) {
+	                            if (this.playerController.removeResource(this.thePlayer, itemStack)) {
+	                                this.theWorld.netSetTile(x, y, z, itemStack.itemID);
+	                                blockToPlace.onBlockAdded(this.theWorld, x, y, z);
+	                                this.entityRenderer.itemRenderer.equippedItemRender();
+	                            }
+	                        }
+	                    }
 
-						return;
-					}
-					if (this.objectMouseOver.typeOfHit == 0) {
-					    int i10 = this.objectMouseOver.blockX;
-					    int i31 = this.objectMouseOver.blockY;
-					    int i13 = this.objectMouseOver.blockZ;
-					    int i15 = this.objectMouseOver.sideHit;
-					    Block block6 = Block.blocksList[this.theWorld.getBlockId(i10, i31, i13)];
-					    
-					    if (clickState == 0) {
-					        this.theWorld.extinguishFire(i10, i31, i13, this.objectMouseOver.sideHit);
-					        if (block6 != Block.bedrock || this.thePlayer.userType >= 100) {
-					            this.playerController.clickBlock(i10, i31, i13);
-					            return;
-					        }
-					    } else {
-					        ItemStack i8 = this.thePlayer.inventory.getCurrentItem();
-					        if (i8 == null || i8.stackSize <= 0) {
-					            return;
-					        }
-					        
-					        ItemStack clickState2 = this.thePlayer.inventory.getCurrentItem();
-					        Block tile9 = Block.waterStill;
-					        AxisAlignedBB aABB10;
+	                    int newBlockId = this.theWorld.getBlockId(x, y, z);
+	                    if (newBlockId > 0 && Block.blocksList[newBlockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
+	                        return;
+	                    }
 
-					        if (((block6 == null || tile9 == Block.waterStill || tile9 == Block.lavaStill) &&
-					            ((aABB10 = Block.blocksList[i8.itemID].getCollisionBoundingBoxFromPool(i10, i31, i13)) == null || 
-					            (!this.thePlayer.boundingBox.intersects(aABB10) && this.theWorld.checkIfAABBIsClear1(aABB10))))) {
-					            
-					            if (!this.playerController.removeResource(thePlayer, i8)) {
-					                return;
-					            }
-
-					            if (this.isOnlineClient()) {
-					                this.networkClient.sendTileUpdated(i10, i31, i13, clickState, i8);
-					            }
-
-					            this.theWorld.netSetTile(i10, i31, i13, i8.itemID);
-					            this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-					            Block.blocksList[i8.itemID].onBlockAdded(this.theWorld, i10, i31, i13);
-					        }
-					    
-					        int i16 = this.theWorld.getBlockId(i10, i31, i13);
-					        if (i16 > 0 && Block.blocksList[i16].blockActivated(this.theWorld, i10, i31, i13, this.thePlayer)) {
-					            return;
-					        }
-
-					        if (clickState2 == null) {
-					            return;
-					        }
-
-					        int i16StackSize = clickState2.stackSize;
-					        if (clickState2.getItem().onItemUse(clickState2, this.theWorld, i10, i31, i13, i15)) {
-					            this.entityRenderer.itemRenderer.equippedItemRender();
-					        }
-
-					        if (clickState2.stackSize == 0) {
-					            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-					            return;
-					        }
-
-					        if (clickState2.stackSize != i16StackSize) {
-					            this.entityRenderer.itemRenderer.equipAnimationSpeed();
-					        }
-					    }
-					}
-				}
-			}
-		}
+	                    if (itemStack.stackSize != initialStackSize) {
+	                        this.entityRenderer.itemRenderer.equipAnimationSpeed();
+	                    }
+	                }
+	            }
+	        }
+	    }
 	}
-			
-
+	
 	public final void toggleFullscreen() {
 		try {
 			this.fullscreen = !this.fullscreen;
@@ -860,16 +806,15 @@ public final class Minecraft implements Runnable {
 						}
 					}
 				}
-
 				EntityPlayerSP player31 = this.thePlayer;
 				client18 = this.networkClient;
 				if(this.networkClient.connected) {
-					int i23 = (int)(player31.posX * 32.0F);
-					i41 = (int)(player31.posY * 32.0F);
-					i38 = (int)(player31.posZ * 32.0F);
-					i46 = (int)(player31.rotationYaw * 256.0F / 360.0F) & 255;
-					i47 = (int)(player31.rotationPitch * 256.0F / 360.0F) & 255;
-					client18.serverConnection.sendPacket(Packet.PLAYER_TELEPORT, new Object[]{-1, i23, i41, i38, i46, i47});
+				    int i23 = (int)(player31.posX * 32.0F);
+				    i41 = (int)(player31.posY * 32.0F);
+				    i38 = (int)(player31.posZ * 32.0F);
+				    i46 = (int)((player31.rotationYaw + 180.0F) * 256.0F / 360.0F) & 255;
+				    i47 = (int)(player31.rotationPitch * 256.0F / 360.0F) & 255;
+				    client18.serverConnection.sendPacket(Packet.PLAYER_TELEPORT, new Object[]{-1, i23, i41, i38, i46, i47});
 				}
 			}
 		}
@@ -882,7 +827,8 @@ public final class Minecraft implements Runnable {
 					while(Mouse.next()) {
 						if((i1 = Mouse.getEventDWheel()) != 0) {
 							i2 = i1;
-							InventoryPlayer inventoryPlayer5 = this.thePlayer.inventory;
+							if (this.thePlayer != null && this.thePlayer.inventory != null) {
+							    InventoryPlayer inventoryPlayer5 = this.thePlayer.inventory;
 							if(i1 > 0) {
 								i2 = 1;
 							}
@@ -897,6 +843,7 @@ public final class Minecraft implements Runnable {
 							while(inventoryPlayer5.currentItem >= 9) {
 								inventoryPlayer5.currentItem -= 9;
 							}
+						}
 						}
 
 						if(this.currentScreen == null) {
@@ -957,7 +904,7 @@ public final class Minecraft implements Runnable {
 
 									z3 = this.currentScreen == null && Mouse.isButtonDown(0) && this.inventoryScreen;
 									boolean z8 = false;
-									if(this.playerController != null &&!this.playerController.isInTestMode && this.leftClickCounter <= 0) {
+									if (this.playerController != null && !this.playerController.isInTestMode && this.leftClickCounter <= 0) {
 										if(z3 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) {
 											i2 = this.objectMouseOver.blockX;
 											int i7 = this.objectMouseOver.blockY;
@@ -1109,21 +1056,17 @@ public final class Minecraft implements Runnable {
 		World width1 = levelGenerator6.generate(string5, width, depth, height1);
 		this.setLevel(width1);
 	}
-	
-	public final boolean isOnlineClient() {
-		return this.networkClient != null;
-	}
 
 	public final void setLevel(World world) {
-        if (this.theWorld != null) {
-            this.theWorld.setLevel();
-        }
+	    if (this.theWorld != null) {
+	        this.theWorld.setLevel();
+	    }
 
-        this.theWorld = world;
+	    this.theWorld = world;
 
-        if (world != null) {
-            world.load();
-
+	    if (world != null) {
+	        world.load();
+	        
             if (world.networkMode) {
                 this.playerController = new PlayerControllerCreative(this);
             } else {
@@ -1140,38 +1083,48 @@ public final class Minecraft implements Runnable {
     		} catch (Throwable throwable3) {
     		}
 
-            this.thePlayer = (EntityPlayerSP) world.findSubclassOf(EntityPlayerSP.class);
-            world.playerEntity = this.thePlayer;
+	        if (world.networkMode) {
+	            this.playerController = new PlayerControllerCreative(this);
+	        } else {
+	            this.playerController = new PlayerControllerSP(this);
+	        }
 
-            if (this.thePlayer == null) {
-                this.thePlayer = new EntityPlayerSP(this, world, this.session);
-                this.thePlayer.preparePlayerToSpawn();
-                world.spawnEntityInWorld(this.thePlayer);
-                world.playerEntity = this.thePlayer;
-            }
+	        this.thePlayer = (EntityPlayerSP) world.findSubclassOf(EntityPlayerSP.class);
+	        world.playerEntity = this.thePlayer;
 
-            if (this.thePlayer != null) {
-                this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
-                this.playerController.onRespawn(this.thePlayer);
-            }
+	        if (this.thePlayer == null) {
+	            this.thePlayer = new EntityPlayerSP(this, world, this.session);
+	            this.thePlayer.preparePlayerToSpawn();
+	            world.spawnEntityInWorld(this.thePlayer);
+	            world.playerEntity = this.thePlayer;
+	        }
 
-            if (this.renderGlobal != null) {
-                this.renderGlobal.changeWorld(world);
-            }
-            if (this.effectRenderer != null) {
-                this.effectRenderer.clearEffects(world);
-            }
+	        if (this.thePlayer != null) {
+	            this.thePlayer.movementInput = new MovementInputFromOptions(this.options);
+	            this.playerController.onRespawn(this.thePlayer);
+	        }
 
-            this.textureWaterFX.textureId = 0;
-            this.textureLavaFX.textureId = 0;
-            int waterTextureId = this.renderEngine.getTexture("/water.png");
-            if (world.defaultFluid == Block.waterMoving.blockID) {
-                this.textureWaterFX.textureId = waterTextureId;
-            } else {
-                this.textureLavaFX.textureId = waterTextureId;
-            }
+	        if (this.renderGlobal != null) {
+	            this.renderGlobal.changeWorld(world);
+	        }
+	        if (this.effectRenderer != null) {
+	            this.effectRenderer.clearEffects(world);
+	        }
 
-        System.gc();
-        }
+	        this.textureWaterFX.textureId = 0;
+	        this.textureLavaFX.textureId = 0;
+	        int waterTextureId = this.renderEngine.getTexture("/water.png");
+	        if (world.defaultFluid == Block.waterMoving.blockID) {
+	            this.textureWaterFX.textureId = waterTextureId;
+	        } else {
+	            this.textureLavaFX.textureId = waterTextureId;
+	        }
+
+	    System.gc();
+	    }
+	}
+
+	public boolean isOnlineClient() {
+	    return theWorld != null && theWorld.networkMode;
 	}
 }

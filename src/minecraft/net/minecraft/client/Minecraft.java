@@ -122,8 +122,8 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = null;
-		this.port = 0;
+		this.server = "localhost";
+		this.port = 25565;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -582,7 +582,7 @@ public final class Minecraft implements Runnable {
 
 		if(this.networkClient != null && !(this.currentScreen instanceof GuiErrorScreen)) {
 			if(!this.networkClient.isConnected()) {
-				this.loadingScreen.displayProgressMessage("Connecting..");
+				this.loadingScreen.displayLoadingString("Connecting..");
 				this.loadingScreen.setLoadingProgress(0);
 			} else {
 				Client client18 = this.networkClient;
