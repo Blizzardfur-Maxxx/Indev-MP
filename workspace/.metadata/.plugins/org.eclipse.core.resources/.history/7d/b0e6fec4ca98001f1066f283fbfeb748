@@ -62,7 +62,7 @@ public final class World {
 	public Pathfinder pathFinder = new Pathfinder(this);
 	private Light lightUpdates;
 	public int worldTime = 0;
-	public static short floodFillCounter;
+	private static short floodFillCounter;
 	private short[] floodFillCounters = new short[1048576];
 	private int[] coords = new int[1048576];
 	private int[] floodedBlocks = new int[1048576];

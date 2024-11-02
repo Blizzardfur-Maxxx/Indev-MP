@@ -24,7 +24,7 @@ import net.minecraft.game.physics.Vec3D;
 import util.MathHelper;
 
 public final class World {
-	public static float[] lightBrightnessTable = new float[16];
+	private static float[] lightBrightnessTable = new float[16];
 	public int width;
 	public int length;
 	public int height;
@@ -62,12 +62,12 @@ public final class World {
 	public Pathfinder pathFinder = new Pathfinder(this);
 	private Light lightUpdates;
 	public int worldTime = 0;
-	public static short floodFillCounter;
+	private static short floodFillCounter;
 	private short[] floodFillCounters = new short[1048576];
 	private int[] coords = new int[1048576];
 	private int[] floodedBlocks = new int[1048576];
 	public int difficultySetting = 2;
-	public boolean networkMode = false;
+	public static boolean networkMode = false;
 
 	public final void load() {
 		if(this.blocks == null) {
@@ -290,7 +290,7 @@ public final class World {
 	}
 
 	public final void swap(int i1, int i2, int i3, int i4, int i5, int i6) {
-		if(!this.networkMode) {
+		if(!World.networkMode) {
 			int i7 = this.getBlockId(i1, i2, i3);
 			int i8 = this.getBlockId(i4, i5, i6);
 			this.setBlock(i1, i2, i3, i8);
@@ -355,7 +355,7 @@ public final class World {
 	}
 
 	public final boolean setTileNoUpdate(int i1, int i2, int i3, int i4) {
-		if(this.networkMode) {
+		if(World.networkMode) {
 			return false;
 		} else {
 			if(i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < this.width && i2 < this.height && i3 < this.length) {
@@ -708,7 +708,7 @@ public final class World {
 	}
 
 	public final void scheduleBlockUpdate(int i1, int i2, int i3, int i4) {
-		if(!this.networkMode) {
+		if(!World.networkMode) {
 			NextTickListEntry nextTickListEntry5 = new NextTickListEntry(i1, i2, i3, i4);
 			if(i4 > 0) {
 				i3 = Block.blocksList[i4].tickRate();
@@ -1644,10 +1644,16 @@ public final class World {
 	}
 	
 	public void setNetworkMode(boolean online) {
-		this.networkMode = online;
+		World.networkMode = online;
 	}
-
 	static {
+		if(networkMode == true) {
+	        for(int i0 = 0; i0 <= 15; ++i0) {
+	            lightBrightnessTable[i0] = 1.0F;
+	        }
+	        floodFillCounter = 0;
+		}
+			
 		for(int i0 = 0; i0 <= 15; ++i0) {
 			float f1 = 1.0F - (float)i0 / 15.0F;
 			lightBrightnessTable[i0] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * 0.95F + 0.05F;

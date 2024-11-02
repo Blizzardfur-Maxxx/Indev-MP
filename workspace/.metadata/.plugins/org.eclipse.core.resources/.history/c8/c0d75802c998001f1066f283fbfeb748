@@ -121,8 +121,8 @@ public final class Minecraft implements Runnable {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = null;
-		this.port = 0;
+		this.server = "localhost";
+		this.port = 25565;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;

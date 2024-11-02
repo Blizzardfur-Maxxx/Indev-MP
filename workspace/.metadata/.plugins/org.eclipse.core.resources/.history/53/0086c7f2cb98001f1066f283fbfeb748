@@ -147,10 +147,12 @@ public final class Light {
 
 	public final void updateLight() {
 		if(worldObj.networkMode == true)	{
-			for(int i0 = 0; i0 <= 15; ++i0) {
-	        	World.lightBrightnessTable[i0] = 1.0F;
-	        }
-	        World.floodFillCounter = 0;
+			if(worldObj.networkMode == true) {
+		        for(int i0 = 0; i0 <= 15; ++i0) {
+		        	World.lightBrightnessTable[i0] = 1.0F;
+		        }
+		        World.floodFillCounter = 0;
+			}
 		} else {
 			if(this.lightingUpdateList2.size() > 0) {
 				this.lightingUpdateList2.remove(this.lightingUpdateList2.size() - 1);

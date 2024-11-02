@@ -24,7 +24,7 @@ import net.minecraft.game.physics.Vec3D;
 import util.MathHelper;
 
 public final class World {
-	public static float[] lightBrightnessTable = new float[16];
+	private static float[] lightBrightnessTable = new float[16];
 	public int width;
 	public int length;
 	public int height;
@@ -62,12 +62,12 @@ public final class World {
 	public Pathfinder pathFinder = new Pathfinder(this);
 	private Light lightUpdates;
 	public int worldTime = 0;
-	public static short floodFillCounter;
+	private static short floodFillCounter;
 	private short[] floodFillCounters = new short[1048576];
 	private int[] coords = new int[1048576];
 	private int[] floodedBlocks = new int[1048576];
 	public int difficultySetting = 2;
-	public boolean networkMode = false;
+	public static boolean networkMode = false;
 
 	public final void load() {
 		if(this.blocks == null) {
@@ -1643,11 +1643,16 @@ public final class World {
 		}
 	}
 	
-	public void setNetworkMode(boolean online) {
-		this.networkMode = online;
-	}
 
+	
 	static {
+		if(networkMode == true) {
+	        for(int i0 = 0; i0 <= 15; ++i0) {
+	            lightBrightnessTable[i0] = 1.0F;  // Maximum brightness
+	        }
+	        floodFillCounter = 0;
+		}
+			
 		for(int i0 = 0; i0 <= 15; ++i0) {
 			float f1 = 1.0F - (float)i0 / 15.0F;
 			lightBrightnessTable[i0] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * 0.95F + 0.05F;
