@@ -12,7 +12,6 @@ import java.util.TreeSet;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
-import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.block.Block;
 import net.minecraft.game.level.block.BlockContainer;
 import net.minecraft.game.level.block.tileentity.TileEntity;
@@ -1607,9 +1606,9 @@ public final class World {
 	}
 	
 	
-	public boolean netSetTile(int x, int y, int z, int i8) {
-		if(this.netSetTileNoNeighborChange(x, y, z, i8)) {
-			this.notifyBlocksOfNeighborChange(x, y, z, i8);
+	public boolean netSetTile(int x, int y, int z, int id) {
+		if(this.netSetTileNoNeighborChange(x, y, z, id)) {
+			this.notifyBlocksOfNeighborChange(x, y, z, id);
 			return true;
 		} else {
 			return false;
@@ -1620,23 +1619,23 @@ public final class World {
 		return this.networkMode ? false : this.netSetTileNoNeighborChange(x, y, z, id);
 	}
 	
-	public boolean netSetTileNoNeighborChange(int x, int y, int z, int i8) {
+	public boolean netSetTileNoNeighborChange(int x, int y, int z, int id) {
 		if(x >= 0 && y >= 0 && z >= 0 && x < this.width && y < this.length && z < this.height) {
-			if(i8 == this.blocks[(y * this.height + z) * this.width + x]) {
+			if(id == this.blocks[(y * this.height + z) * this.width + x]) {
 				return false;
 			} else {
-				if(i8 == 0 && (x == 0 || z == 0 || x == this.width - 1 || z == this.height - 1) && (float)y >= this.getGroundLevel() && (float)y < this.getWaterLevel()) {
-					i8 = Block.waterStill.blockID;
+				if(id == 0 && (x == 0 || z == 0 || x == this.width - 1 || z == this.height - 1) && (float)y >= this.getGroundLevel() && (float)y < this.getWaterLevel()) {
+					id = Block.waterStill.blockID;
 				}
 
 				byte b5 = this.blocks[(y * this.height + z) * this.width + x];
-				this.blocks[(y * this.height + z) * this.width + x] = (byte)i8;
+				this.blocks[(y * this.height + z) * this.width + x] = (byte)id;
 				if(b5 != 0) {
 					Block.blocksList[b5].onTileRemoved(this, x, y, z);
 				}
 
-				if(i8 != 0) {
-					Block.blocksList[i8].onTileAdded(this, x, y, z);
+				if(id != 0) {
+					Block.blocksList[id].onTileAdded(this, x, y, z);
 				}
 
 				this.updateLighting();

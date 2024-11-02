@@ -24,8 +24,8 @@ public final class Client {
 		(new ConnectionThread(this, ip, port, user, session, minecraft)).start();
 	}
 
-	public final void sendTileUpdated(int x, int y, int z, int id1, ItemStack i8) {
-		this.serverConnection.sendPacket(Packet.PLACE_OR_REMOVE_TILE, new Object[]{x, y, z, id1, i8});
+	public final void sendTileUpdated(int x, int y, int z, int id1, int i) {
+		this.serverConnection.sendPacket(Packet.PLACE_OR_REMOVE_TILE, new Object[]{x, y, z, id1, i});
 	}
 
 	public final void handleException(Exception e) {

@@ -503,8 +503,8 @@ public final class Minecraft implements Runnable {
 							return;
 						}
 					} else {
-						ItemStack i8;
-						if((i8 = this.thePlayer.inventory.getCurrentItem()) <= 0) {
+						int i8;
+						if((i8 = InventoryPlayer.getCurrentItem()) <= 0) {
 							return;
 						}
 						clickState1 = this.thePlayer.inventory.getCurrentItem();
