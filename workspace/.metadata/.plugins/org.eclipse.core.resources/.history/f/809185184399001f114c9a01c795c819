@@ -1,0 +1,209 @@
+package net.minecraft.client.gui;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
+import net.minecraft.client.ChatLine;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.RenderHelper;
+import net.minecraft.client.player.EntityPlayerSP;
+import net.minecraft.client.render.entity.RenderItem;
+import net.minecraft.game.entity.player.InventoryPlayer;
+import net.minecraft.game.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+public final class GuiIngame extends Gui {
+    private static RenderItem itemRenderer = new RenderItem();
+    private List<ChatLine> persistentChatHistory = new LinkedList<ChatLine>();
+    private List<ChatLine> chatMessageList = new ArrayList<ChatLine>();
+    private Random rand = new Random();
+    private Minecraft mc;
+    private int updateCounter = 0;
+    public String testMessage = null;
+    private String hoveredUsername;
+
+    public GuiIngame(Minecraft minecraft) {
+        this.mc = minecraft;
+    }
+
+    public final void renderGameOverlay(float partialTicks) {
+        ScaledResolution scaledResolution = new ScaledResolution(this.mc.displayWidth, this.mc.displayHeight);
+        int screenWidth = scaledResolution.getScaledWidth();
+        int screenHeight = scaledResolution.getScaledHeight();
+        FontRenderer fontRenderer = this.mc.fontRenderer;
+
+        this.mc.entityRenderer.setupOverlayRendering();
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/gui.png"));
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glEnable(GL11.GL_BLEND);
+
+        InventoryPlayer inventory = this.mc.thePlayer.inventory;
+        this.zLevel = -90.0F;
+        this.drawTexturedModalRect(screenWidth / 2 - 91, screenHeight - 22, 0, 0, 182, 22);
+        this.drawTexturedModalRect(screenWidth / 2 - 91 - 1 + inventory.currentItem * 20, screenHeight - 22 - 1, 0, 22, 24, 22);
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
+        this.drawTexturedModalRect(screenWidth / 2 - 7, screenHeight / 2 - 7, 0, 0, 16, 16);
+        GL11.glDisable(GL11.GL_BLEND);
+
+        // Health and Armor Rendering
+        boolean isBlinking = this.mc.thePlayer.heartsLife / 3 % 2 == 1;
+        if (this.mc.thePlayer.heartsLife < 10) isBlinking = false;
+
+        int playerHealth = this.mc.thePlayer.health;
+        int prevHealth = this.mc.thePlayer.prevHealth;
+        this.rand.setSeed((long) (this.updateCounter * 312871));
+
+        if (this.mc.playerController.shouldDrawHUD()) {
+            int armorValue = this.mc.thePlayer.inventory.getPlayerArmorValue();
+            for (int i = 0; i < 10; ++i) {
+                int posY = screenHeight - 32;
+                int posX = screenWidth / 2 - 91 + (i * 8);
+
+                if (armorValue > 0) {
+                    int armorX = screenWidth / 2 + 91 - (i * 8) - 9;
+                    if ((i * 2) + 1 < armorValue) this.drawTexturedModalRect(armorX, posY, 34, 9, 9, 9);
+                    if ((i * 2) + 1 == armorValue) this.drawTexturedModalRect(armorX, posY, 25, 9, 9, 9);
+                    if ((i * 2) + 1 > armorValue) this.drawTexturedModalRect(armorX, posY, 16, 9, 9, 9);
+                }
+
+                int heartYOffset = isBlinking ? 1 : 0;
+                if (playerHealth <= 4) posY += this.rand.nextInt(2);
+
+                this.drawTexturedModalRect(posX, posY, 16 + heartYOffset * 9, 0, 9, 9);
+                if (isBlinking) {
+                    if ((i * 2) + 1 < prevHealth) this.drawTexturedModalRect(posX, posY, 70, 0, 9, 9);
+                    if ((i * 2) + 1 == prevHealth) this.drawTexturedModalRect(posX, posY, 79, 0, 9, 9);
+                }
+
+                if ((i * 2) + 1 < playerHealth) this.drawTexturedModalRect(posX, posY, 52, 0, 9, 9);
+                if ((i * 2) + 1 == playerHealth) this.drawTexturedModalRect(posX, posY, 61, 0, 9, 9);
+            }
+        }
+
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_NORMALIZE);
+        RenderHelper.enableStandardItemLighting();
+
+        // Inventory Hotbar Rendering
+        for (int i = 0; i < 9; ++i) {
+            int posX = screenWidth / 2 - 90 + i * 20 + 2;
+            int posY = screenHeight - 16 - 3;
+            ItemStack itemStack = inventory.mainInventory[i];
+
+            if (itemStack != null) {
+                float animationProgress = itemStack.animationsToGo - partialTicks;
+                if (animationProgress > 0.0F) {
+                    GL11.glPushMatrix();
+                    float scale = 1.0F + animationProgress / 5.0F;
+                    GL11.glTranslatef(posX + 8, posY + 12, 0.0F);
+                    GL11.glScalef(1.0F / scale, (scale + 1.0F) / 2.0F, 1.0F);
+                    GL11.glTranslatef(-(posX + 8), -(posY + 12), 0.0F);
+                }
+
+                itemRenderer.renderItemIntoGUI(this.mc.renderEngine, itemStack, posX, posY);
+                if (animationProgress > 0.0F) GL11.glPopMatrix();
+                itemRenderer.renderItemOverlayIntoGUI(fontRenderer, itemStack, posX, posY);
+            }
+        }
+
+        RenderHelper.disableStandardItemLighting();
+        GL11.glDisable(GL11.GL_NORMALIZE);
+		if(this.mc.options.showFPS) {
+			fontRenderer.drawStringWithShadow("Minecraft Indev (" + this.mc.debug + ")", 2, 2, 0xFFFFFF);
+			Minecraft minecraft23 = this.mc;
+			fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoRenders(), 2, 12, 0xFFFFFF);
+			minecraft23 = this.mc;
+			fontRenderer.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoEntities(), 2, 22, 0xFFFFFF);
+			minecraft23 = this.mc;
+			fontRenderer.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.debugSkylightUpdates(), 2, 32, 0xFFFFFF);
+			long j24 = Runtime.getRuntime().maxMemory();
+			long j27 = Runtime.getRuntime().totalMemory();
+			long j28 = Runtime.getRuntime().freeMemory();
+			long j16 = j24 - j28;
+			String string18 = "Free memory: " + j16 * 100L / j24 + "% of " + j24 / 1024L / 1024L + "MB";
+			drawString(fontRenderer, string18, screenHeight - fontRenderer.getStringWidth(string18) - 2, 2, 14737632);
+			string18 = "Allocated memory: " + j27 * 100L / j24 + "% (" + j27 / 1024L / 1024L + "MB)";
+			drawString(fontRenderer, string18, screenHeight - fontRenderer.getStringWidth(string18) - 2, 12, 14737632);
+		} else {
+			fontRenderer.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
+		}
+		
+        if (!(this.mc.currentScreen instanceof GuiChat)) {
+            int chatLineHeight = 10;
+            int maxVisibleLines = 10;
+
+            for (int i = 0; i < Math.min(this.chatMessageList.size(), maxVisibleLines); i++) {
+                ChatLine chatLine = this.chatMessageList.get(i);
+                String message = chatLine.message;
+                int xPos = 2;
+                int yPos = screenHeight - 40 - (i * chatLineHeight);
+                fontRenderer.drawStringWithShadow(message, xPos, yPos, 16777215);
+            }
+        }
+
+    	int i14 = screenWidth / 2;
+		int i15 = screenHeight / 2;
+		this.hoveredUsername = null;
+		if(Keyboard.isKeyDown(Keyboard.KEY_TAB) && this.mc.networkClient != null && this.mc.networkClient.isConnected()) {
+			List list22 = this.mc.networkClient.getUsernames();
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.7F);
+			GL11.glVertex2f((float)(i14 + 128), (float)(i15 - 68 - 12));
+			GL11.glVertex2f((float)(i14 - 128), (float)(i15 - 68 - 12));
+			GL11.glColor4f(0.2F, 0.2F, 0.2F, 0.8F);
+			GL11.glVertex2f((float)(i14 - 128), (float)(i15 + 68));
+			GL11.glVertex2f((float)(i14 + 128), (float)(i15 + 68));
+			GL11.glEnd();
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			String string21 = "Connected players:";
+			fontRenderer.drawStringWithShadow(string21, i14 - fontRenderer.getStringWidth(string21) / 2, i15 - 64 - 12, 0xFFFFFF);
+
+			for(prevHealth = 0; prevHealth < list22.size(); ++prevHealth) {
+				int i28 = i14 + prevHealth % 2 * 120 - 120;
+				int i17 = i15 - 64 + (prevHealth / 2 << 3);
+				boolean playerAlive = true;
+				if(playerAlive && screenWidth >= i28 && screenHeight >= i17 && screenWidth < i28 + 120 && screenHeight < i17 + 8) {
+					this.hoveredUsername = (String)list22.get(prevHealth);
+					fontRenderer.drawString((String)list22.get(prevHealth), i28 + 2, i17, 0xFFFFFF);
+				} else {
+					fontRenderer.drawString((String)list22.get(prevHealth), i28, i17, 15658734);
+				}
+			}
+		}
+    }
+
+    public final void updateChatMessages() {
+        this.updateCounter++;
+
+        for (int i = 0; i < this.chatMessageList.size(); i++) {
+            ChatLine chatline = this.chatMessageList.get(i);
+
+            if (chatline.updateCounter > 200) {
+                this.chatMessageList.remove(this.chatMessageList.size() - 1);
+            } else {
+                chatline.updateCounter++;
+            }
+        }
+    }
+
+    public final void addChatMessage(String message) {
+        ChatLine chatLine = new ChatLine(message);
+        chatMessageList.add(0, chatLine);
+        persistentChatHistory.add(0, chatLine);
+    }
+
+    public List<ChatLine> getPersistentChatHistory() {
+        return persistentChatHistory;
+    }
+}
