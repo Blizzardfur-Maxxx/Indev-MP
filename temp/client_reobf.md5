@@ -245,7 +245,7 @@ net/minecraft/game/level/path/Path 4555b9c7349865e3f22f6bbe6b43daae
 net/minecraft/game/level/path/PathEntity d0bf00b9f500f17307cbfefadcb9b085
 net/minecraft/game/level/path/Pathfinder 98818aa08ced6f893a6ee60426f365c1
 net/minecraft/game/level/path/PathPoint 817323ff8b3e0bcb640005b1eae6eb02
-net/minecraft/game/level/World 13e3829565c9270f96ec619cb46929c6
+net/minecraft/game/level/World 2128a3d2bc1f5f723c4fde1a2534c866
 net/minecraft/game/physics/AxisAlignedBB bbd94332f1ccf3131bba0b98a2b65c53
 net/minecraft/game/physics/MovingObjectPosition 7f6efbbcb2eed23861062009cb0d51e3
 net/minecraft/game/physics/Vec3D 128676c7046b1ef72ce40cec22a77be8
