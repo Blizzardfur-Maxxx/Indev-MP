@@ -531,11 +531,8 @@ public final class Minecraft implements Runnable {
 				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 			            int itemId = itemStack.itemID;
 			            int actionId = this.objectMouseOver.typeOfHit;
-						if(this.objectMouseOver.typeOfHit != 0) {
-							actionId = 0; 
-						} else {
-							actionId = 1;
-						}
+						if(actionId != 0) {
+							actionId = 1; 
 						Block tile9;
 						AxisAlignedBB aABB10;
 						if(((tile9 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[itemId].getCollisionBoundingBoxFromPool(i10, i3, i13)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear1(aABB10)))) {
@@ -554,6 +551,7 @@ public final class Minecraft implements Runnable {
 						}
 					}
 				}
+			}
 			}
 		}
 	}

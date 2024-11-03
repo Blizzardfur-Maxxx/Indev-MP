@@ -530,11 +530,11 @@ public final class Minecraft implements Runnable {
 						}
 				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 			            int itemId = itemStack.itemID;
-			            int actionId = this.objectMouseOver.typeOfHit;
-						if(this.objectMouseOver.typeOfHit != 0) {
-							actionId = 0; 
+			            int actionId;
+						if(this.objectMouseOver.typeOfHit == 1) {
+							actionId = 1; 
 						} else {
-							actionId = 1;
+							actionId = 0;
 						}
 						Block tile9;
 						AxisAlignedBB aABB10;
@@ -550,7 +550,7 @@ public final class Minecraft implements Runnable {
 							this.theWorld.netSetTile(i10, i3, i13, itemId);
 							tileRenderer6 = this.entityRenderer.itemRenderer;
 							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[itemId].onBlockAdded(this.theWorld, i10, i3, actionId);
+							Block.blocksList[itemId].onBlockAdded(this.theWorld, i10, i3, 1);
 						}
 					}
 				}

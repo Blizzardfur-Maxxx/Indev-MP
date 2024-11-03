@@ -498,7 +498,7 @@ public final class Minecraft implements Runnable {
 					Block block6 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)];
 					if(clickState == 0) {
 						this.theWorld.extinguishFire(i10, i3, i13, this.objectMouseOver.sideHit);
-						if(block6 != Block.bedrock) {
+						if(block6 != Block.bedrock || this.thePlayer.userType >= 100) {
 							this.playerController.clickBlock(i10, i3, i13);
 							return;
 						}
@@ -530,11 +530,11 @@ public final class Minecraft implements Runnable {
 						}
 				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 			            int itemId = itemStack.itemID;
-			            int actionId = this.objectMouseOver.typeOfHit;
-						if(this.objectMouseOver.typeOfHit != 0) {
-							actionId = 0; 
+			            int actionId;
+						if(this.objectMouseOver.typeOfHit == 1) {
+							actionId = 1; 
 						} else {
-							actionId = 1;
+							actionId = 0;
 						}
 						Block tile9;
 						AxisAlignedBB aABB10;

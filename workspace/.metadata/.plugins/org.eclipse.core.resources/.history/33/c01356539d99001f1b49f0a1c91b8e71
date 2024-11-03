@@ -531,9 +531,7 @@ public final class Minecraft implements Runnable {
 				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 			            int itemId = itemStack.itemID;
 			            int actionId = this.objectMouseOver.typeOfHit;
-						if(this.objectMouseOver.typeOfHit != 0) {
-							actionId = 0; 
-						} else {
+						if(actionId != 0) {
 							actionId = 1;
 						}
 						Block tile9;
@@ -555,6 +553,7 @@ public final class Minecraft implements Runnable {
 					}
 				}
 			}
+			
 		}
 	}
 
