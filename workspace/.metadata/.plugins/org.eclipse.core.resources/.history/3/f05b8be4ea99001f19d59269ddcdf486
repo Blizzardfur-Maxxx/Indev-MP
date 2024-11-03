@@ -477,7 +477,10 @@ public final class Minecraft implements Runnable {
 	    }
 	}
 
-	private void clickMouseRightMP() {
+	// Modified block place client with sendTileUpdated
+
+	private void clickMouseRightMP(int clickState) {
+		ItemRenderer tileRenderer6;
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
@@ -493,117 +496,49 @@ public final class Minecraft implements Runnable {
 	            }
 	        }
 
-	        if (this.objectMouseOver == null) {
-	            if (!(this.playerController instanceof PlayerControllerCreative)) {
-	                this.leftClickCounter = 10;
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 0) { // Block interaction
+	        if (this.objectMouseOver.typeOfHit == 0) { // Block placement interaction
 	            int x = this.objectMouseOver.blockX;
 	            int y = this.objectMouseOver.blockY;
 	            int z = this.objectMouseOver.blockZ;
 	            int sideHit = this.objectMouseOver.sideHit;
-	            Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
 
+	            Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
 	            if (block != null && itemStack != null) {
 	                int blockId = this.theWorld.getBlockId(x, y, z);
 	                if (Block.blocksList[blockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
 	                    return;
 	                }
 
-	                int stackSizeBeforeUse = itemStack.stackSize;
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
-	                    this.entityRenderer.itemRenderer.equippedItemRender();
+	                    // Send packet to other clients if online
+	                    if (this.isOnlineClient()) {
+	                        this.networkClient.sendTileUpdated(x, z, 1, clickState, itemStack.itemID);
+	                    }
+
+	                    // Local world update
+	                    this.theWorld.netSetTile(x, y, z, itemStack.itemID);
+
+	                    // Calculate the distance between player and block
+	                    float dx = x - (float) this.thePlayer.posX;
+	                    float dy = y - (float) this.thePlayer.posY;
+	                    float dz = z - (float) this.thePlayer.posZ;
+	                    float distance = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+	                    // Debug print statement for client
+	                    System.out.println("Client Block Placed at: (" + x + ", " + y + ", " + z + "), Item ID: " + itemStack.itemID + ", Distance from Player: " + distance);
+
+	                    // Additional code to handle block rendering reset or equip animation as needed
+	                    this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+	                    Block.blocksList[itemStack.itemID].onBlockAdded(this.theWorld, x, y, 1);
 	                }
 
 	                if (itemStack.stackSize == 0) {
 	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
-	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
-	                }
-	            }
-	        }
-	    }
-	}	
-	
-	// new mp right
-	
-	private void mouseClickRightMP(int id) {
-	    if (id != 0 || this.clickCooldown <= 0) {
-	        if (id == 0) {  // Right-click interaction
-	            // Placeholder for tile rendering logic
-	            TileRenderer tileRenderer = new TileRenderer(); // Example placeholder
-
-	            tileRenderer.setRotation(-1);  // Reset rotation for placing
-	            tileRenderer.setMovement(true);  // Allow movement for placement
-	        }
-
-	        int selectedItemIndex;
-	        if (id == 1 && (selectedItemIndex = this.player.inventory.getSelected()) > 0) {
-	            if (this.controller.removeResource(this.player, selectedItemIndex)) {
-	                // Reset progress using a placeholder method
-	                tileRenderer.resetProgress();
-	            } else {
-	                return;  // Resource removal failed
-	            }
-	        } else if (this.hitResult == null) {
-	            if (id == 0 && !(this.controller instanceof CreativeModeController)) {
-	                this.clickCooldown = 10;  // Cooldown for non-creative mode
-	            }
-	        } else {
-	            if (this.hitResult.type == 1) {  // Hit an entity
-	                if (id == 0) {
-	                    this.hitResult.entity.hurt(this.player, 4);  // Damage entity on right-click
-	                    return;
-	                }
-	            } else if (this.hitResult.type == 0) {  // Hit a block
-	                int x = this.hitResult.x;
-	                int y = this.hitResult.y;
-	                int z = this.hitResult.z;
-
-	                if (id != 0) {  // Modify coordinates based on face hit
-	                    switch (this.hitResult.face) {
-	                        case 0: --y; break;  // Bottom face
-	                        case 1: ++y; break;  // Top face
-	                        case 2: --z; break;  // North face
-	                        case 3: ++z; break;  // South face
-	                        case 4: --x; break;  // West face
-	                        case 5: ++x; break;  // East face
-	                    }
-	                }
-
-	                // Placeholder for checking the tile type
-	                Tile tileAtHit = TileManager.getTile(this.currentWorld.getTile(x, y, z));
-	                if (id == 0) {
-	                    if (tileAtHit != Tile.UNBREAKABLE || this.player.userType >= 100) {
-	                        this.controller.startDestroyBlock(x, y, z);
-	                        return;  // Start block destruction
-	                    }
-	                } else {  // Placing a block
-	                    if ((selectedItemIndex = this.player.inventory.getSelected()) <= 0) {
-	                        return;  // No item selected
-	                    }
-
-	                    // Checking if the block can be placed
-	                    if (TileManager.canPlaceBlock(this.currentWorld, selectedItemIndex, x, y, z)) {
-	                        if (!this.controller.removeResource(selectedItemIndex)) {
-	                            return;  // Resource removal failed
-	                        }
-
-	                        // Multiplayer network update
-	                        if (this.isOnlineClient()) {
-	                            this.networkClient.sendTileUpdated(x, y, z, id, selectedItemIndex);
-	                        }
-
-	                        this.currentWorld.netSetTile(x, y, z, selectedItemIndex);  // Set the tile in the level
-	                        tileRenderer.resetProgress();  // Reset progress
-	                        TileManager.onPlace(this.currentWorld, selectedItemIndex, x, y, z);  // Trigger place event
-	                    }
 	                }
 	            }
 	        }
 	    }
 	}
-
 	
 	// mouse click left/right sp
 	
@@ -699,7 +634,7 @@ public final class Minecraft implements Runnable {
 	            }
 	        } else if (clickState == 1) {
 	            if (this.isOnlineClient()) {
-	                clickMouseRightMP();
+	                clickMouseRightMP(clickState);
 	            } else {
 	                clickMouseRightSP();
 	            }

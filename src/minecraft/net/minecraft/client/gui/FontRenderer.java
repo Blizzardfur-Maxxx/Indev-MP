@@ -114,48 +114,54 @@ public final class FontRenderer {
 	}
 
 	public void renderString(String string1, int xPosition, int yPosition, int fontColor, boolean textShadow) {
-		if(string1 != null) {
-			char[] c8 = string1.toCharArray();
-			if(textShadow) {
-				fontColor = (fontColor & 16579836) >> 2;
-			}
+	    if (string1 != null) {
+	        char[] c8 = string1.toCharArray();
+	        if (textShadow) {
+	            fontColor = (fontColor & 16579836) >> 2;
+	        }
 
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTextureName);
-			float f6 = (float)(fontColor >> 16 & 255) / 255.0F;
-			float f7 = (float)(fontColor >> 8 & 255) / 255.0F;
-			float f9 = (float)(fontColor & 255) / 255.0F;
-			GL11.glColor4f(f6, f7, f9, 1.0F);
-			this.buffer.clear();
-			GL11.glPushMatrix();
-			GL11.glTranslatef((float)xPosition, (float)yPosition, 0.0F);
+	        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.fontTextureName);
+	        float f6 = (float)(fontColor >> 16 & 255) / 255.0F;
+	        float f7 = (float)(fontColor >> 8 & 255) / 255.0F;
+	        float f9 = (float)(fontColor & 255) / 255.0F;
+	        GL11.glColor4f(f6, f7, f9, 1.0F);
+	        this.buffer.clear();
+	        GL11.glPushMatrix();
+	        GL11.glTranslatef((float)xPosition, (float)yPosition, 0.0F);
 
-			for(int i10 = 0; i10 < c8.length; ++i10) {
-				for(; c8[i10] == 38 && c8.length > i10 + 1; i10 += 2) {
-					int i11;
-					if((i11 = "0123456789abcdef".indexOf(c8[i10 + 1])) < 0 || i11 > 15) {
-						i11 = 15;
-					}
+	        for (int i10 = 0; i10 < c8.length; ++i10) {
+	            // Handle color codes
+	            if (c8[i10] == 38 && c8.length > i10 + 1) { // 38 is the ASCII code for '&'
+	                int colorIndex = "0123456789abcdef".indexOf(c8[i10 + 1]);
+	                if (colorIndex < 0 || colorIndex > 15) {
+	                    colorIndex = 15; // default to white if the color code is invalid
+	                }
 
-					this.buffer.put(this.fontDisplayLists + 256 + i11 + (textShadow ? 16 : 0));
-					if(this.buffer.remaining() == 0) {
-						this.buffer.flip();
-						GL11.glCallLists(this.buffer);
-						this.buffer.clear();
-					}
-				}
+	                // Calculate the index for the buffer
+	                int displayListIndex = this.fontDisplayLists + 256 + colorIndex + (textShadow ? 16 : 0);
+	                if (displayListIndex < this.fontDisplayLists + 288) { // Check if index is valid
+	                    this.buffer.put(displayListIndex);
+	                }
+	                i10++; // skip next character
+	            } else {
+	                // Handle normal characters
+	                if (c8[i10] < this.charWidth.length) { // Check if character is valid
+	                    this.buffer.put(this.fontDisplayLists + c8[i10]);
+	                }
+	            }
 
-				this.buffer.put(this.fontDisplayLists + c8[i10]);
-				if(this.buffer.remaining() == 0) {
-					this.buffer.flip();
-					GL11.glCallLists(this.buffer);
-					this.buffer.clear();
-				}
-			}
+	            // Flush the buffer if full
+	            if (this.buffer.remaining() == 0) {
+	                this.buffer.flip();
+	                GL11.glCallLists(this.buffer);
+	                this.buffer.clear();
+	            }
+	        }
 
-			this.buffer.flip();
-			GL11.glCallLists(this.buffer);
-			GL11.glPopMatrix();
-		}
+	        this.buffer.flip();
+	        GL11.glCallLists(this.buffer);
+	        GL11.glPopMatrix();
+	    }
 	}
 
 	public final int getStringWidth(String string1) {
@@ -189,5 +195,12 @@ public final class FontRenderer {
 		}
 
 		return string1;
+	}
+
+	public int getCharWidth(char charAt) {
+	    if (charAt < 0 || charAt >= this.charWidth.length) {
+	        return 0; // Return 0 if character is out of bounds
+	    }
+	    return this.charWidth[charAt];
 	}
 }

@@ -12,6 +12,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Random;
+
 import javax.swing.JOptionPane;
 
 import net.minecraft.client.controller.PlayerController;
@@ -37,6 +39,7 @@ import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
 import net.minecraft.client.render.ItemRenderer;
+import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.WorldRenderer;
@@ -114,16 +117,16 @@ public final class Minecraft implements Runnable {
 	private int prevFrameTime;
 	public boolean inGameHasFocus;
 	public Client networkClient;
-	String server;
-	int port;
+	public String server;
+	public int port;
 	public PlayerController playerController;
 	
 	public Minecraft(Canvas canvas, MinecraftApplet minecraftApplet, int tempDisplayWidth, int tempDisplayHeight, boolean fullscreen) {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = "localhost";
-		this.port = 25565;
+		this.server = null;
+		this.port = 0;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -201,37 +204,27 @@ public final class Minecraft implements Runnable {
 			} else {
 				Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
 			}
+			
+			Display.create();
 
-			Display.setTitle("Minecraft Minecraft IndevMP");
+			Display.setTitle("Minecraft IndevMP");
 
-			try {
-				Display.create();
-				System.out.println("LWJGL version: " + Sys.getVersion());
-				System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
-				System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
-				System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
-				ContextCapabilities contextCapabilities2 = GLContext.getCapabilities();
-				System.out.println("OpenGL 3.0: " + contextCapabilities2.OpenGL30);
-				System.out.println("OpenGL 3.1: " + contextCapabilities2.OpenGL31);
-				System.out.println("OpenGL 3.2: " + contextCapabilities2.OpenGL32);
-				System.out.println("ARB_compatibility: " + contextCapabilities2.GL_ARB_compatibility);
-				if(contextCapabilities2.OpenGL32) {
-					IntBuffer intBuffer24 = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
-					GL11.glGetInteger(37158, intBuffer24);
-					int i25 = intBuffer24.get(0);
-					System.out.println("PROFILE MASK: " + Integer.toBinaryString(i25));
-					System.out.println("CORE PROFILE: " + ((i25 & 1) != 0));
-					System.out.println("COMPATIBILITY PROFILE: " + ((i25 & 2) != 0));
-				}
-			} catch (LWJGLException lWJGLException17) {
-				lWJGLException17.printStackTrace();
-
-				try {
-					Thread.sleep(1000L);
-				} catch (InterruptedException interruptedException16) {
-				}
-
-				Display.create();
+			System.out.println("LWJGL version: " + Sys.getVersion());
+			System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
+			System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
+			System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
+			ContextCapabilities contextCapabilities2 = GLContext.getCapabilities();
+			System.out.println("OpenGL 3.0: " + contextCapabilities2.OpenGL30);
+			System.out.println("OpenGL 3.1: " + contextCapabilities2.OpenGL31);
+			System.out.println("OpenGL 3.2: " + contextCapabilities2.OpenGL32);
+			System.out.println("ARB_compatibility: " + contextCapabilities2.GL_ARB_compatibility);
+			if(contextCapabilities2.OpenGL32) {
+				IntBuffer intBuffer24 = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
+				GL11.glGetInteger(37158, intBuffer24);
+				int i25 = intBuffer24.get(0);
+				System.out.println("PROFILE MASK: " + Integer.toBinaryString(i25));
+				System.out.println("CORE PROFILE: " + ((i25 & 1) != 0));
+				System.out.println("COMPATIBILITY PROFILE: " + ((i25 & 2) != 0));
 			}
 
 			Keyboard.create();
@@ -401,8 +394,21 @@ public final class Minecraft implements Runnable {
 			exception20.printStackTrace();
 		} finally {
 			this.shutdownMinecraftApplet();
+			Display.destroy();
 		}
 
+	}
+
+	private Block getRandomBlock() {
+		Block[] blocks = Block.blocksList;
+		Random random = new Random();
+		
+		Block randomBlock;
+		do {
+			randomBlock = blocks[random.nextInt(blocks.length)];
+		} while (randomBlock == null);
+		
+		return randomBlock;
 	}
 
 	public final void setIngameFocus() {
@@ -479,23 +485,26 @@ public final class Minecraft implements Runnable {
 
 	// Modified block place client with sendTileUpdated
 
-	private void clickMouseRightMP(int clickState) {
-		ItemRenderer tileRenderer6;
+	private void clickMouseRightMP() {
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
 
 	        if (itemStack != null) {
+	            // Handle item right-click action
 	            ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
 	            if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
 	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
 	                this.entityRenderer.itemRenderer.resetEquippedProgress();
-	                if (updatedStack != null && updatedStack.stackSize == 0) {
+
+	                // Remove the item from inventory if its stack size is zero
+	                if (updatedStack != null && updatedStack.stackSize <= 0) {
 	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
 	                }
 	            }
 	        }
 
+	        // Handle mouse over actions
 	        if (this.objectMouseOver == null) {
 	            if (!(this.playerController instanceof PlayerControllerCreative)) {
 	                this.leftClickCounter = 10;
@@ -509,30 +518,33 @@ public final class Minecraft implements Runnable {
 
 	            if (block != null && itemStack != null) {
 	                int blockId = this.theWorld.getBlockId(x, y, z);
-	                if (Block.blocksList[blockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
+
+	                // Check if the block can be activated
+	                if (block.blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
 	                    return;
 	                }
 
 	                int stackSizeBeforeUse = itemStack.stackSize;
+
+	                // Use the item on the block
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
 	                    this.entityRenderer.itemRenderer.equippedItemRender();
 
-	                    // Define the actionId as '1' for the right-click action
+	                    // Define actionId as '1' for right-click action
 	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
 	                    int itemId = itemStack.itemID;
 
-						if(this.isOnlineClient()) {
-							this.networkClient.sendTileUpdated(x, z, actionId, clickState, itemId);
-						}
+	                    if (this.isOnlineClient()) {
+	                        // Send the block interaction update to the server
+	                        this.networkClient.sendTileUpdated(x, y, z, actionId, itemId);
+	                    }
 
-	                    // Update the level locally (if necessary)
+	                    // Update the level locally
 	                    this.theWorld.netSetTile(x, y, z, itemId);
-						tileRenderer6 = this.entityRenderer.itemRenderer;
-						this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-						Block.blocksList[itemId].onBlockAdded(this.theWorld, x, y, actionId);
 	                }
 
-	                if (itemStack.stackSize == 0) {
+	                // Update inventory and renderer based on item stack size
+	                if (itemStack.stackSize <= 0) {
 	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
 	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
 	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
@@ -541,7 +553,7 @@ public final class Minecraft implements Runnable {
 	        }
 	    }
 	}
-	
+
 	// mouse click left/right sp
 	
 	private void clickMouseLeftSP() {
@@ -636,7 +648,7 @@ public final class Minecraft implements Runnable {
 	            }
 	        } else if (clickState == 1) {
 	            if (this.isOnlineClient()) {
-	                clickMouseRightMP(clickState);
+	                clickMouseRightMP();
 	            } else {
 	                clickMouseRightSP();
 	            }

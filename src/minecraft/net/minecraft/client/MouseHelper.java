@@ -24,49 +24,50 @@ public final class MouseHelper {
 
 	public MouseHelper(Component component) {
 		this.windowComponent = component;
-
 		try {
 			this.robot = new Robot();
-		} catch (AWTException aWTException4) {
-			aWTException4.printStackTrace();
+		} catch (AWTException e) {
+			e.printStackTrace();
 		}
 
-		IntBuffer component1;
-		(component1 = BufferUtils.createIntBuffer(1)).put(0);
-		component1.flip();
-		IntBuffer intBuffer2 = BufferUtils.createIntBuffer(1024);
+		IntBuffer bufferZero = BufferUtils.createIntBuffer(1).put(0);
+		bufferZero.flip();
+		IntBuffer intBuffer = BufferUtils.createIntBuffer(1024);
 
 		try {
-			this.cursor = new Cursor(32, 32, 16, 16, 1, intBuffer2, component1);
-		} catch (LWJGLException lWJGLException3) {
-			lWJGLException3.printStackTrace();
+			this.cursor = new Cursor(32, 32, 16, 16, 1, intBuffer, bufferZero);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
 		}
 	}
 
 	public final void grabMouseCursor() {
 		try {
 			Mouse.setNativeCursor(this.cursor);
-		} catch (LWJGLException lWJGLException2) {
-			lWJGLException2.printStackTrace();
+		} catch (LWJGLException e) {
+			e.printStackTrace();
 		}
-
 		this.ungrabMouseCursor();
 		this.deltaX = 0;
 		this.deltaY = 0;
 	}
 
 	public final void ungrabMouseCursor() {
-		Point point1 = MouseInfo.getPointerInfo().getLocation();
-		Point point2 = this.windowComponent.getLocationOnScreen();
+		Point currentLocation = MouseInfo.getPointerInfo().getLocation();
+		Point componentLocation = this.windowComponent.getLocationOnScreen();
+
+		this.mouseX = componentLocation.x + this.windowComponent.getWidth() / 2;
+		this.mouseY = componentLocation.y + this.windowComponent.getHeight() / 2;
+		
 		this.robot.mouseMove(this.mouseX, this.mouseY);
-		this.mouseX = point2.x + this.windowComponent.getWidth() / 2;
-		this.mouseY = point2.y + this.windowComponent.getHeight() / 2;
-		if(this.mouseInt == 0) {
-			this.deltaX = point1.x - this.mouseX;
-			this.deltaY = point1.y - this.mouseY;
+
+		if (this.mouseInt == 0) {
+			this.deltaX = currentLocation.x - this.mouseX;
+			this.deltaY = currentLocation.y - this.mouseY;
 		} else {
-			this.deltaX = this.deltaY = 0;
-			--this.mouseInt;
+			this.deltaX = 0;
+			this.deltaY = 0;
+			this.mouseInt--;
 		}
 	}
 }

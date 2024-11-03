@@ -2,6 +2,7 @@ package net.minecraft.client;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLoadLevel;
+import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiNewLevel;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
@@ -24,33 +25,42 @@ public final class GuiMainMenu extends GuiScreen {
 	}
 
 	public final void initGui() {
-		this.controlList.clear();
-		this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Generate new level..."));
-		this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, "Load level.."));
-		this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 96, "Play tutorial level"));
-		this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, "Options..."));
-		((GuiButton)this.controlList.get(2)).enabled = false;
-		if(this.mc.session == null) {
-			((GuiButton)this.controlList.get(1)).enabled = false;
-		}
+	    this.controlList.clear();
+	    this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Generate new level..."));
+	    this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, "Load level.."));
+	    this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 96, "Multiplayer")); // Multiplayer button added
+	    this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 120, "Play tutorial level"));
+	    this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 144, "Options..."));
+	    
+	    // Enable multiplayer button by removing any disable setting
+	    ((GuiButton)this.controlList.get(2)).enabled = true;
 
+	    // Disable "Generate new level..." if session is null
+	    if(this.mc.session == null) {
+	        ((GuiButton)this.controlList.get(1)).enabled = false;
+	    }
 	}
 
 	protected final void actionPerformed(GuiButton guiButton1) {
-		if(guiButton1.id == 0) {
-			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.options));
-		}
+	    if(guiButton1.id == 0) {
+	        this.mc.displayGuiScreen(new GuiOptions(this, this.mc.options));
+	    }
 
-		if(guiButton1.id == 1) {
-			this.mc.displayGuiScreen(new GuiNewLevel(this));
-		}
+	    if(guiButton1.id == 1) {
+	        this.mc.displayGuiScreen(new GuiNewLevel(this));
+	    }
 
-		if(this.mc.session != null && guiButton1.id == 2) {
-			this.mc.displayGuiScreen(new GuiLoadLevel(this));
-		}
+	    // Check if session is available only for Load Level, if required
+	    if(this.mc.session != null && guiButton1.id == 2) {
+	        this.mc.displayGuiScreen(new GuiLoadLevel(this));
+	    }
 
+	    // Always allow opening Multiplayer GUI
+	    if(guiButton1.id == 4) {
+	        this.mc.displayGuiScreen(new GuiMultiplayer(this));
+	    }
 	}
-
+	
 	public final void drawScreen(int xSize_lo, int ySize_lo, float f3) {
 		this.drawDefaultBackground();
 		Tessellator tessellator4 = Tessellator.instance;

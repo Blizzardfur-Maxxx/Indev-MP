@@ -477,7 +477,10 @@ public final class Minecraft implements Runnable {
 	    }
 	}
 
-	private void clickMouseRightMP() {
+	// Modified block place client with sendTileUpdated
+
+	private void clickMouseRightMP(int clickState) {
+		ItemRenderer tileRenderer6;
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
@@ -513,6 +516,20 @@ public final class Minecraft implements Runnable {
 	                int stackSizeBeforeUse = itemStack.stackSize;
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
 	                    this.entityRenderer.itemRenderer.equippedItemRender();
+
+	                    // Define the actionId as '1' for the right-click action
+	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
+	                    int itemId = itemStack.itemID;
+
+						if(this.isOnlineClient()) {
+							this.networkClient.sendTileUpdated(x, z, actionId, clickState, itemId);
+						}
+
+	                    // Update the level locally (if necessary)
+	                    this.theWorld.netSetTile(x, y, z, itemId);
+						tileRenderer6 = this.entityRenderer.itemRenderer;
+						this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+						Block.blocksList[itemId].onBlockAdded(this.theWorld, x, y, actionId);
 	                }
 
 	                if (itemStack.stackSize == 0) {
@@ -523,95 +540,7 @@ public final class Minecraft implements Runnable {
 	            }
 	        }
 	    }
-	}	
-	
-	// new mp right
-	
-	private void mouseClickRightMP(int id) {
-	    if (id != 0 || this.clickCounter <= 0) {
-	        TileRenderer tileRenderer6;
-	        
-	        if (id == 0) {  // Right-click interaction
-	            tileRenderer6 = this.gameRenderer.tileRenderer;
-	            this.gameRenderer.tileRenderer.rot = -1;  // Reset rotation for placing
-	            tileRenderer6.move = true;  // Allow movement for placement
-	        }
-
-	        int selectedItemIndex;
-	        if (id == 1 && (selectedItemIndex = this.player.inventory.getSelected()) > 0) {
-	            if (this.gamemode.removeResource(this.player, selectedItemIndex)) {
-	                tileRenderer6 = this.gameRenderer.tileRenderer;
-	                this.gameRenderer.tileRenderer.progress = 0.0F;  // Reset progress
-	            } else {
-	                return;  // Resource removal failed
-	            }
-	        } else if (this.hitResult == null) {
-	            if (id == 0 && !(this.gamemode instanceof CreativeGameMode)) {
-	                this.clickCounter = 10;  // Cooldown for non-creative mode
-	            }
-	        } else {
-	            if (this.hitResult.type == 1) {  // Hit an entity
-	                if (id == 0) {
-	                    this.hitResult.entity.hurt(this.player, 4);  // Damage entity on right-click
-	                    return;
-	                }
-	            } else if (this.hitResult.type == 0) {  // Hit a block
-	                int x = this.hitResult.x;
-	                int y = this.hitResult.y;
-	                int z = this.hitResult.z;
-
-	                if (id != 0) {  // Modify coordinates based on face hit
-	                    switch (this.hitResult.f) {
-	                        case 0: --y; break;  // Bottom face
-	                        case 1: ++y; break;  // Top face
-	                        case 2: --z; break;  // North face
-	                        case 3: ++z; break;  // South face
-	                        case 4: --x; break;  // West face
-	                        case 5: ++x; break;  // East face
-	                    }
-	                }
-
-	                Tile tileAtHit = Tile.tiles[this.level.getTile(x, y, z)];
-	                if (id == 0) {
-	                    if (tileAtHit != Tile.unbreakable || this.player.userType >= 100) {
-	                        this.gamemode.startDestroyBlock(x, y, z);
-	                        return;  // Start block destruction
-	                    }
-	                } else {  // Placing a block
-	                    if ((selectedItemIndex = this.player.inventory.getSelected()) <= 0) {
-	                        return;  // No item selected
-	                    }
-
-	                    Tile placingTile;
-	                    AABB placingAABB;
-	                    if ((placingTile = Tile.tiles[this.level.getTile(x, y, z)]) == null ||
-	                        placingTile == Tile.water || placingTile == Tile.calmWater ||
-	                        placingTile == Tile.lava || placingTile == Tile.calmLava) {
-	                        
-	                        if ((placingAABB = Tile.tiles[selectedItemIndex].getTileAABB(x, y, z)) == null ||
-	                            !this.player.bb.intersects(placingAABB) && this.level.isFree(placingAABB)) {
-	                            
-	                            if (!this.gamemode.removeResource(selectedItemIndex)) {
-	                                return;  // Resource removal failed
-	                            }
-
-	                            // Multiplayer network update
-	                            if (this.isOnlineClient()) {
-	                                this.networkClient.sendTileUpdated(x, y, z, id, selectedItemIndex);
-	                            }
-
-	                            this.level.netSetTile(x, y, z, selectedItemIndex);  // Set the tile in the level
-	                            tileRenderer6 = this.gameRenderer.tileRenderer;
-	                            this.gameRenderer.tileRenderer.progress = 0.0F;  // Reset progress
-	                            Tile.tiles[selectedItemIndex].onPlace(this.level, x, y, z);  // Trigger place event
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
 	}
-
 	
 	// mouse click left/right sp
 	
@@ -707,7 +636,7 @@ public final class Minecraft implements Runnable {
 	            }
 	        } else if (clickState == 1) {
 	            if (this.isOnlineClient()) {
-	                clickMouseRightMP();
+	                clickMouseRightMP(clickState);
 	            } else {
 	                clickMouseRightSP();
 	            }

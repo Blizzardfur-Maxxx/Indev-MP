@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="mouseHelper"/>
+		<item key="selection" value="&#x09;&#x09;    long j24 = Runtime.getRuntime().maxMemory();"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="true"/>
 		<item key="wholeword" value="true"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="&#x09;&#x09;    long j24 = Runtime.getRuntime().maxMemory();"/>
 			<item value="hitResult"/>
 			<item value="getCurrentSelected"/>
 			<item value="net"/>
@@ -22,7 +23,6 @@
 			<item value="Block.blocksList[i8"/>
 			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)&#x0A;"/>
 			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool(i10, i3, i13)&#x0A;\"/>
-			<item value="Block.blocksList[i8].getCollisionBoundingBoxFromPool"/>
 		</list>
 		<list key="replacehistory">
 			<item value="mouseHelper"/>

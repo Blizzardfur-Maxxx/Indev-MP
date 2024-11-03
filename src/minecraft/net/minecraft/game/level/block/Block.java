@@ -727,4 +727,9 @@ public class Block {
 		}
 
 	}
+
+	public int getTextureID() {
+	    return this.blockIndexInTexture;
+	}
+
 }

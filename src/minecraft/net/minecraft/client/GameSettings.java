@@ -36,7 +36,9 @@ public final class GameSettings {
 	public int numberOfOptions = 9;
 	public int difficulty = 2;
 	public boolean thirdPersonView = false;
-
+	public float mouseSensitivity = 0.5F;
+	public Object lastServer;
+	
 	public GameSettings(Minecraft minecraft, File file) {
 		this.mc = minecraft;
 		this.optionsFile = new File(file, "options.txt");
@@ -147,6 +149,9 @@ public final class GameSettings {
 						if(string5[0].equals("key_" + this.keyBindings[i3].keyDescription)) {
 							this.keyBindings[i3].keyCode = Integer.parseInt(string5[1]);
 						}
+					if (string5[0].equals("lastServer")) {
+						this.lastServer = string5[1];
+					}
 					}
 				}
 
@@ -170,7 +175,8 @@ public final class GameSettings {
 			printWriter1.println("anaglyph3d:" + this.anaglyph);
 			printWriter1.println("limitFramerate:" + this.limitFramerate);
 			printWriter1.println("difficulty:" + this.difficulty);
-
+			printWriter1.println("lastServer: + this.lastServer");
+			
 			for(int i2 = 0; i2 < this.keyBindings.length; ++i2) {
 				printWriter1.println("key_" + this.keyBindings[i2].keyDescription + ":" + this.keyBindings[i2].keyCode);
 			}

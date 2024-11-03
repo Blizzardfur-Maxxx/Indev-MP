@@ -600,12 +600,14 @@ public final class World {
 	}
 
 	public final int getGroundLevel() {
-		return this.groundLevel;
-	}
+        int groundOffset = this.networkMode ? 100: 0;  // Adjust ground level for network mode
+        return this.groundLevel - groundOffset;
+    }
 
-	public final int getWaterLevel() {
-		return this.waterLevel;
-	}
+    public final int getWaterLevel() {
+        int waterOffset = this.networkMode ? 50: 0;  // Adjust water level for network mode
+        return this.waterLevel - waterOffset;
+    }
 
 	public final boolean getIsAnyLiquid(AxisAlignedBB aabb) {
 		int i2 = (int)aabb.minX;

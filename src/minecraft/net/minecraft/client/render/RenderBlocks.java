@@ -447,7 +447,7 @@ public final class RenderBlocks {
 		}
 	}
 
-	private void renderBlockTorch(Block block, float f2, float f3, float f4, float f5, float f6) {
+	void renderBlockTorch(Block block, float f2, float f3, float f4, float f5, float f6) {
 		Tessellator tessellator7 = Tessellator.instance;
 		int block1 = block.getBlockTextureFromSide(0);
 		if(this.overrideBlockTexture >= 0) {
@@ -492,7 +492,7 @@ public final class RenderBlocks {
 		tessellator7.addVertexWithUV(f15, f3 + 1.0F, f4 - 0.0625F, f21, f10);
 	}
 
-	private void renderBlockPlant(Block block, int i2, float f3, float f4, float f5) {
+	void renderBlockPlant(Block block, int i2, float f3, float f4, float f5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		int block1 = block.getBlockTextureFromSideAndMetadata(0, i2);
 		if(this.overrideBlockTexture >= 0) {
@@ -527,7 +527,7 @@ public final class RenderBlocks {
 		tessellator6.addVertexWithUV(f9, f4 + 1.0F, f5, f12, f8);
 	}
 
-	private void renderBlockCrops(Block block, int i2, float f3, float f4, float f5) {
+	void renderBlockCrops(Block block, int i2, float f3, float f4, float f5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		int block1 = block.getBlockTextureFromSideAndMetadata(0, i2);
 		if(this.overrideBlockTexture >= 0) {
@@ -586,7 +586,7 @@ public final class RenderBlocks {
 		return this.blockAccess.getBlockMaterial(i1, i2, i3) != Material.water ? 1.0F : (float)this.blockAccess.getBlockMetadata(i1, i2, i3) / 9.0F;
 	}
 
-	private void renderBlockBottom(Block block, float f2, float f3, float f4, int i5) {
+	void renderBlockBottom(Block block, float f2, float f3, float f4, int i5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			i5 = this.overrideBlockTexture;
@@ -609,7 +609,7 @@ public final class RenderBlocks {
 		tessellator6.addVertexWithUV(f2, f3, block1, f14, f13);
 	}
 
-	private void renderBlockTop(Block block, float f2, float f3, float f4, int i5) {
+	void renderBlockTop(Block block, float f2, float f3, float f4, int i5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			i5 = this.overrideBlockTexture;
@@ -632,7 +632,7 @@ public final class RenderBlocks {
 		tessellator6.addVertexWithUV(f10, f3, block1, f8, f13);
 	}
 
-	private void renderBlockNorth(Block block, int i2, int i3, int i4, int i5) {
+	void renderBlockNorth(Block block, int i2, int i3, int i4, int i5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			i5 = this.overrideBlockTexture;
@@ -663,7 +663,7 @@ public final class RenderBlocks {
 		tessellator6.addVertexWithUV(f10, f11, block1, f16, f15);
 	}
 
-	private void renderBlockSouth(Block block, int i2, int i3, int i4, int i5) {
+	void renderBlockSouth(Block block, int i2, int i3, int i4, int i5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			i5 = this.overrideBlockTexture;
@@ -694,7 +694,7 @@ public final class RenderBlocks {
 		tessellator6.addVertexWithUV(f13, f14, block1, f16, f9);
 	}
 
-	private void renderBlockWest(Block block, int i2, int i3, int i4, int i5) {
+	void renderBlockWest(Block block, int i2, int i3, int i4, int i5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			i5 = this.overrideBlockTexture;
@@ -725,7 +725,7 @@ public final class RenderBlocks {
 		tessellator6.addVertexWithUV(f13, f10, block1, f16, f15);
 	}
 
-	private void renderBlockEast(Block block, int i2, int i3, int i4, int i5) {
+	void renderBlockEast(Block block, int i2, int i3, int i4, int i5) {
 		Tessellator tessellator6 = Tessellator.instance;
 		if(this.overrideBlockTexture >= 0) {
 			i5 = this.overrideBlockTexture;

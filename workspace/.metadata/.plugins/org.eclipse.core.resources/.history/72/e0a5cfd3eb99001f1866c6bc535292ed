@@ -169,8 +169,6 @@ public final class GuiIngame extends Gui {
 		    Minecraft minecraft23 = this.mc;
 		    fontRenderer4.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoRenders(), 2, 12, 0xFFFFFF);
 		    fontRenderer4.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoEntities(), 2, 22, 0xFFFFFF);
-		    fontRenderer4.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.debugSkylightUpdates(), 2, 32, 0xFFFFFF);
-
 		    long j24 = Runtime.getRuntime().maxMemory();
 		    long j27 = Runtime.getRuntime().totalMemory();
 		    long j28 = Runtime.getRuntime().freeMemory();
@@ -180,6 +178,9 @@ public final class GuiIngame extends Gui {
 
 		    string18 = "Allocated memory: " + j27 * 100L / j24 + "% (" + j27 / 1024L / 1024L + "MB)";
 		    drawString(fontRenderer4, string18, i3 - fontRenderer4.getStringWidth(string18) - 3, 12, 14737632);
+		    
+		    fontRenderer4.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.debugSkylightUpdates(), 2, 32, 0xFFFFFF);
+
 		} else {
 		    fontRenderer4.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
 
@@ -222,59 +223,20 @@ public final class GuiIngame extends Gui {
 				}
 			}
 
-			int chatLineHeight = 10; // Adjust height according to font size
-			int maxVisibleLines = 10; // Number of visible chat lines
-			for (int i = 0; i < Math.min(this.chatMessageList.size(), maxVisibleLines); i++) {
-			    ChatLine chatline = (ChatLine) this.chatMessageList.get(i);
-			    String message = chatline.message;
+        int chatLineHeight = 10; // Adjust height according to font size
+        int maxVisibleLines = 10; // Number of visible chat lines, adjust as needed
 
-			    int xPos = 2; // X position for chat messages
-			    int yPos = i19 - 40 - (i * chatLineHeight); // Y position based on index and height
+        for (int i = 0; i < Math.min(this.chatMessageList.size(), maxVisibleLines); i++) {
+            ChatLine chatline = (ChatLine) this.chatMessageList.get(i);
+            String message = chatline.message;
 
-			    // Parse and handle color codes in the message
-			    int color = 0xFFFFFF; // Default color (white)
-			    int messageLength = message.length();
-			    int currentXPos = xPos;
+            int xPos = 2; // X position for chat messages
+            int yPos = i19 - 40 - (i * chatLineHeight); // Y position based on index and height
 
-			    for (int j = 0; j < messageLength; j++) {
-			        if (j < messageLength - 1 && message.charAt(j) == '&') {
-			            // If we encounter a color code, parse the next character for color
-			            char colorCode = message.charAt(j + 1);
-			            color = getColorFromCode(colorCode); // Get color based on the code
-			            j++; // Skip the color code character
-			        } else {
-			            // Draw each character with the current color
-			            String character = String.valueOf(message.charAt(j));
-			            fontRenderer4.drawStringWithShadow(character, currentXPos, yPos, color);
-			            currentXPos += fontRenderer4.getCharWidth(message.charAt(j)); // Move to the next character position
-			        }
-			    }
-			}
+            fontRenderer4.drawStringWithShadow(message, xPos, yPos, 16777215); // Render the chat message in white
+        }
 	}
 
-			// Helper method to get color from a color code using '&' format
-			private int getColorFromCode(char colorCode) {
-			    switch (colorCode) {
-			        case '0': return 0x000000; // Black
-			        case '1': return 0x0000AA; // Dark Blue
-			        case '2': return 0x00AA00; // Dark Green
-			        case '3': return 0x00AAAA; // Dark Aqua
-			        case '4': return 0xAA0000; // Dark Red
-			        case '5': return 0xAA00AA; // Dark Purple
-			        case '6': return 0xFFAA00; // Gold
-			        case '7': return 0xAAAAAA; // Gray
-			        case '8': return 0x555555; // Dark Gray
-			        case '9': return 0x5555FF; // Blue
-			        case 'a': return 0x55FF55; // Green
-			        case 'b': return 0x55FFFF; // Aqua
-			        case 'c': return 0xFF5555; // Red
-			        case 'd': return 0xFF55FF; // Light Purple
-			        case 'e': return 0xFFFF55; // Yellow
-			        case 'f': return 0xFFFFFF; // White
-			        default: return 0xFFFFFF; // Default to white if unknown code
-			    }
-			}
-			
     public final void updateChatMessages() {
         this.updateCounter++;
 
