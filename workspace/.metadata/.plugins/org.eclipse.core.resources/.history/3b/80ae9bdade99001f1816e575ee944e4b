@@ -477,7 +477,10 @@ public final class Minecraft implements Runnable {
 	    }
 	}
 
+	// Modified block place client with sendTileUpdated
+
 	private void clickMouseRightMP() {
+		ItemRenderer tileRenderer6;
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
@@ -513,6 +516,21 @@ public final class Minecraft implements Runnable {
 	                int stackSizeBeforeUse = itemStack.stackSize;
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
 	                    this.entityRenderer.itemRenderer.equippedItemRender();
+
+	                    // Define the actionId as '1' for the right-click action
+	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
+	                    int itemId = itemStack.itemID;
+
+	                    if (this.isOnlineClient()) {
+	                        // Send the block interaction update to the server in the specified format
+	                        this.networkClient.sendTileUpdated(x, y, z, actionId, itemId);
+	                    }
+
+	                    // Update the level locally (if necessary)
+	                    this.theWorld.netSetTile(x, y, z, itemId);
+						tileRenderer6 = this.entityRenderer.itemRenderer;
+						this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+						Block.blocksList[itemId].onBlockAdded(this.theWorld, x, y, actionId);
 	                }
 
 	                if (itemStack.stackSize == 0) {
@@ -520,59 +538,6 @@ public final class Minecraft implements Runnable {
 	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
 	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
 	                }
-	            }
-	        }
-	    }
-	}	
-	
-	// new mp right
-	
-	private void clickMouseRightNewMP() {
-	    ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	    int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
-
-	    // Perform right-click item action without consuming the item
-	    if (itemStack != null) {
-	        ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
-	        if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
-	            this.entityRenderer.itemRenderer.resetEquippedProgress();
-	            if (updatedStack != null && updatedStack.stackSize == 0) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack; // Restore the item stack instead of nullifying it
-	            }
-	        }
-	    }
-
-	    // Block interaction logic
-	    if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) { // Block interaction
-	        int x = this.objectMouseOver.blockX;
-	        int y = this.objectMouseOver.blockY;
-	        int z = this.objectMouseOver.blockZ;
-	        int sideHit = this.objectMouseOver.sideHit;
-	        Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
-
-	        // Place block logic without consuming item
-	        if (itemStack != null && itemStack.stackSize > 0) {
-	            Block blockToPlace = Block.blocksList[itemStack.itemID];
-	            if (block == null || block.isCollidable()) {
-	                // Check if the placement area is clear of collision
-	                if (this.theWorld.checkIfAABBIsClear1(blockToPlace.getCollisionBoundingBoxFromPool(x, y, z))) {
-	                    // Use sendTileUpdated to place the block on the server
-	                    this.networkClient.sendTileUpdated(x, y, z, 1, itemStack.itemID); // id1 = 1 for placement, itemStack.itemID is the tile ID
-	                    blockToPlace.onBlockAdded(this.theWorld, x, y, z);
-	                    this.entityRenderer.itemRenderer.equippedItemRender();
-	                }
-	            }
-
-	            // Activate block if possible
-	            int newBlockId = this.theWorld.getBlockId(x, y, z);
-	            if (newBlockId > 0 && Block.blocksList[newBlockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
-	                return;
-	            }
-
-	            // Reset the equipped item render animation if the item stack size changes
-	            if (itemStack.stackSize != initialStackSize) {
-	                this.entityRenderer.itemRenderer.equipAnimationSpeed();
 	            }
 	        }
 	    }

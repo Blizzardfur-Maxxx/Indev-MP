@@ -479,7 +479,8 @@ public final class Minecraft implements Runnable {
 
 	// Modified block place client with sendTileUpdated
 
-	private void clickMouseRightMP() {
+	private void clickMouseRightMP(int clickState) {
+		ItemRenderer tileRenderer6;
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
@@ -520,13 +521,15 @@ public final class Minecraft implements Runnable {
 	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
 	                    int itemId = itemStack.itemID;
 
-	                    if (this.isOnlineClient()) {
-	                        // Send the block interaction update to the server in the specified format
-	                        this.networkClient.sendTileUpdated(x, y, z, actionId, itemId);
-	                    }
+						if(this.isOnlineClient()) {
+							this.networkClient.sendTileUpdated(x, z, actionId, clickState, itemId);
+						}
 
 	                    // Update the level locally (if necessary)
 	                    this.theWorld.netSetTile(x, y, z, itemId);
+						tileRenderer6 = this.entityRenderer.itemRenderer;
+						this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+						Block.blocksList[itemId].onBlockAdded(this.theWorld, x, y, actionId);
 	                }
 
 	                if (itemStack.stackSize == 0) {
@@ -633,7 +636,7 @@ public final class Minecraft implements Runnable {
 	            }
 	        } else if (clickState == 1) {
 	            if (this.isOnlineClient()) {
-	                clickMouseRightMP();
+	                clickMouseRightMP(clickState);
 	            } else {
 	                clickMouseRightSP();
 	            }

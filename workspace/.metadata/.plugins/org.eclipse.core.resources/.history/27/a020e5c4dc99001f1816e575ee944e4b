@@ -477,6 +477,8 @@ public final class Minecraft implements Runnable {
 	    }
 	}
 
+	// Modified block place client with sendTileUpdated
+
 	private void clickMouseRightMP() {
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
@@ -513,71 +515,24 @@ public final class Minecraft implements Runnable {
 	                int stackSizeBeforeUse = itemStack.stackSize;
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
 	                    this.entityRenderer.itemRenderer.equippedItemRender();
+
+	                    // Define the actionId as '1' for the right-click action
+	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
+	                    int itemId = itemStack.itemID;
+
+	                    if (this.isOnlineClient()) {
+	                        // Send the block interaction update to the server in the specified format
+	                        this.networkClient.sendTileUpdated(x, y, z, actionId, itemId);
+	                    }
+
+	                    // Update the level locally (if necessary)
+	                    this.theWorld.netSetTile(x, y, z, itemId);
 	                }
 
 	                if (itemStack.stackSize == 0) {
 	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
 	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
 	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
-	                }
-	            }
-	        }
-	    }
-	}	
-	
-	// new mp right
-	
-	private void mouseClickRightMP() {
-	    // Check if the player can interact (no cooldowns)
-	    if (this.leftClickCounter <= 0) {
-	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem(); // Get current item in hand
-	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0; // Track initial stack size
-
-	        if (itemStack != null) {
-	            // Call the item's right-click handling method
-	            ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
-	            
-	            // Check if the item was updated and update the player's inventory
-	            if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack; // Update inventory
-	                this.entityRenderer.itemRenderer.resetEquippedProgress(); // Reset render progress
-	                if (updatedStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null; // Remove item if stack is empty
-	                }
-	            }
-	        }
-
-	        if (this.objectMouseOver == null) { // No object being pointed at
-	            if (!(this.playerController instanceof PlayerControllerCreative)) {
-	                this.leftClickCounter = 10; // Set cooldown if not in creative mode
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 0) { // If hitting a block
-	            // Get block coordinates and side hit
-	            int x = this.objectMouseOver.blockX;
-	            int y = this.objectMouseOver.blockY;
-	            int z = this.objectMouseOver.blockZ;
-	            int sideHit = this.objectMouseOver.sideHit;
-	            Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)]; // Get the block at the position
-
-	            if (block != null && itemStack != null) { // If there's a block and an item
-	                // Check if the block can be activated
-	                if (block.blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
-	                    return; // Block already activated
-	                }
-
-	                // Store initial stack size before using the item
-	                int stackSizeBeforeUse = itemStack.stackSize;
-	                
-	                // Call the item's use method
-	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
-	                    this.entityRenderer.itemRenderer.resetEquippedProgress(); // Reset render progress on use
-	                }
-
-	                // Handle item stack updates
-	                if (itemStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null; // Remove item if empty
-	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
-	                    this.entityRenderer.itemRenderer.equipAnimationSpeed(); // Update animation speed if the stack size changed
 	                }
 	            }
 	        }
