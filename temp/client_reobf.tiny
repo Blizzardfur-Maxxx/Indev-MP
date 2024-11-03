@@ -2526,4 +2526,3 @@ c	net/minecraft/game/item/ItemSword	net/minecraft/a/b/c
 		p	2	damage	
 c	net/minecraft/client/gui/GuiChat	net/minecraft/client/c/GuiChat
 c	net/minecraft/game/entity/HumanoidMob	net/minecraft/a/c/HumanoidMob
-c	net/minecraft/game/entity/player/InventoryClassic	net/minecraft/a/c/e/InventoryClassic

@@ -17,8 +17,9 @@
 <fullyQualifiedTypeName name="net.minecraft.game.entity.player.EntityPlayer"/>
 <fullyQualifiedTypeName name="net.minecraft.game.level.block.Block"/>
 <fullyQualifiedTypeName name="net.minecraft.client.Session"/>
-<fullyQualifiedTypeName name="net.minecraft.game.item.Item"/>
-<fullyQualifiedTypeName name="net.minecraft.game.item.ItemStack"/>
 <fullyQualifiedTypeName name="net.minecraft.game.physics.AxisAlignedBB"/>
 <fullyQualifiedTypeName name="net.minecraft.client.render.ItemRenderer"/>
+<fullyQualifiedTypeName name="net.minecraft.client.player.EntityPlayerSP"/>
+<fullyQualifiedTypeName name="net.minecraft.game.item.Item"/>
+<fullyQualifiedTypeName name="net.minecraft.game.item.ItemStack"/>
 </qualifiedTypeNameHistroy>
