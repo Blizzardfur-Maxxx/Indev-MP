@@ -1,0 +1,72 @@
+private void mouseClickRightMP(int id) {
+    if (id != 0 || this.leftClickCounter <= 0) {
+        if (id == 0) {  // Right-click interaction
+            // Placeholder if rotation and movement adjustments are needed
+            // Implement rotation and movement adjustments here if applicable
+        }
+
+        int selectedItemIndex = this.thePlayer.inventory.currentItem;
+        if (id == 1 && selectedItemIndex > 0) {
+            // Assume removeResource method is a placeholder or create a simple implementation if needed
+            if (this.playerController.removeResource(this.thePlayer, selectedItemIndex)) {
+                // Implement reset progress here if necessary
+            } else {
+                return;  // Resource removal failed
+            }
+        } else if (this.objectMouseOver == null) {  
+            if (id == 0 && !(this.playerController instanceof PlayerControllerCreative)) { 
+                this.leftClickCounter = 10;  // Cooldown for non-creative mode
+            }
+        } else {
+            if (this.objectMouseOver.typeOfHit == 1) {  // Hit an entity
+                if (id == 0) {
+                    this.objectMouseOver.entityHit.attackEntityFrom(this.thePlayer, 4);  // Damage entity on right-click
+                    return;
+                }
+            } else if (this.objectMouseOver.typeOfHit == 0) {  // Hit a block
+                int x = this.objectMouseOver.blockX;
+                int y = this.objectMouseOver.blockY;
+                int z = this.objectMouseOver.blockZ;
+
+                if (id != 0) {  // Modify coordinates based on face hit
+                    switch (this.objectMouseOver.sideHit) {
+                        case 0: --y; break;  // Bottom face
+                        case 1: ++y; break;  // Top face
+                        case 2: --z; break;  // North face
+                        case 3: ++z; break;  // South face
+                        case 4: --x; break;  // West face
+                        case 5: ++x; break;  // East face
+                    }
+                }
+
+                Block blockAtHit = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
+                if (id == 0) {
+                    if (blockAtHit != Block.bedrock || this.thePlayer.userType >= 100) {
+                        this.playerController.clickBlock(x, y, z);  // Start block destruction
+                        return;
+                    }
+                } else {  // Placing a block
+                    if (selectedItemIndex <= 0) {
+                        return;  // No item selected
+                    }
+
+                    // Check if the block can be placed (add check logic if needed)
+                    if (this.theWorld.canPlaceBlockAt(x, y, z, selectedItemIndex)) {
+                        // Placeholder if removeResource is required
+                        if (!this.playerController.removeResource(selectedItemIndex)) {
+                            return;  // Resource removal failed
+                        }
+
+                        // Multiplayer network update if applicable
+                        if (this.isOnlineClient()) {
+                            this.networkClient.sendTileUpdated(x, y, z, id, selectedItemIndex);
+                        }
+
+                        this.theWorld.setBlock(x, y, z, selectedItemIndex);  // Set the block in the level
+                        Block.blocksList[selectedItemIndex].onBlockPlacedBy(this.theWorld, x, y, z, this.thePlayer);  // Trigger place event
+                    }
+                }
+            }
+        }
+    }
+}

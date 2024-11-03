@@ -477,6 +477,8 @@ public final class Minecraft implements Runnable {
 	    }
 	}
 
+	// Modified block place client with sendTileUpdated
+
 	private void clickMouseRightMP() {
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
@@ -513,6 +515,18 @@ public final class Minecraft implements Runnable {
 	                int stackSizeBeforeUse = itemStack.stackSize;
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
 	                    this.entityRenderer.itemRenderer.equippedItemRender();
+
+	                    // Define the actionId as '1' for the right-click action
+	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
+	                    int itemId = itemStack.itemID;
+
+	                    if (this.isOnlineClient()) {
+	                        // Send the block interaction update to the server in the specified format
+	                        this.networkClient.sendTileUpdated(x, y, z, actionId, itemId);
+	                    }
+
+	                    // Update the level locally (if necessary)
+	                    this.theWorld.netSetTile(x, y, z, itemId);
 	                }
 
 	                if (itemStack.stackSize == 0) {
@@ -520,54 +534,6 @@ public final class Minecraft implements Runnable {
 	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
 	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
 	                }
-	            }
-	        }
-	    }
-	}	
-	
-	// new mp right
-	
-	private void clickMouseRightNewMP() {
-	    ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	    int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
-
-	    if (itemStack != null) {
-	        ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
-	        if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
-	            this.entityRenderer.itemRenderer.resetEquippedProgress();
-	            if (updatedStack != null && updatedStack.stackSize == 0) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	            }
-	        }
-	    }
-
-	    if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) { // Block interaction
-	        int x = this.objectMouseOver.blockX;
-	        int y = this.objectMouseOver.blockY;
-	        int z = this.objectMouseOver.blockZ;
-	        int sideHit = this.objectMouseOver.sideHit;
-	        Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
-
-	        if (itemStack != null && itemStack.stackSize > 0) {
-	            Block blockToPlace = Block.blocksList[itemStack.itemID];
-	            if (block == null || block.isCollidable()) {
-	                if (this.theWorld.checkIfAABBIsClear1(blockToPlace.getCollisionBoundingBoxFromPool(x, y, z))) {
-	                    if (this.playerController.removeResource(this.thePlayer, itemStack)) {
-	                        this.theWorld.netSetTile(x, y, z, itemStack.itemID);
-	                        blockToPlace.onBlockAdded(this.theWorld, x, y, z);
-	                        this.entityRenderer.itemRenderer.equippedItemRender();
-	                    }
-	                }
-	            }
-
-	            int newBlockId = this.theWorld.getBlockId(x, y, z);
-	            if (newBlockId > 0 && Block.blocksList[newBlockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
-	                return;
-	            }
-
-	            if (itemStack.stackSize != initialStackSize) {
-	                this.entityRenderer.itemRenderer.equipAnimationSpeed();
 	            }
 	        }
 	    }
