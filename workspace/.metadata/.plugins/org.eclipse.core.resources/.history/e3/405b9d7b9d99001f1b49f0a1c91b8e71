@@ -530,8 +530,8 @@ public final class Minecraft implements Runnable {
 						}
 				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 			            int itemId = itemStack.itemID;
-			            int actionId;
-						if(this.objectMouseOver.typeOfHit == 0) {
+			            int actionId = this.objectMouseOver.typeOfHit;
+						if(this.objectMouseOver.typeOfHit != 0) {
 							actionId = 0; 
 						} else {
 							actionId = 1;

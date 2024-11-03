@@ -35,7 +35,7 @@ public class PlayerController {
 			if(this.mc.isOnlineClient()&& this.mc.objectMouseOver.typeOfHit == 0) {
 				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, itemId);
 			} else if (this.mc.isOnlineClient()&& this.mc.objectMouseOver.typeOfHit == 1) {
-				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 1, itemId);
+				
 			}
 			SoundManager soundManager10000 = this.mc.sndManager;
 			String string10001 = block5.stepSound.stepSoundDir();

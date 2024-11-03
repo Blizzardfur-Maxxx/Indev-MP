@@ -544,13 +544,13 @@ public final class Minecraft implements Runnable {
 							}
 
 							if(this.isOnlineClient()) {
-								this.networkClient.sendTileUpdated(i10, i3, actionId, clickState, itemId);
+								this.networkClient.sendTileUpdated(i10, i3, 1, clickState, itemId);
 							}
 
 							this.theWorld.netSetTile(i10, i3, i13, itemId);
 							tileRenderer6 = this.entityRenderer.itemRenderer;
 							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[itemId].onBlockAdded(this.theWorld, i10, i3, actionId);
+							Block.blocksList[itemId].onBlockAdded(this.theWorld, i10, i3, 1);
 						}
 					}
 				}
