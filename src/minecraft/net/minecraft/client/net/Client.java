@@ -24,10 +24,12 @@ public final class Client {
 		(new ConnectionThread(this, ip, port, user, session, minecraft)).start();
 	}
 
-	public final void sendTileUpdated(int x, int y, int z, int id1, ItemStack i8) {
-		this.serverConnection.sendPacket(Packet.PLACE_OR_REMOVE_TILE, new Object[]{x, y, z, id1, i8});
+	public final void sendTileUpdated(int x, int y, int z, int id1, int id2) {
+	    System.out.println("sendTileUpdated called with parameters: x=" + x + ", y=" + y + ", z=" + z + ", id1=" + id1 + ", id2=" + id2);
+	    this.serverConnection.sendPacket(Packet.PLACE_OR_REMOVE_TILE, new Object[]{x, y, z, id1, id2});
+	    System.out.println("Packet sent with PLACE_OR_REMOVE_TILE, data={" + x + ", " + y + ", " + z + ", " + id1 + ", " + id2 + "}");
 	}
-
+	
 	public final void handleException(Exception e) {
 		this.serverConnection.disconnect();
 		this.minecraft.displayGuiScreen(new GuiErrorScreen("Disconnected!", e.getMessage()));

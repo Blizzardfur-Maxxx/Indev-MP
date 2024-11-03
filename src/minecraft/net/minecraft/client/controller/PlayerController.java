@@ -31,8 +31,11 @@ public class PlayerController {
 		byte b6 = world4.getBlockMetadata(i1, i2, i3);
 		boolean z7 = world4.setBlockWithNotify(i1, i2, i3, 0);
 		if(block5 != null && z7) {
-			if(this.mc.isOnlineClient()) {
-				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, this.mc.thePlayer.inventory.getCurrentItem());
+			if (this.mc.isOnlineClient()) {
+			    ItemStack currentItem = this.mc.thePlayer.inventory.getCurrentItem();
+			    int itemID = (currentItem != null && currentItem.stackSize > 0) ? currentItem.itemID : 1; // Get item ID or default to 0 if null or empty
+			    
+			    this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, itemID); // Send the item ID to the method
 			}
 			SoundManager soundManager10000 = this.mc.sndManager;
 			String string10001 = block5.stepSound.stepSoundDir();
