@@ -438,10 +438,10 @@ public final class Minecraft implements Runnable {
 			this.displayGuiScreen(new GuiIngameMenu());
 		}
 	}
-
+	
+	
 	private void clickMouse(int clickState) {
 		if(clickState != 0 || this.leftClickCounter <= 0) {
-			ItemRenderer tileRenderer6;
 			if(clickState == 0) {
 				this.entityRenderer.itemRenderer.equippedItemRender();
 			}
@@ -528,32 +528,9 @@ public final class Minecraft implements Runnable {
 						if(clickState1.stackSize != i16) {
 							this.entityRenderer.itemRenderer.equipAnimationSpeed();
 						}
-				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-			            int itemId = itemStack.itemID;
-			            int actionId;
-						if(this.objectMouseOver.typeOfHit == 1) {
-							actionId = 1; 
-						} else {
-							actionId = 0;
-						}
-						Block tile9;
-						AxisAlignedBB aABB10;
-						if(((tile9 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[itemId].getCollisionBoundingBoxFromPool(i10, i3, i13)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear1(aABB10)))) {
-							if(!this.playerController.removeResource(itemId)) {
-								return;
-							}
-
-							if(this.isOnlineClient()) {
-								this.networkClient.sendTileUpdated(i10, i3, actionId, clickState, itemId);
-							}
-
-							this.theWorld.netSetTile(i10, i3, i13, itemId);
-							tileRenderer6 = this.entityRenderer.itemRenderer;
-							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[itemId].onBlockAdded(this.theWorld, i10, i3, actionId);
-						}
 					}
 				}
+
 			}
 		}
 	}

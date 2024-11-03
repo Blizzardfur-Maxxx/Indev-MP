@@ -3,6 +3,7 @@ package net.minecraft.client.controller;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.EntityPlayer;
+import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.ItemStack;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
@@ -30,10 +31,8 @@ public class PlayerController {
 		byte b6 = world4.getBlockMetadata(i1, i2, i3);
 		boolean z7 = world4.setBlockWithNotify(i1, i2, i3, 0);
 		if(block5 != null && z7) {
-	        ItemStack itemStack = this.mc.thePlayer.inventory.getCurrentItem();
-            int itemId = itemStack.itemID;
 			if(this.mc.isOnlineClient()) {
-				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, itemId);
+				this.mc.networkClient.sendTileUpdated(i1, i2, i3, 0, this.mc.thePlayer.inventory.getCurrentItem());
 			}
 			SoundManager soundManager10000 = this.mc.sndManager;
 			String string10001 = block5.stepSound.stepSoundDir();
@@ -51,7 +50,11 @@ public class PlayerController {
 	}
 	
 	public boolean removeResource(int quantity) {
-		return isInTestMode;
+		return true;
+	}
+
+	public boolean removeResource(EntityPlayer player, ItemStack i8) {
+		return false;
 	}
 
 	public void sendBlockRemoving(int i1, int i2, int i3, int i4) {

@@ -439,121 +439,91 @@ public final class Minecraft implements Runnable {
 		}
 	}
 
-	private void clickMouse(int clickState) {
-		if(clickState != 0 || this.leftClickCounter <= 0) {
+	private void clickMouse(int id) {
+		if(id != 0 || this.leftClickCounter <= 0) {
 			ItemRenderer tileRenderer6;
-			if(clickState == 0) {
-				this.entityRenderer.itemRenderer.equippedItemRender();
+			if(id == 0) {
+				tileRenderer6 = this.entityRenderer.itemRenderer;
+				this.entityRenderer.itemRenderer.swingProgress = -1;
+				tileRenderer6.itemSwingState = true;
 			}
 
-			ItemStack itemStack2;
-			int i3;
-			World world5;
-			if(clickState == 1 && (itemStack2 = this.thePlayer.inventory.getCurrentItem()) != null) {
-				i3 = itemStack2.stackSize;
-				EntityPlayerSP entityPlayerSP7 = this.thePlayer;
-				world5 = this.theWorld;
-				ItemStack itemStack4;
-				if((itemStack4 = itemStack2.getItem().onItemRightClick(itemStack2, world5, entityPlayerSP7)) != itemStack2 || itemStack4 != null && itemStack4.stackSize != i3) {
-					this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = itemStack4;
-					this.entityRenderer.itemRenderer.resetEquippedProgress();
-					if(itemStack4.stackSize == 0) {
-						this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-					}
-				}
-			}
-
-			if(this.objectMouseOver == null) {
-				if(clickState == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
+			int i2;
+			if(id == 1 && (i2 = this.thePlayer.inventory.getSelected()) > 0 && this.gamemode.removeResource(this.thePlayer, i2)) {
+				tileRenderer6 = this.entityRenderer.itemRenderer;
+				this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+			} else if(this.mouseHelper == null) {
+				if(id == 0 && !(this.gamemode instanceof CreativeGameMode)) {
 					this.leftClickCounter = 10;
 				}
 
 			} else {
-				ItemStack clickState1;
-				if(this.objectMouseOver.typeOfHit == 1) {
-					if(clickState == 0) {
-						Entity entity14 = this.objectMouseOver.entityHit;
-						EntityPlayerSP entityPlayerSP12 = this.thePlayer;
-						InventoryPlayer inventoryPlayer11;
-						int i10000 = (clickState1 = (inventoryPlayer11 = this.thePlayer.inventory).getStackInSlot(inventoryPlayer11.currentItem)) != null ? Item.itemsList[clickState1.itemID].getDamageVsEntity() : 1;
-						int i17 = i10000;
-						if(i10000 > 0) {
-							entity14.attackEntityFrom(entityPlayerSP12, i17);
-							if((itemStack2 = entityPlayerSP12.inventory.getCurrentItem()) != null && entity14 instanceof EntityLiving) {
-								EntityLiving entityLiving8 = (EntityLiving)entity14;
-								Item.itemsList[itemStack2.itemID].hitEntity(itemStack2);
-								if(itemStack2.stackSize <= 0) {
-									entityPlayerSP12.destroyCurrentEquippedItem();
-								}
-							}
-						}
-
+				if(this.mouseHelper.type == 1) {
+					if(id == 0) {
+						this.mouseHelper.entity.hurt(this.thePlayer, 4);
 						return;
 					}
-				} else if(this.objectMouseOver.typeOfHit == 0) {
-					int i10 = this.objectMouseOver.blockX;
-					i3 = this.objectMouseOver.blockY;
-					int i13 = this.objectMouseOver.blockZ;
-					int i15 = this.objectMouseOver.sideHit;
-					Block block6 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)];
-					if(clickState == 0) {
-						this.theWorld.extinguishFire(i10, i3, i13, this.objectMouseOver.sideHit);
-						if(block6 != Block.bedrock) {
-							this.playerController.clickBlock(i10, i3, i13);
+				} else if(this.mouseHelper.type == 0) {
+					i2 = this.mouseHelper.x;
+					int i3 = this.mouseHelper.y;
+					int i4 = this.mouseHelper.z;
+					if(id != 0) {
+						if(this.mouseHelper.f == 0) {
+							--i3;
+						}
+
+						if(this.mouseHelper.f == 1) {
+							++i3;
+						}
+
+						if(this.mouseHelper.f == 2) {
+							--i4;
+						}
+
+						if(this.mouseHelper.f == 3) {
+							++i4;
+						}
+
+						if(this.mouseHelper.f == 4) {
+							--i2;
+						}
+
+						if(this.mouseHelper.f == 5) {
+							++i2;
+						}
+					}
+
+					Tile tile5 = Tile.tiles[this.level.getTile(i2, i3, i4)];
+					if(id == 0) {
+						if(tile5 != Tile.unbreakable || this.thePlayer.userType >= 100) {
+							this.gamemode.startDestroyBlock(i2, i3, i4);
 							return;
 						}
 					} else {
-						clickState1 = this.thePlayer.inventory.getCurrentItem();
-						int i16;
-						if((i16 = this.theWorld.getBlockId(i10, i3, i13)) > 0 && Block.blocksList[i16].blockActivated(this.theWorld, i10, i3, i13, this.thePlayer)) {
+						int i8;
+						if((i8 = this.thePlayer.inventory.getSelected()) <= 0) {
 							return;
 						}
 
-						if(clickState1 == null) {
-							return;
-						}
-
-						i16 = clickState1.stackSize;
-						int i18 = i15;
-						world5 = this.theWorld;
-						if(clickState1.getItem().onItemUse(clickState1, world5, i10, i3, i13, i18)) {
-							this.entityRenderer.itemRenderer.equippedItemRender();
-						}
-
-						if(clickState1.stackSize == 0) {
-							this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-							return;
-						}
-
-						if(clickState1.stackSize != i16) {
-							this.entityRenderer.itemRenderer.equipAnimationSpeed();
-						}
-				        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-			            int itemId = itemStack.itemID;
-			            int actionId;
-						if(this.objectMouseOver.typeOfHit == 1) {
-							actionId = 1; 
-						} else {
-							actionId = 0;
-						}
-						Block tile9;
-						AxisAlignedBB aABB10;
-						if(((tile9 = Block.blocksList[this.theWorld.getBlockId(i10, i3, i13)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[itemId].getCollisionBoundingBoxFromPool(i10, i3, i13)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear1(aABB10)))) {
-							if(!this.playerController.removeResource(itemId)) {
+						Tile tile9;
+						AABB aABB10;
+						if(((tile9 = Tile.tiles[this.level.getTile(i2, i3, i4)]) == null || tile9 == Tile.water || tile9 == Tile.calmWater || tile9 == Tile.lava || tile9 == Tile.calmLava) && ((aABB10 = Tile.tiles[i8].getTileAABB(i2, i3, i4)) == null || (this.thePlayer.bb.intersects(aABB10) ? false : this.level.isFree(aABB10)))) {
+							if(!this.gamemode.removeResource(i8)) {
 								return;
 							}
 
 							if(this.isOnlineClient()) {
-								this.networkClient.sendTileUpdated(i10, i3, actionId, clickState, itemId);
+								this.networkClient.sendTileUpdated(i2, i3, i4, id, i8);
 							}
 
-							this.theWorld.netSetTile(i10, i3, i13, itemId);
+							this.level.netSetTile(i2, i3, i4, i8);
 							tileRenderer6 = this.entityRenderer.itemRenderer;
 							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[itemId].onBlockAdded(this.theWorld, i10, i3, actionId);
+							Tile.tiles[i8].onPlace(this.level, i2, i3, i4);
 						}
 					}
 				}
+
 			}
 		}
 	}

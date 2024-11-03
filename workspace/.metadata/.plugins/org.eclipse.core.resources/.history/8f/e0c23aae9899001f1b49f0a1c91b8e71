@@ -50,7 +50,7 @@ public class PlayerController {
 		return z7;
 	}
 	
-	public boolean removeResource(int quantity) {
+	public boolean removeResource(EntityPlayer player, int quantity) {
 		return isInTestMode;
 	}
 
