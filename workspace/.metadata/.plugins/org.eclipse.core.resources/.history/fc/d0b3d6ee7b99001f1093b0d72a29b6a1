@@ -155,39 +155,41 @@ public final class GuiIngame extends Gui {
 
 		RenderHelper.disableStandardItemLighting();
 		GL11.glDisable(GL11.GL_NORMALIZE);
+
 		if(this.mc.options.showFPS) {
-            fontRenderer4.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
+		    fontRenderer4.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
 
-            // Check if in network mode and add "MP" if true
-            if (this.mc.isOnlineClient()) {
-                // network mode: Show "MP" in green
-                fontRenderer4.drawStringWithShadow(" MP", fontRenderer4.getStringWidth("Minecraft Indev") - 1, 2, 0x00FF00);
-            }
+		 // if network mode, add "MP" right after "Minecraft Indev"
+		    if (this.mc.isOnlineClient()) {
+		        fontRenderer4.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
+		        fontRenderer4.drawStringWithShadow("MP", fontRenderer4.getStringWidth("Minecraft Indev"), 2, 0x00FF00);
+		    }
 
-            // Render debug information
-            Minecraft minecraft23 = this.mc;
-            fontRenderer4.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoRenders(), 2, 12, 0xFFFFFF);
-            fontRenderer4.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoEntities(), 2, 22, 0xFFFFFF);
-            fontRenderer4.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.debugSkylightUpdates(), 2, 32, 0xFFFFFF);
+		    // debug info
+		    Minecraft minecraft23 = this.mc;
+		    fontRenderer4.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoRenders(), 2, 12, 0xFFFFFF);
+		    fontRenderer4.drawStringWithShadow(this.mc.renderGlobal.getDebugInfoEntities(), 2, 22, 0xFFFFFF);
+		    fontRenderer4.drawStringWithShadow("P: " + minecraft23.effectRenderer.getStatistics() + ". T: " + minecraft23.theWorld.debugSkylightUpdates(), 2, 32, 0xFFFFFF);
 
-            long j24 = Runtime.getRuntime().maxMemory();
-            long j27 = Runtime.getRuntime().totalMemory();
-            long j28 = Runtime.getRuntime().freeMemory();
-            long j16 = j24 - j28;
-            String string18 = "Free memory: " + j16 * 100L / j24 + "% of " + j24 / 1024L / 1024L + "MB";
-            drawString(fontRenderer4, string18, i3 - fontRenderer4.getStringWidth(string18) - 2, 2, 14737632);
+		    // memory stats
+		    long j24 = Runtime.getRuntime().maxMemory();
+		    long j27 = Runtime.getRuntime().totalMemory();
+		    long j28 = Runtime.getRuntime().freeMemory();
+		    long j16 = j24 - j28;
+		    String string18 = "Free memory: " + j16 * 100L / j24 + "% of " + j24 / 1024L / 1024L + "MB";
+		    drawString(fontRenderer4, string18, i3 - fontRenderer4.getStringWidth(string18) - 2, 2, 14737632);
 
-            string18 = "Allocated memory: " + j27 * 100L / j24 + "% (" + j27 / 1024L / 1024L + "MB)";
-            drawString(fontRenderer4, string18, i3 - fontRenderer4.getStringWidth(string18) - 2, 12, 14737632);
-        } else {
-            fontRenderer4.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
+		    string18 = "Allocated memory: " + j27 * 100L / j24 + "% (" + j27 / 1024L / 1024L + "MB)";
+		    drawString(fontRenderer4, string18, i3 - fontRenderer4.getStringWidth(string18) - 2, 12, 14737632);
 
-            // Render "MP" only if in network mode
-            if (this.mc.isOnlineClient()) {
-                fontRenderer4.drawStringWithShadow(" MP", fontRenderer4.getStringWidth("Minecraft Indev") - 1, 2, 0x00FF00);
-            }
-        }
-		
+		    } else {
+		        fontRenderer4.drawStringWithShadow("Minecraft Indev", 2, 2, 0xFFFFFF);
+
+		        // add "MP" if network mode
+		        if (this.mc.isOnlineClient()) {
+		            fontRenderer4.drawStringWithShadow("MP", fontRenderer4.getStringWidth("Minecraft Indev"), 2, 0x00FF00);
+		        }
+		    }
 	   	int i14 = i3 / 2;
 			int i15 = i19 / 2;
 			this.hoveredUsername = null;

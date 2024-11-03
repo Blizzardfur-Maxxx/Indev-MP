@@ -74,17 +74,15 @@ public final class SocketConnection {
 						} else if(class5 == Short.TYPE) {
 							socketConnection4.writeBuffer.putShort(((Number)object6).shortValue());
 						} else if(class5 == Byte.TYPE) {
-						    if (object6 instanceof ItemStack) {
-						        ItemStack itemStack = (ItemStack) object6;
-						        int itemId = itemStack.getItem().shiftedIndex; // Access `shiftedIndex` as the item ID
-						        socketConnection4.writeBuffer.put((byte) itemId);
-						    } else if (object6 instanceof Number) {
-						        socketConnection4.writeBuffer.put(((Number) object6).byteValue());
-						    } else {
-						        // Write a default item ID if object6 is neither an ItemStack nor a Number
-						        int defaultItemId = 1; // stone (ID 1)
-						        socketConnection4.writeBuffer.put((byte) defaultItemId);
-						    }
+							if (object6 instanceof ItemStack) {
+							    ItemStack itemStack = (ItemStack) object6;
+							    int itemId = itemStack.getItem().shiftedIndex; // Access `shiftedIndex` as the item ID
+							    socketConnection4.writeBuffer.put((byte) itemId);
+							} else if (object6 instanceof Number) {
+							    socketConnection4.writeBuffer.put(((Number) object6).byteValue());
+							} else {
+							    throw new IllegalArgumentException("Expected ItemStack or Number, but got " + object6.getClass());
+							}
 						} else if(class5 == Double.TYPE) {
 							socketConnection4.writeBuffer.putDouble(((Double)object6).doubleValue());
 						} else if(class5 == Float.TYPE) {

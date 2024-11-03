@@ -108,8 +108,8 @@ public final class Minecraft implements Runnable {
 	public File mcDataDir;
 	private TextureWaterFX textureWaterFX;
 	private TextureLavaFX textureLavaFX;
-		volatile boolean running;
-		public String debug;
+	volatile boolean running;
+	public String debug;
 	public boolean inventoryScreen;
 	private int prevFrameTime;
 	public boolean inGameHasFocus;
@@ -143,30 +143,29 @@ public final class Minecraft implements Runnable {
 	}
 
 	public final void displayGuiScreen(GuiScreen guiScreen) {
-	    if (!(this.currentScreen instanceof GuiErrorScreen)) {
-	        if (this.currentScreen != null) {
-	            this.currentScreen.onGuiClosed();
-	        }
+		if(!(this.currentScreen instanceof GuiErrorScreen)) {
+			if(this.currentScreen != null) {
+				this.currentScreen.onGuiClosed();
+			}
 
-	        // Only display main menu if not connecting
-	        if (guiScreen == null && this.theWorld == null && (this.networkClient == null || this.networkClient.isConnected())) {
-	            guiScreen = new GuiMainMenu();
-	        } else if (guiScreen == null && this.thePlayer.health <= 0) {
-	            guiScreen = new GuiGameOver();
-	        }
+			if(guiScreen == null && this.theWorld == null && !this.isOnlineClient()) {
+				guiScreen = new GuiMainMenu();
+			} else if(guiScreen == null && this.thePlayer.health <= 0) {
+				guiScreen = new GuiGameOver();
+			}
 
-	        this.currentScreen = guiScreen;
-	        if (guiScreen != null) {
-	            this.inputLock();
-	            ScaledResolution scaledResolution2 = new ScaledResolution(this.displayWidth, this.displayHeight);
-	            int i3 = scaledResolution2.getScaledWidth();
-	            int i4 = scaledResolution2.getScaledHeight();
-	            guiScreen.setWorldAndResolution(this, i3, i4);
-	            this.skipRenderWorld = false;
-	        } else {
-	            this.setIngameFocus();
-	        }
-	    }
+			this.currentScreen = (GuiScreen)guiScreen;
+			if(guiScreen != null) {
+				this.inputLock();
+				ScaledResolution scaledResolution2;
+				int i3 = (scaledResolution2 = new ScaledResolution(this.displayWidth, this.displayHeight)).getScaledWidth();
+				int i4 = scaledResolution2.getScaledHeight();
+				((GuiScreen)guiScreen).setWorldAndResolution(this, i3, i4);
+				this.skipRenderWorld = false;
+			} else {
+				this.setIngameFocus();
+			}
+		}
 	}
 
 	public final void shutdownMinecraftApplet() {
@@ -202,7 +201,7 @@ public final class Minecraft implements Runnable {
 				Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
 			}
 
-			Display.setTitle("Minecraft Minecraft IndevMP");
+			Display.setTitle("Minecraft Minecraft Indev");
 
 			try {
 				Display.create();
@@ -439,50 +438,16 @@ public final class Minecraft implements Runnable {
 		}
 	}
 
-	// mouse click left/right mp    
-	private void clickMouseLeftMP() {
-	    if (this.leftClickCounter <= 0) {
-	        this.entityRenderer.itemRenderer.equippedItemRender();
-
-	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
-
-	        if (this.objectMouseOver != null) {
-	            if (this.objectMouseOver.typeOfHit == 1) { // Entity hit
-	                Entity entityHit = this.objectMouseOver.entityHit;
-	                int damage = itemStack != null ? Item.itemsList[itemStack.itemID].getDamageVsEntity() : 1;
-	                entityHit.attackEntityFrom(this.thePlayer, damage);
-
-	                if (itemStack != null && entityHit instanceof EntityLiving) {
-	                    itemStack.getItem().hitEntity(itemStack);
-	                    if (itemStack.stackSize <= 0) {
-	                        this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                    }
-	                }
-	            } else if (this.objectMouseOver.typeOfHit == 0) { // Block hit
-	                int x = this.objectMouseOver.blockX;
-	                int y = this.objectMouseOver.blockY;
-	                int z = this.objectMouseOver.blockZ;
-	                int sideHit = this.objectMouseOver.sideHit;
-	                Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
-
-	                this.theWorld.extinguishFire(x, y, z, sideHit);
-
-	                // Allow block breaking even without an item in hand
-	                if (block != Block.bedrock || this.thePlayer.userType >= 100) {
-	                    this.playerController.clickBlock(x, y, z);
-	                }
-	            }
+	private void clickMouse(int clickState) {
+	    if (clickState != 0 || this.leftClickCounter <= 0) {
+	        if (clickState == 0) {
+	            this.entityRenderer.itemRenderer.equippedItemRender();
 	        }
-	    }
-	}
 
-	private void clickMouseRightMP() {
-	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
-
-	        if (itemStack != null) {
+	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;  // Initialize initialStackSize here
+	        
+	        if (clickState == 1 && itemStack != null) {
 	            ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
 	            if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
 	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
@@ -493,185 +458,55 @@ public final class Minecraft implements Runnable {
 	            }
 	        }
 
-	        if (this.objectMouseOver == null) {
-	            if (!(this.playerController instanceof PlayerControllerCreative)) {
-	                this.leftClickCounter = 10;
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 0) { // Block interaction
-	            int x = this.objectMouseOver.blockX;
-	            int y = this.objectMouseOver.blockY;
-	            int z = this.objectMouseOver.blockZ;
-	            int sideHit = this.objectMouseOver.sideHit;
-	            Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
-
-	            if (block != null && itemStack != null) {
-	                int blockId = this.theWorld.getBlockId(x, y, z);
-	                if (Block.blocksList[blockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
-	                    return;
-	                }
-
-	                int stackSizeBeforeUse = itemStack.stackSize;
-	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
-	                    this.entityRenderer.itemRenderer.equippedItemRender();
-	                }
-
-	                if (itemStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
-	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
-	                }
-	            }
-	        }
-	    }
-	}	
-	
-	// new mp right
-	private void clickMouseRightNewMP() {
-	    ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	    int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
-
-	    if (itemStack != null) {
-	        ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
-	        if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
-	            this.entityRenderer.itemRenderer.resetEquippedProgress();
-	            if (updatedStack != null && updatedStack.stackSize == 0) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	            }
-	        }
-	    }
-
-	    if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) { // Block interaction
-	        int x = this.objectMouseOver.blockX;
-	        int y = this.objectMouseOver.blockY;
-	        int z = this.objectMouseOver.blockZ;
-	        int sideHit = this.objectMouseOver.sideHit;
-	        Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
-
-	        if (itemStack != null && itemStack.stackSize > 0) {
-	            Block blockToPlace = Block.blocksList[itemStack.itemID];
-	            if (block == null || block.isCollidable()) {
-	                if (this.theWorld.checkIfAABBIsClear1(blockToPlace.getCollisionBoundingBoxFromPool(x, y, z))) {
-	                    if (this.playerController.removeResource(this.thePlayer, itemStack)) {
-	                        this.theWorld.netSetTile(x, y, z, itemStack.itemID);
-	                        blockToPlace.onBlockAdded(this.theWorld, x, y, z);
-	                        this.entityRenderer.itemRenderer.equippedItemRender();
-	                    }
-	                }
-	            }
-
-	            int newBlockId = this.theWorld.getBlockId(x, y, z);
-	            if (newBlockId > 0 && Block.blocksList[newBlockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
-	                return;
-	            }
-
-	            if (itemStack.stackSize != initialStackSize) {
-	                this.entityRenderer.itemRenderer.equipAnimationSpeed();
-	            }
-	        }
-	    }
-	}
-	
-	// mouse click left/right sp
-	
-	private void clickMouseLeftSP() {
-	    if (this.leftClickCounter <= 0) {
-	        this.entityRenderer.itemRenderer.equippedItemRender();
-	        if (this.objectMouseOver == null) {
-	            if (!(this.playerController instanceof PlayerControllerCreative)) {
-	                this.leftClickCounter = 10;
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 1) { // Hit entity
-	            Entity entityHit = this.objectMouseOver.entityHit;
-	            EntityPlayerSP entityPlayerSP = this.thePlayer;
-	            InventoryPlayer inventory = this.thePlayer.inventory;
-	            ItemStack currentItem = inventory.getStackInSlot(inventory.currentItem);
-	            int damage = (currentItem != null) ? Item.itemsList[currentItem.itemID].getDamageVsEntity() : 1;
-
-	            if (damage > 0) {
-	                entityHit.attackEntityFrom(entityPlayerSP, damage);
-	                ItemStack itemStack = entityPlayerSP.inventory.getCurrentItem();
+	        if (this.objectMouseOver != null) {
+	            if (this.objectMouseOver.typeOfHit == 1 && clickState == 0) {
+	                Entity entityHit = this.objectMouseOver.entityHit;
+	                int damage = itemStack != null ? Item.itemsList[itemStack.itemID].getDamageVsEntity() : 1;
+	                entityHit.attackEntityFrom(this.thePlayer, damage);
 	                if (itemStack != null && entityHit instanceof EntityLiving) {
-	                    EntityLiving entityLiving = (EntityLiving) entityHit;
-	                    Item.itemsList[itemStack.itemID].hitEntity(itemStack);
+	                    itemStack.getItem().hitEntity(itemStack);
 	                    if (itemStack.stackSize <= 0) {
-	                        entityPlayerSP.destroyCurrentEquippedItem();
+	                        this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
 	                    }
 	                }
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 0) { // Hit block
-	            int blockX = this.objectMouseOver.blockX;
-	            int blockY = this.objectMouseOver.blockY;
-	            int blockZ = this.objectMouseOver.blockZ;
-	            Block block = Block.blocksList[this.theWorld.getBlockId(blockX, blockY, blockZ)];
-	            this.theWorld.extinguishFire(blockX, blockY, blockZ, this.objectMouseOver.sideHit);
-	            if (block != Block.bedrock) {
-	                this.playerController.clickBlock(blockX, blockY, blockZ);
-	            }
-	        }
-	    }
-	}
+	            } else if (this.objectMouseOver.typeOfHit == 0) {
+	                int x = this.objectMouseOver.blockX;
+	                int y = this.objectMouseOver.blockY;
+	                int z = this.objectMouseOver.blockZ;
+	                int sideHit = this.objectMouseOver.sideHit;
+	                Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
 
-	private void clickMouseRightSP() {
-	    ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	    if (itemStack != null) {
-	        int initialStackSize = itemStack.stackSize;
-	        EntityPlayerSP entityPlayerSP = this.thePlayer;
-	        World world = this.theWorld;
-	        ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, world, entityPlayerSP);
+	                if (clickState == 0) {
+	                    this.theWorld.extinguishFire(x, y, z, sideHit);
+	                    if (block != Block.bedrock || this.thePlayer.userType >= 100) {
+	                        this.playerController.clickBlock(x, y, z);
+	                    }
+	                } else if (itemStack != null && itemStack.stackSize > 0) {
+	                    Block blockToPlace = Block.blocksList[itemStack.itemID];
+	                    if (block == null || block.isCollidable()) {
+	                        if (this.theWorld.checkIfAABBIsClear1(blockToPlace.getCollisionBoundingBoxFromPool(x, y, z))) {
+	                            if (this.playerController.removeResource(this.thePlayer, itemStack)) {
+	                                this.theWorld.netSetTile(x, y, z, itemStack.itemID);
+	                                blockToPlace.onBlockAdded(this.theWorld, x, y, z);
+	                                this.entityRenderer.itemRenderer.equippedItemRender();
+	                            }
+	                        }
+	                    }
 
-	        if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
-	            this.entityRenderer.itemRenderer.resetEquippedProgress();
-	            if (updatedStack.stackSize == 0) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	            }
-	        }
+	                    int newBlockId = this.theWorld.getBlockId(x, y, z);
+	                    if (newBlockId > 0 && Block.blocksList[newBlockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
+	                        return;
+	                    }
 
-	        if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) { // Hit block
-	            int blockX = this.objectMouseOver.blockX;
-	            int blockY = this.objectMouseOver.blockY;
-	            int blockZ = this.objectMouseOver.blockZ;
-	            int sideHit = this.objectMouseOver.sideHit;
-	            int blockId = this.theWorld.getBlockId(blockX, blockY, blockZ);
-
-	            if (blockId > 0 && Block.blocksList[blockId].blockActivated(this.theWorld, blockX, blockY, blockZ, this.thePlayer)) {
-	                return;
-	            }
-
-	            if (itemStack != null) {
-	                int initialStackSizeRight = itemStack.stackSize;
-	                if (itemStack.getItem().onItemUse(itemStack, world, blockX, blockY, blockZ, sideHit)) {
-	                    this.entityRenderer.itemRenderer.equippedItemRender();
-	                }
-	                if (itemStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                } else if (itemStack.stackSize != initialStackSizeRight) {
-	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
+	                    if (itemStack.stackSize != initialStackSize) {
+	                        this.entityRenderer.itemRenderer.equipAnimationSpeed();
+	                    }
 	                }
 	            }
 	        }
 	    }
 	}
 	
-	private void clickMouse(int clickState) {
-	    if (clickState != 0 || this.leftClickCounter <= 0) {
-	        if (clickState == 0) {
-	            if (this.isOnlineClient()) {
-	                clickMouseLeftMP();
-	            } else {
-	                clickMouseLeftSP();
-	            }
-	        } else if (clickState == 1) {
-	            if (this.isOnlineClient()) {
-	                clickMouseRightMP();
-	            } else {
-	                clickMouseRightSP();
-	            }
-	        }
-	    }
-	}
-
 	public final void toggleFullscreen() {
 		try {
 			this.fullscreen = !this.fullscreen;
@@ -724,24 +559,20 @@ public final class Minecraft implements Runnable {
 	}
 
 	private void runTick() {
-	    this.ingameGUI.updateChatMessages();
-	    if (!this.isGamePaused && this.theWorld != null) {
-	        this.playerController.onUpdate();
-	    }
+        this.ingameGUI.updateChatMessages();
+		if(!this.isGamePaused && this.theWorld != null) {
+			this.playerController.onUpdate();
+		}
 
-	    GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
-	    if (!this.isGamePaused) {
-	        this.renderEngine.updateDynamicTextures();
-	    }
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.renderEngine.getTexture("/terrain.png"));
+		if(!this.isGamePaused) {
+			this.renderEngine.updateDynamicTextures();
+		}
 
-	    // Remove main menu if connected and replace with connecting screen until connected
-	    if (this.currentScreen instanceof GuiMainMenu && this.isOnlineClient()) {
-	        this.displayGuiScreen(null);
-	    }
-
-	    if (this.currentScreen == null && this.thePlayer != null && this.thePlayer.health <= 0) {
-	        this.displayGuiScreen(null);
-	    }
+		if(this.currentScreen == null && this.thePlayer != null && this.thePlayer.health <= 0) {
+			this.displayGuiScreen((GuiScreen)null);
+		}
+		
 		
 		int i41;
 		int i8;
@@ -749,11 +580,11 @@ public final class Minecraft implements Runnable {
 		int i46;
 		int i47;
 
-	    if (this.networkClient != null && !(this.currentScreen instanceof GuiErrorScreen)) {
-	        if (!this.networkClient.isConnected()) {
-	            this.loadingScreen.displayLoadingString("Connecting..");
-	            this.loadingScreen.setLoadingProgress(0);
-	        } else {
+		if(this.networkClient != null && !(this.currentScreen instanceof GuiErrorScreen)) {
+			if(!this.networkClient.isConnected()) {
+				this.loadingScreen.displayLoadingString("Connecting..");
+				this.loadingScreen.setLoadingProgress(0);
+			} else {
 				Client client18 = this.networkClient;
 				if(this.networkClient.processData) {
 					SocketConnection socketConnection22 = client18.serverConnection;
@@ -1129,7 +960,7 @@ public final class Minecraft implements Runnable {
 										this.displayGuiScreen(new GuiInventory(this.thePlayer.inventory));
 									}
 
-									if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode && !isOnlineClient()) {
+									if(Keyboard.getEventKey() == this.options.keyBindDrop.keyCode) {
 										this.thePlayer.dropPlayerItemWithRandomChoice(this.thePlayer.inventory.decrStackSize(this.thePlayer.inventory.currentItem, 1), false);
 									}
 									
