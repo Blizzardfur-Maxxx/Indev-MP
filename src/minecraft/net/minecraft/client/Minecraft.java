@@ -977,6 +977,7 @@ public final class Minecraft implements Runnable {
 				while(true) {
 					int i1;
 					int i2;
+					int i6;
 					while(Mouse.next()) {
 						if((i1 = Mouse.getEventDWheel()) != 0) {
 							i2 = i1;
@@ -1130,6 +1131,21 @@ public final class Minecraft implements Runnable {
 
 								if(Keyboard.getEventKey() == this.options.keyBindToggleFog.keyCode) {
 									this.options.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
+								}
+								
+								boolean z5 = this.playerController instanceof PlayerControllerCreative;
+								InventoryPlayer inventoryPlayer18 = this.thePlayer.inventory;
+								if((i6 = this.thePlayer.inventory.getInventorySlotContainItem(i2)) >= 0 && isOnlineClient()) {
+									inventoryPlayer18.currentItem = i6;
+								} else if(z5 && i2 > 0 && Session.registeredBlocksList.contains(Block.blocksList[i2])) {
+									for(int i21 = 0; i21 < 9; ++i21) {
+										if(thePlayer.inventory.mainInventory[i21] == null) {
+											this.thePlayer.inventory.mainInventory[i21] = new ItemStack(((Block)Session.registeredBlocksList.get(i21)).blockID);
+										} else {
+											this.thePlayer.inventory.mainInventory[i21].stackSize = 64;
+										}
+									}
+								
 								}
 							}
 						}

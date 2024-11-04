@@ -165,6 +165,32 @@ public final class InventoryPlayer implements IInventory {
 	public final int getSizeInventory() {
 		return this.mainInventory.length + 4;
 	}
+	
+	public final void replaceSlot(ItemStack itemStack ,int i1) {
+		ItemStack[] itemStack2 = this.mainInventory;
+		if(i1 >= this.mainInventory.length) {
+			itemStack2 = this.armorInventory;
+			i1 -= this.mainInventory.length;
+		}
+		if(itemStack2 != null) {
+			if(this.getInventorySlotContainItem(itemStack.itemID) >= 0) {
+				return itemStack2[i1];
+			}
+		}
+	}
+	
+	
+	public final void replaceSlot(int i1) {
+	    ItemStack[] itemStackArray = this.mainInventory;
+	    
+	    if (i1 >= this.mainInventory.length) {
+	        itemStackArray = this.armorInventory;
+	        i1 -= this.mainInventory.length;
+	    }
+
+	    itemStackArray[i1] = this.mainInventory[this.currentItem];
+	}
+
 
 	public final ItemStack getStackInSlot(int i1) {
 		ItemStack[] itemStack2 = this.mainInventory;

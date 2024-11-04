@@ -12,6 +12,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Random;
+
 import javax.swing.JOptionPane;
 
 import net.minecraft.client.controller.PlayerController;
@@ -37,6 +39,7 @@ import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
 import net.minecraft.client.render.ItemRenderer;
+import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.WorldRenderer;
@@ -114,16 +117,16 @@ public final class Minecraft implements Runnable {
 	private int prevFrameTime;
 	public boolean inGameHasFocus;
 	public Client networkClient;
-	String server;
-	int port;
+	public String server;
+	public int port;
 	public PlayerController playerController;
 	
 	public Minecraft(Canvas canvas, MinecraftApplet minecraftApplet, int tempDisplayWidth, int tempDisplayHeight, boolean fullscreen) {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = "localhost";
-		this.port = 25565;
+		this.server = null;
+		this.port = 0;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -201,37 +204,27 @@ public final class Minecraft implements Runnable {
 			} else {
 				Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
 			}
+			
+			Display.create();
 
-			Display.setTitle("Minecraft Minecraft IndevMP");
+			Display.setTitle("Minecraft IndevMP");
 
-			try {
-				Display.create();
-				System.out.println("LWJGL version: " + Sys.getVersion());
-				System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
-				System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
-				System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
-				ContextCapabilities contextCapabilities2 = GLContext.getCapabilities();
-				System.out.println("OpenGL 3.0: " + contextCapabilities2.OpenGL30);
-				System.out.println("OpenGL 3.1: " + contextCapabilities2.OpenGL31);
-				System.out.println("OpenGL 3.2: " + contextCapabilities2.OpenGL32);
-				System.out.println("ARB_compatibility: " + contextCapabilities2.GL_ARB_compatibility);
-				if(contextCapabilities2.OpenGL32) {
-					IntBuffer intBuffer24 = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
-					GL11.glGetInteger(37158, intBuffer24);
-					int i25 = intBuffer24.get(0);
-					System.out.println("PROFILE MASK: " + Integer.toBinaryString(i25));
-					System.out.println("CORE PROFILE: " + ((i25 & 1) != 0));
-					System.out.println("COMPATIBILITY PROFILE: " + ((i25 & 2) != 0));
-				}
-			} catch (LWJGLException lWJGLException17) {
-				lWJGLException17.printStackTrace();
-
-				try {
-					Thread.sleep(1000L);
-				} catch (InterruptedException interruptedException16) {
-				}
-
-				Display.create();
+			System.out.println("LWJGL version: " + Sys.getVersion());
+			System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
+			System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
+			System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
+			ContextCapabilities contextCapabilities2 = GLContext.getCapabilities();
+			System.out.println("OpenGL 3.0: " + contextCapabilities2.OpenGL30);
+			System.out.println("OpenGL 3.1: " + contextCapabilities2.OpenGL31);
+			System.out.println("OpenGL 3.2: " + contextCapabilities2.OpenGL32);
+			System.out.println("ARB_compatibility: " + contextCapabilities2.GL_ARB_compatibility);
+			if(contextCapabilities2.OpenGL32) {
+				IntBuffer intBuffer24 = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
+				GL11.glGetInteger(37158, intBuffer24);
+				int i25 = intBuffer24.get(0);
+				System.out.println("PROFILE MASK: " + Integer.toBinaryString(i25));
+				System.out.println("CORE PROFILE: " + ((i25 & 1) != 0));
+				System.out.println("COMPATIBILITY PROFILE: " + ((i25 & 2) != 0));
 			}
 
 			Keyboard.create();
@@ -401,8 +394,21 @@ public final class Minecraft implements Runnable {
 			exception20.printStackTrace();
 		} finally {
 			this.shutdownMinecraftApplet();
+			Display.destroy();
 		}
 
+	}
+
+	private Block getRandomBlock() {
+		Block[] blocks = Block.blocksList;
+		Random random = new Random();
+		
+		Block randomBlock;
+		do {
+			randomBlock = blocks[random.nextInt(blocks.length)];
+		} while (randomBlock == null);
+		
+		return randomBlock;
 	}
 
 	public final void setIngameFocus() {
@@ -477,22 +483,28 @@ public final class Minecraft implements Runnable {
 	    }
 	}
 
+	// Modified block place client with sendTileUpdated
+
 	private void clickMouseRightMP() {
 	    if (this.leftClickCounter <= 0) {
 	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
 	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
 
 	        if (itemStack != null) {
+	            // Handle item right-click action
 	            ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
 	            if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
 	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
 	                this.entityRenderer.itemRenderer.resetEquippedProgress();
-	                if (updatedStack != null && updatedStack.stackSize == 0) {
+
+	                // Remove the item from inventory if its stack size is zero
+	                if (updatedStack != null && updatedStack.stackSize <= 0) {
 	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
 	                }
 	            }
 	        }
 
+	        // Handle mouse over actions
 	        if (this.objectMouseOver == null) {
 	            if (!(this.playerController instanceof PlayerControllerCreative)) {
 	                this.leftClickCounter = 10;
@@ -506,16 +518,33 @@ public final class Minecraft implements Runnable {
 
 	            if (block != null && itemStack != null) {
 	                int blockId = this.theWorld.getBlockId(x, y, z);
-	                if (Block.blocksList[blockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
+
+	                // Check if the block can be activated
+	                if (block.blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
 	                    return;
 	                }
 
 	                int stackSizeBeforeUse = itemStack.stackSize;
+
+	                // Use the item on the block
 	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
 	                    this.entityRenderer.itemRenderer.equippedItemRender();
+
+	                    // Define actionId as '1' for right-click action
+	                    int actionId = 1; // Set appropriate actionId for right-click or other actions
+	                    int itemId = itemStack.itemID;
+
+	                    if (this.isOnlineClient()) {
+	                        // Send the block interaction update to the server
+	                        this.networkClient.sendTileUpdated(x, y, z, actionId, itemId);
+	                    }
+
+	                    // Update the level locally
+	                    this.theWorld.netSetTile(x, y, z, itemId);
 	                }
 
-	                if (itemStack.stackSize == 0) {
+	                // Update inventory and renderer based on item stack size
+	                if (itemStack.stackSize <= 0) {
 	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
 	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
 	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
@@ -523,84 +552,8 @@ public final class Minecraft implements Runnable {
 	            }
 	        }
 	    }
-	}	
-	
-	// new mp right
-	
-	private void mouseClickRightMP(int id) {
-	    if (id != 0 || this.clickCooldown <= 0) {
-	        TileRenderer tileRenderer = new TileRenderer(); // Example placeholder if not defined
-
-	        if (id == 0) {  // Right-click interaction
-	            tileRenderer.setRotation(-1);  // Reset rotation for placing
-	            tileRenderer.setMovement(true);  // Allow movement for placement
-	        }
-
-	        int selectedItemIndex;
-	        if (id == 1 && (selectedItemIndex = this.thePlayer.inventory.getSelected()) > 0) {
-	            if (this.controller.removeResource(this.thePlayer, selectedItemIndex)) {
-	                tileRenderer.resetProgress(); // Placeholder reset method
-	            } else {
-	                return;  // Resource removal failed
-	            }
-	        } else if (this.hitResult == null) {
-	            if (id == 0 && !(this.controller instanceof CreativeModeController)) {
-	                this.clickCooldown = 10;  // Cooldown for non-creative mode
-	            }
-	        } else {
-	            if (this.hitResult.type == 1) {  // Hit an entity
-	                if (id == 0) {
-	                    this.hitResult.entity.hurt(this.thePlayer, 4);  // Damage entity on right-click
-	                    return;
-	                }
-	            } else if (this.hitResult.type == 0) {  // Hit a block
-	                int x = this.hitResult.x;
-	                int y = this.hitResult.y;
-	                int z = this.hitResult.z;
-
-	                if (id != 0) {  // Modify coordinates based on face hit
-	                    switch (this.hitResult.face) {
-	                        case 0: --y; break;  // Bottom face
-	                        case 1: ++y; break;  // Top face
-	                        case 2: --z; break;  // North face
-	                        case 3: ++z; break;  // South face
-	                        case 4: --x; break;  // West face
-	                        case 5: ++x; break;  // East face
-	                    }
-	                }
-
-	                Tile tileAtHit = Tile.tiles[this.theWorld.getTile(x, y, z)]; // Use 'theWorld' if currentWorld doesn't exist
-	                if (id == 0) {
-	                    if (tileAtHit != Tile.UNBREAKABLE || this.thePlayer.userType >= 100) {
-	                        this.controller.startDestroyBlock(x, y, z);
-	                        return;  // Start block destruction
-	                    }
-	                } else {  // Placing a block
-	                    if ((selectedItemIndex = this.thePlayer.inventory.getSelected()) <= 0) {
-	                        return;  // No item selected
-	                    }
-
-	                    // Check if the tile can be placed (you may need to implement this)
-	                    if (Tile.canPlaceBlock(this.theWorld, selectedItemIndex, x, y, z)) {
-	                        if (!this.controller.removeResource(selectedItemIndex)) {
-	                            return;  // Resource removal failed
-	                        }
-
-	                        // Multiplayer network update (check if this method exists)
-	                        if (this.isOnlineClient()) {
-	                            this.networkClient.sendTileUpdated(x, y, z, id, selectedItemIndex);
-	                        }
-
-	                        this.theWorld.netSetTile(x, y, z, selectedItemIndex);  // Set the tile in the level
-	                        tileRenderer.resetProgress();  // Reset progress
-	                        Tile.tiles[selectedItemIndex].onPlace(this.theWorld, x, y, z);  // Trigger place event
-	                    }
-	                }
-	            }
-	        }
-	    }
 	}
-	
+
 	// mouse click left/right sp
 	
 	private void clickMouseLeftSP() {
@@ -1024,6 +977,7 @@ public final class Minecraft implements Runnable {
 				while(true) {
 					int i1;
 					int i2;
+					int i6;
 					while(Mouse.next()) {
 						if((i1 = Mouse.getEventDWheel()) != 0) {
 							i2 = i1;
@@ -1177,6 +1131,21 @@ public final class Minecraft implements Runnable {
 
 								if(Keyboard.getEventKey() == this.options.keyBindToggleFog.keyCode) {
 									this.options.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
+								}
+								
+								boolean z5 = this.playerController instanceof PlayerControllerCreative;
+								InventoryPlayer inventoryPlayer18 = this.thePlayer.inventory;
+								if((i6 = this.thePlayer.inventory.getInventorySlotContainItem(i2)) >= 0 && isOnlineClient()) {
+									inventoryPlayer18.currentItem = i6;
+								} else if(z5 && i2 > 0 && Session.registeredBlocksList.contains(Block.blocksList[i2])) {
+									for(int i21 = 0; i21 < 9; ++i21) {
+										if(thePlayer.inventory.mainInventory[i21] == null) {
+											this.thePlayer.inventory.mainInventory[i21] = new ItemStack(((Block)Session.registeredBlocksList.get(i21)).blockID);
+										} else {
+											this.thePlayer.inventory.mainInventory[i21].stackSize = 1;
+										}
+									}
+								
 								}
 							}
 						}

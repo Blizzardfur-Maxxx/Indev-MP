@@ -18,7 +18,7 @@ public final class InventoryPlayer implements IInventory {
 		return this.mainInventory[this.currentItem];
 	}
 
-	public int getInventorySlotContainItem(int i1) {
+	private int getInventorySlotContainItem(int i1) {
 		for(int i2 = 0; i2 < this.mainInventory.length; ++i2) {
 			if(this.mainInventory[i2] != null && this.mainInventory[i2].itemID == i1) {
 				return i2;
