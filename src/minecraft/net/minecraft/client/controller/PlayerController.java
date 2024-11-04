@@ -1,6 +1,7 @@
 package net.minecraft.client.controller;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
@@ -81,5 +82,9 @@ public class PlayerController {
 	}
 
 	public void onRespawn(EntityPlayer entityPlayer) {
+	}
+
+	public boolean removeResource(EntityPlayerSP thePlayer, int i2) {
+		return false;
 	}
 }
