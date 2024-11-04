@@ -17,8 +17,8 @@ public final class ItemRenderer {
 	private ItemStack itemToRender = null;
 	public float equippedProgress = 0.0F;
 	private float prevEquippedProgress = 0.0F;
-	private int swingProgress = 0;
-	private boolean itemSwingState = false;
+	public int swingProgress = 0;
+	public boolean itemSwingState = false;
 	private RenderBlocks renderBlocksInstance = new RenderBlocks();
 
 	public ItemRenderer(Minecraft minecraft) {

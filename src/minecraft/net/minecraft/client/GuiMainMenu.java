@@ -26,11 +26,11 @@ public final class GuiMainMenu extends GuiScreen {
 
 	public final void initGui() {
 	    this.controlList.clear();
+	 // Adjusted order: Generate, Load, Multiplayer, Options
 	    this.controlList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48, "Generate new level..."));
 	    this.controlList.add(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, "Load level.."));
-	    this.controlList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 96, "Multiplayer")); // Multiplayer button added
-	    this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 120, "Play tutorial level"));
-	    this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 144, "Options..."));
+	    this.controlList.add(new GuiButton(3, this.width / 2 - 100, this.height / 4 + 96, "Multiplayer"));
+	    this.controlList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, "Options..."));
 	    
 	    // Enable multiplayer button by removing any disable setting
 	    ((GuiButton)this.controlList.get(2)).enabled = true;
@@ -56,7 +56,7 @@ public final class GuiMainMenu extends GuiScreen {
 	    }
 
 	    // Always allow opening Multiplayer GUI
-	    if(guiButton1.id == 4) {
+	    if(guiButton1.id == 3) {
 	        this.mc.displayGuiScreen(new GuiMultiplayer(this));
 	    }
 	}
