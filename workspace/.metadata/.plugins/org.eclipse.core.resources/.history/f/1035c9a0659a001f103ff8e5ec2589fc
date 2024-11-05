@@ -51,7 +51,6 @@ import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
-import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -497,7 +496,6 @@ public final class Minecraft implements Runnable {
 							return;
 						}
 					} else {
-						id = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem());
 						if((id = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem())) <= 0) {
 							return;
 						}
@@ -508,13 +506,13 @@ public final class Minecraft implements Runnable {
 							if(!this.playerController.removeResource(id)) {
 								return;
 							}
+
 							if(this.isOnlineClient()) {
 								this.networkClient.sendTileUpdated(i2, i3, i4, id, id);
 							}
 
 							this.theWorld.netSetTile(i2, i3, i4, id);
 							tileRenderer6 = this.entityRenderer.itemRenderer;
-
 							this.theWorld.setBlockWithNotify(i2, i3, i4, id);
 
 							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
@@ -842,7 +840,6 @@ public final class Minecraft implements Runnable {
 				}
 			}
 		}
-	
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
 			label286:
 			while(true) {
@@ -1019,7 +1016,6 @@ public final class Minecraft implements Runnable {
 									}
 								
 								}
-
 							}
 						}
 					}
@@ -1072,11 +1068,8 @@ public final class Minecraft implements Runnable {
 			if(!this.isGamePaused) {
 				this.effectRenderer.updateEffects();
 			}
-			if(!this.isOnlineClient()) {
-				this.theWorld.tick();
-			}
-			
 		}
+
 	}
 
 	public final void generateLevel(int width, int worldShape, int depth, int height) {
@@ -1117,6 +1110,7 @@ public final class Minecraft implements Runnable {
             } else {
                 this.playerController = new PlayerControllerSP(this);
             }
+            
     		try {
     			BufferedReader bufferedReader2;
     			Integer.parseInt((bufferedReader2 = new BufferedReader(new InputStreamReader((new URL(this.mcApplet.getDocumentBase() + "?n=" + this.session.username + "&i=" + this.session.sessionId)).openStream()))).readLine());
@@ -1134,9 +1128,6 @@ public final class Minecraft implements Runnable {
 	        }
 
 	        this.thePlayer = (EntityPlayerSP) world.findSubclassOf(EntityPlayerSP.class);
-			if(!this.isOnlineClient()) {
-				this.thePlayer = (EntityPlayerSP)theWorld.findSubclassOf(EntityPlayerSP.class);
-			}
 	        world.playerEntity = this.thePlayer;
 
 	        if (this.thePlayer == null) {
@@ -1166,12 +1157,10 @@ public final class Minecraft implements Runnable {
 	        } else {
 	            this.textureLavaFX.textureId = waterTextureId;
 	        }
-		}
 
 	    System.gc();
 	    }
-	
-	
+	}
 
 	public boolean isOnlineClient() {
 	    return theWorld != null && theWorld.networkMode;

@@ -12,6 +12,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Random;
+
 import javax.swing.JOptionPane;
 
 import net.minecraft.client.controller.PlayerController;
@@ -37,6 +39,7 @@ import net.minecraft.client.player.EntityPlayerSP;
 import net.minecraft.client.player.MovementInputFromOptions;
 import net.minecraft.client.render.EntityRenderer;
 import net.minecraft.client.render.ItemRenderer;
+import net.minecraft.client.render.RenderBlocks;
 import net.minecraft.client.render.RenderEngine;
 import net.minecraft.client.render.RenderGlobal;
 import net.minecraft.client.render.WorldRenderer;
@@ -51,6 +54,7 @@ import net.minecraft.game.entity.EntityLiving;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
+import net.minecraft.game.item.ItemStackToID;
 import net.minecraft.game.level.LevelLoader;
 import net.minecraft.game.level.World;
 import net.minecraft.game.level.block.Block;
@@ -114,16 +118,16 @@ public final class Minecraft implements Runnable {
 	private int prevFrameTime;
 	public boolean inGameHasFocus;
 	public Client networkClient;
-	String server;
-	int port;
+	public String server;
+	public int port;
 	public PlayerController playerController;
 	
 	public Minecraft(Canvas canvas, MinecraftApplet minecraftApplet, int tempDisplayWidth, int tempDisplayHeight, boolean fullscreen) {
 		new ModelBiped(0.0F);
 		this.objectMouseOver = null;
 		this.sndManager = new SoundManager();
-		this.server = "localhost";
-		this.port = 25565;
+		this.server = null;
+		this.port = 0;
 		this.textureWaterFX = new TextureWaterFX();
 		this.textureLavaFX = new TextureLavaFX();
 		this.running = false;
@@ -201,37 +205,27 @@ public final class Minecraft implements Runnable {
 			} else {
 				Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
 			}
+			
+			Display.create();
 
-			Display.setTitle("Minecraft Minecraft IndevMP");
+			Display.setTitle("Minecraft IndevMP");
 
-			try {
-				Display.create();
-				System.out.println("LWJGL version: " + Sys.getVersion());
-				System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
-				System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
-				System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
-				ContextCapabilities contextCapabilities2 = GLContext.getCapabilities();
-				System.out.println("OpenGL 3.0: " + contextCapabilities2.OpenGL30);
-				System.out.println("OpenGL 3.1: " + contextCapabilities2.OpenGL31);
-				System.out.println("OpenGL 3.2: " + contextCapabilities2.OpenGL32);
-				System.out.println("ARB_compatibility: " + contextCapabilities2.GL_ARB_compatibility);
-				if(contextCapabilities2.OpenGL32) {
-					IntBuffer intBuffer24 = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
-					GL11.glGetInteger(37158, intBuffer24);
-					int i25 = intBuffer24.get(0);
-					System.out.println("PROFILE MASK: " + Integer.toBinaryString(i25));
-					System.out.println("CORE PROFILE: " + ((i25 & 1) != 0));
-					System.out.println("COMPATIBILITY PROFILE: " + ((i25 & 2) != 0));
-				}
-			} catch (LWJGLException lWJGLException17) {
-				lWJGLException17.printStackTrace();
-
-				try {
-					Thread.sleep(1000L);
-				} catch (InterruptedException interruptedException16) {
-				}
-
-				Display.create();
+			System.out.println("LWJGL version: " + Sys.getVersion());
+			System.out.println("GL RENDERER: " + GL11.glGetString(GL11.GL_RENDERER));
+			System.out.println("GL VENDOR: " + GL11.glGetString(GL11.GL_VENDOR));
+			System.out.println("GL VERSION: " + GL11.glGetString(GL11.GL_VERSION));
+			ContextCapabilities contextCapabilities2 = GLContext.getCapabilities();
+			System.out.println("OpenGL 3.0: " + contextCapabilities2.OpenGL30);
+			System.out.println("OpenGL 3.1: " + contextCapabilities2.OpenGL31);
+			System.out.println("OpenGL 3.2: " + contextCapabilities2.OpenGL32);
+			System.out.println("ARB_compatibility: " + contextCapabilities2.GL_ARB_compatibility);
+			if(contextCapabilities2.OpenGL32) {
+				IntBuffer intBuffer24 = ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
+				GL11.glGetInteger(37158, intBuffer24);
+				int i25 = intBuffer24.get(0);
+				System.out.println("PROFILE MASK: " + Integer.toBinaryString(i25));
+				System.out.println("CORE PROFILE: " + ((i25 & 1) != 0));
+				System.out.println("COMPATIBILITY PROFILE: " + ((i25 & 2) != 0));
 			}
 
 			Keyboard.create();
@@ -401,6 +395,7 @@ public final class Minecraft implements Runnable {
 			exception20.printStackTrace();
 		} finally {
 			this.shutdownMinecraftApplet();
+			Display.destroy();
 		}
 
 	}
@@ -439,271 +434,96 @@ public final class Minecraft implements Runnable {
 		}
 	}
 
-	// mouse click left/right mp    
-	private void clickMouseLeftMP() {
-	    if (this.leftClickCounter <= 0) {
-	        this.entityRenderer.itemRenderer.equippedItemRender();
 
-	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
+	private void clickMouse(int id) {
+		if(id != 0 || this.leftClickCounter <= 0) {
+			ItemRenderer tileRenderer6;
+			if(id == 0) {
+				tileRenderer6 = this.entityRenderer.itemRenderer;
+				this.entityRenderer.itemRenderer.swingProgress = -1;
+				tileRenderer6.itemSwingState = true;
+			}
 
-	        if (this.objectMouseOver != null) {
-	            if (this.objectMouseOver.typeOfHit == 1) { // Entity hit
-	                Entity entityHit = this.objectMouseOver.entityHit;
-	                int damage = itemStack != null ? Item.itemsList[itemStack.itemID].getDamageVsEntity() : 1;
-	                entityHit.attackEntityFrom(this.thePlayer, damage);
+			int i2;
+			if(id == 1 && (i2 = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem())) > 0 && this.playerController.removeResource(this.thePlayer, i2)) {
+				tileRenderer6 = this.entityRenderer.itemRenderer;
+				this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+			} else if(this.objectMouseOver == null) {
+				if(id == 0 && !(this.playerController instanceof PlayerControllerCreative)) {
+					this.leftClickCounter = 10;
+				}
 
-	                if (itemStack != null && entityHit instanceof EntityLiving) {
-	                    itemStack.getItem().hitEntity(itemStack);
-	                    if (itemStack.stackSize <= 0) {
-	                        this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                    }
-	                }
-	            } else if (this.objectMouseOver.typeOfHit == 0) { // Block hit
-	                int x = this.objectMouseOver.blockX;
-	                int y = this.objectMouseOver.blockY;
-	                int z = this.objectMouseOver.blockZ;
-	                int sideHit = this.objectMouseOver.sideHit;
-	                Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
+			} else {
+				if(this.objectMouseOver.typeOfHit == 1) {
+					if(id == 0) {
+						this.objectMouseOver.entityHit.attackEntityFrom(this.thePlayer, 4);
+						return;
+					}
+				} else if(this.objectMouseOver.typeOfHit == 0) {
+					i2 = this.objectMouseOver.blockX;
+					int i3 = this.objectMouseOver.blockY;
+					int i4 = this.objectMouseOver.blockZ;
+					if(id != 0) {
+						if(this.objectMouseOver.sideHit == 0) {
+							--i3;
+						}
 
-	                this.theWorld.extinguishFire(x, y, z, sideHit);
+						if(this.objectMouseOver.sideHit == 1) {
+							++i3;
+						}
 
-	                // Allow block breaking even without an item in hand
-	                if (block != Block.bedrock || this.thePlayer.userType >= 100) {
-	                    this.playerController.clickBlock(x, y, z);
-	                }
-	            }
-	        }
-	    }
-	}
+						if(this.objectMouseOver.sideHit == 2) {
+							--i4;
+						}
 
-	private void clickMouseRightMP() {
-	    if (this.leftClickCounter <= 0) {
-	        ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	        int initialStackSize = itemStack != null ? itemStack.stackSize : 0;
+						if(this.objectMouseOver.sideHit == 3) {
+							++i4;
+						}
 
-	        if (itemStack != null) {
-	            ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, this.theWorld, this.thePlayer);
-	            if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
-	                this.entityRenderer.itemRenderer.resetEquippedProgress();
-	                if (updatedStack != null && updatedStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                }
-	            }
-	        }
+						if(this.objectMouseOver.sideHit == 4) {
+							--i2;
+						}
 
-	        if (this.objectMouseOver == null) {
-	            if (!(this.playerController instanceof PlayerControllerCreative)) {
-	                this.leftClickCounter = 10;
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 0) { // Block interaction
-	            int x = this.objectMouseOver.blockX;
-	            int y = this.objectMouseOver.blockY;
-	            int z = this.objectMouseOver.blockZ;
-	            int sideHit = this.objectMouseOver.sideHit;
-	            Block block = Block.blocksList[this.theWorld.getBlockId(x, y, z)];
+						if(this.objectMouseOver.sideHit == 5) {
+							++i2;
+						}
+					}
 
-	            if (block != null && itemStack != null) {
-	                int blockId = this.theWorld.getBlockId(x, y, z);
-	                if (Block.blocksList[blockId].blockActivated(this.theWorld, x, y, z, this.thePlayer)) {
-	                    return;
-	                }
+					Block block9 = Block.blocksList[this.theWorld.getBlockId(i2, i3, i4)];
+					if(id == 0) {
+						if(block9 != Block.bedrock || this.thePlayer.userType >= 100) {
+							this.playerController.clickBlock(i2, i3, i4);
+							return;
+						}
+					} else {
+						id = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem());
+						if((id = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem())) <= 0) {
+							return;
+						}
 
-	                int stackSizeBeforeUse = itemStack.stackSize;
-	                if (itemStack.getItem().onItemUse(itemStack, this.theWorld, x, y, z, sideHit)) {
-	                    this.entityRenderer.itemRenderer.equippedItemRender();
-	                }
+						Block tile9;
+						AxisAlignedBB aABB10;
+						if(((tile9 = Block.blocksList[this.theWorld.getBlockId(i2, i3, i4)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[id].getCollisionBoundingBoxFromPool(i2, i3, i4)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear(aABB10)))) {
+							if(!this.playerController.removeResource(id)) {
+								return;
+							}
+							if(this.isOnlineClient()) {
+								this.networkClient.sendTileUpdated(i2, i3, i4, id, id);
+							}
 
-	                if (itemStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                } else if (itemStack.stackSize != stackSizeBeforeUse) {
-	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
-	                }
-	            }
-	        }
-	    }
-	}	
-	
-	// new mp right
-	
-	private void mouseClickRightMP(int id) {
-	    if (id != 0 || this.clickCooldown <= 0) {
-	        // Placeholder tile renderer instance if necessary, or comment this out if undefined
-	        WorldRenderer tileRenderer = new WorldRenderer(); 
+							this.theWorld.netSetTile(i2, i3, i4, id);
+							tileRenderer6 = this.entityRenderer.itemRenderer;
 
-	        if (id == 0) {  // Right-click interaction
-	            // Set properties as needed; these methods may need custom implementations
-	            tileRenderer.setRotation(-1);  // Reset rotation for placing (if applicable)
-	            tileRenderer.setMovement(true);  // Allow movement for placement
-	        }
+							this.theWorld.setBlockWithNotify(i2, i3, i4, id);
 
-	        int selectedItemIndex;
-	        if (id == 1 && (selectedItemIndex = this.thePlayer.inventory.currentItem) > 0) { // Replaced getSelected()
-	            if (this.playerController.removeResource(this.thePlayer, selectedItemIndex)) { // Replaced controller
-	                tileRenderer.resetProgress(); // Placeholder reset method
-	            } else {
-	                return;  // Resource removal failed
-	            }
-	        } else if (this.objectMouseOver == null) {  // Replaced hitResult
-	            if (id == 0 && !(this.playerController instanceof PlayerControllerCreative)) { // Replaced controller and CreativeModeController
-	                this.clickCooldown = 10;  // Cooldown for non-creative mode
-	            }
-	        } else {
-	            if (this.objectMouseOver.typeOfHit == 1) {  // Hit an entity
-	                if (id == 0) {
-	                    this.objectMouseOver.entityHit.attackEntityFrom(this.thePlayer, 4);  // Damage entity on right-click
-	                    return;
-	                }
-	            } else if (this.objectMouseOver.typeOfHit == 0) {  // Hit a block
-	                int x = this.objectMouseOver.blockX;
-	                int y = this.objectMouseOver.blockY;
-	                int z = this.objectMouseOver.blockZ;
+							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
+							Block.blocksList[id].onBlockPlaced(this.theWorld, i2, i3, i4);
+						}
+					}
+				}
 
-	                if (id != 0) {  // Modify coordinates based on face hit
-	                    switch (this.objectMouseOver.sideHit) {
-	                        case 0: --y; break;  // Bottom face
-	                        case 1: ++y; break;  // Top face
-	                        case 2: --z; break;  // North face
-	                        case 3: ++z; break;  // South face
-	                        case 4: --x; break;  // West face
-	                        case 5: ++x; break;  // East face
-	                    }
-	                }
-
-	                Block blockAtHit = Block.blocksList[this.theWorld.getBlockId(x, y, z)]; // Replaced Tile with Block
-	                if (id == 0) {
-	                    if (blockAtHit != Block.bedrock || this.thePlayer.userType >= 100) {
-	                        this.playerController.startDestroyBlock(x, y, z);  // Start block destruction
-	                        return;
-	                    }
-	                } else {  // Placing a block
-	                    if ((selectedItemIndex = this.thePlayer.inventory.currentItem) <= 0) {
-	                        return;  // No item selected
-	                    }
-
-	                    // Check if the block can be placed
-	                    if (Block.canPlaceBlockAt(this.theWorld, x, y, z)) {
-	                        if (!this.playerController.removeResource(selectedItemIndex)) {
-	                            return;  // Resource removal failed
-	                        }
-
-	                        // Multiplayer network update
-	                        if (this.isOnlineClient()) {
-	                            this.networkClient.sendTileUpdated(x, y, z, id, selectedItemIndex);
-	                        }
-
-	                        this.theWorld.setBlock(x, y, z, selectedItemIndex);  // Set the block in the level
-	                        tileRenderer.resetProgress();  // Reset progress
-	                        Block.blocksList[selectedItemIndex].onBlockPlacedBy(this.theWorld, x, y, z, this.thePlayer);  // Trigger place event
-	                    }
-	                }
-	            }
-	        }
-	    }
-	}
-
-	
-	// mouse click left/right sp
-	
-	private void clickMouseLeftSP() {
-	    if (this.leftClickCounter <= 0) {
-	        this.entityRenderer.itemRenderer.equippedItemRender();
-	        if (this.objectMouseOver == null) {
-	            if (!(this.playerController instanceof PlayerControllerCreative)) {
-	                this.leftClickCounter = 10;
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 1) { // Hit entity
-	            Entity entityHit = this.objectMouseOver.entityHit;
-	            EntityPlayerSP entityPlayerSP = this.thePlayer;
-	            InventoryPlayer inventory = this.thePlayer.inventory;
-	            ItemStack currentItem = inventory.getStackInSlot(inventory.currentItem);
-	            int damage = (currentItem != null) ? Item.itemsList[currentItem.itemID].getDamageVsEntity() : 1;
-
-	            if (damage > 0) {
-	                entityHit.attackEntityFrom(entityPlayerSP, damage);
-	                ItemStack itemStack = entityPlayerSP.inventory.getCurrentItem();
-	                if (itemStack != null && entityHit instanceof EntityLiving) {
-	                    EntityLiving entityLiving = (EntityLiving) entityHit;
-	                    Item.itemsList[itemStack.itemID].hitEntity(itemStack);
-	                    if (itemStack.stackSize <= 0) {
-	                        entityPlayerSP.destroyCurrentEquippedItem();
-	                    }
-	                }
-	            }
-	        } else if (this.objectMouseOver.typeOfHit == 0) { // Hit block
-	            int blockX = this.objectMouseOver.blockX;
-	            int blockY = this.objectMouseOver.blockY;
-	            int blockZ = this.objectMouseOver.blockZ;
-	            Block block = Block.blocksList[this.theWorld.getBlockId(blockX, blockY, blockZ)];
-	            this.theWorld.extinguishFire(blockX, blockY, blockZ, this.objectMouseOver.sideHit);
-	            if (block != Block.bedrock) {
-	                this.playerController.clickBlock(blockX, blockY, blockZ);
-	            }
-	        }
-	    }
-	}
-
-	private void clickMouseRightSP() {
-	    ItemStack itemStack = this.thePlayer.inventory.getCurrentItem();
-	    if (itemStack != null) {
-	        int initialStackSize = itemStack.stackSize;
-	        EntityPlayerSP entityPlayerSP = this.thePlayer;
-	        World world = this.theWorld;
-	        ItemStack updatedStack = itemStack.getItem().onItemRightClick(itemStack, world, entityPlayerSP);
-
-	        if (updatedStack != itemStack || (updatedStack != null && updatedStack.stackSize != initialStackSize)) {
-	            this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = updatedStack;
-	            this.entityRenderer.itemRenderer.resetEquippedProgress();
-	            if (updatedStack.stackSize == 0) {
-	                this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	            }
-	        }
-
-	        if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit == 0) { // Hit block
-	            int blockX = this.objectMouseOver.blockX;
-	            int blockY = this.objectMouseOver.blockY;
-	            int blockZ = this.objectMouseOver.blockZ;
-	            int sideHit = this.objectMouseOver.sideHit;
-	            int blockId = this.theWorld.getBlockId(blockX, blockY, blockZ);
-
-	            if (blockId > 0 && Block.blocksList[blockId].blockActivated(this.theWorld, blockX, blockY, blockZ, this.thePlayer)) {
-	                return;
-	            }
-
-	            if (itemStack != null) {
-	                int initialStackSizeRight = itemStack.stackSize;
-	                if (itemStack.getItem().onItemUse(itemStack, world, blockX, blockY, blockZ, sideHit)) {
-	                    this.entityRenderer.itemRenderer.equippedItemRender();
-	                }
-	                if (itemStack.stackSize == 0) {
-	                    this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.currentItem] = null;
-	                } else if (itemStack.stackSize != initialStackSizeRight) {
-	                    this.entityRenderer.itemRenderer.equipAnimationSpeed();
-	                }
-	            }
-	        }
-	    }
-	}
-	
-	// clickmouse switch ig idk
-	
-	private void clickMouse(int clickState) {
-	    if (clickState != 0 || this.leftClickCounter <= 0) {
-	        if (clickState == 0) {
-	            if (this.isOnlineClient()) {
-	                clickMouseLeftMP();
-	            } else {
-	                clickMouseLeftSP();
-	            }
-	        } else if (clickState == 1) {
-	            if (this.isOnlineClient()) {
-	                clickMouseRightMP();
-	            } else {
-	                clickMouseRightSP();
-	            }
-	        }
-	    }
+			}
+		}
 	}
 
 	public final void toggleFullscreen() {
@@ -1027,6 +847,7 @@ public final class Minecraft implements Runnable {
 				while(true) {
 					int i1;
 					int i2;
+					int i6;
 					while(Mouse.next()) {
 						if((i1 = Mouse.getEventDWheel()) != 0) {
 							i2 = i1;
@@ -1180,6 +1001,21 @@ public final class Minecraft implements Runnable {
 
 								if(Keyboard.getEventKey() == this.options.keyBindToggleFog.keyCode) {
 									this.options.setOptionValue(4, !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ? 1 : -1);
+								}
+								
+								boolean z5 = this.playerController instanceof PlayerControllerCreative;
+								InventoryPlayer inventoryPlayer18 = this.thePlayer.inventory;
+								if((i6 = this.thePlayer.inventory.getInventorySlotContainItem(i2)) >= 0 && isOnlineClient()) {
+									inventoryPlayer18.currentItem = i6;
+								} else if(z5 && i2 > 0 && Session.registeredBlocksList.contains(Block.blocksList[i2])) {
+									for(int i21 = 0; i21 < 9; ++i21) {
+										if(thePlayer.inventory.mainInventory[i21] == null) {
+											this.thePlayer.inventory.mainInventory[i21] = new ItemStack(((Block)Session.registeredBlocksList.get(i21)).blockID);
+										} else {
+											this.thePlayer.inventory.mainInventory[i21].stackSize = 64;
+										}
+									}
+								
 								}
 							}
 						}

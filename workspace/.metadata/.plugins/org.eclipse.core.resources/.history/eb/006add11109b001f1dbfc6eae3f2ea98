@@ -842,7 +842,6 @@ public final class Minecraft implements Runnable {
 				}
 			}
 		}
-	
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
 			label286:
 			while(true) {
@@ -1019,7 +1018,6 @@ public final class Minecraft implements Runnable {
 									}
 								
 								}
-
 							}
 						}
 					}
@@ -1072,10 +1070,10 @@ public final class Minecraft implements Runnable {
 			if(!this.isGamePaused) {
 				this.effectRenderer.updateEffects();
 			}
+			
 			if(!this.isOnlineClient()) {
 				this.theWorld.tick();
 			}
-			
 		}
 	}
 
@@ -1117,6 +1115,8 @@ public final class Minecraft implements Runnable {
             } else {
                 this.playerController = new PlayerControllerSP(this);
             }
+			if(!this.isOnlineClient()) {
+				this.thePlayer = (EntityPlayerSP)theWorld.findSubclassOf(EntityPlayerSP.class);
     		try {
     			BufferedReader bufferedReader2;
     			Integer.parseInt((bufferedReader2 = new BufferedReader(new InputStreamReader((new URL(this.mcApplet.getDocumentBase() + "?n=" + this.session.username + "&i=" + this.session.sessionId)).openStream()))).readLine());
@@ -1134,9 +1134,6 @@ public final class Minecraft implements Runnable {
 	        }
 
 	        this.thePlayer = (EntityPlayerSP) world.findSubclassOf(EntityPlayerSP.class);
-			if(!this.isOnlineClient()) {
-				this.thePlayer = (EntityPlayerSP)theWorld.findSubclassOf(EntityPlayerSP.class);
-			}
 	        world.playerEntity = this.thePlayer;
 
 	        if (this.thePlayer == null) {
@@ -1170,8 +1167,7 @@ public final class Minecraft implements Runnable {
 
 	    System.gc();
 	    }
-	
-	
+	}
 
 	public boolean isOnlineClient() {
 	    return theWorld != null && theWorld.networkMode;

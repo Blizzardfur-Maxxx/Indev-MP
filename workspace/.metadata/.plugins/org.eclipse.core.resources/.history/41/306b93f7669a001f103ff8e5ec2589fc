@@ -51,7 +51,6 @@ import net.minecraft.client.render.texture.TextureWaterFlowFX;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.game.entity.Entity;
 import net.minecraft.game.entity.EntityLiving;
-import net.minecraft.game.entity.player.EntityPlayer;
 import net.minecraft.game.entity.player.InventoryPlayer;
 import net.minecraft.game.item.Item;
 import net.minecraft.game.item.ItemStack;
@@ -497,28 +496,28 @@ public final class Minecraft implements Runnable {
 							return;
 						}
 					} else {
-						id = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem());
-						if((id = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem())) <= 0) {
+						int i8;
+						if((i8 = ItemStackToID.getItemID(this.thePlayer.inventory.getCurrentItem())) <= 0) {
 							return;
 						}
 
 						Block tile9;
 						AxisAlignedBB aABB10;
 						if(((tile9 = Block.blocksList[this.theWorld.getBlockId(i2, i3, i4)]) == null || tile9 == Block.waterStill || tile9 == Block.waterStill || tile9 == Block.lavaStill || tile9 == Block.lavaStill) && ((aABB10 = Block.blocksList[id].getCollisionBoundingBoxFromPool(i2, i3, i4)) == null || (this.thePlayer.boundingBox.intersects(aABB10) ? false : this.theWorld.checkIfAABBIsClear(aABB10)))) {
-							if(!this.playerController.removeResource(id)) {
+							if(!this.playerController.removeResource(i8)) {
 								return;
 							}
+
 							if(this.isOnlineClient()) {
-								this.networkClient.sendTileUpdated(i2, i3, i4, id, id);
+								this.networkClient.sendTileUpdated(i2, i3, i4, id, i8);
 							}
 
-							this.theWorld.netSetTile(i2, i3, i4, id);
+							this.theWorld.netSetTile(i2, i3, i4, i8);
 							tileRenderer6 = this.entityRenderer.itemRenderer;
-
-							this.theWorld.setBlockWithNotify(i2, i3, i4, id);
+							this.theWorld.setBlockWithNotify(i2, i3, i4, i8);
 
 							this.entityRenderer.itemRenderer.equippedProgress = 0.0F;
-							Block.blocksList[id].onBlockPlaced(this.theWorld, i2, i3, i4);
+							Block.blocksList[i8].onBlockPlaced(this.theWorld, i2, i3, i4);
 						}
 					}
 				}
@@ -842,7 +841,6 @@ public final class Minecraft implements Runnable {
 				}
 			}
 		}
-	
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
 			label286:
 			while(true) {
@@ -1019,7 +1017,6 @@ public final class Minecraft implements Runnable {
 									}
 								
 								}
-
 							}
 						}
 					}
@@ -1072,11 +1069,8 @@ public final class Minecraft implements Runnable {
 			if(!this.isGamePaused) {
 				this.effectRenderer.updateEffects();
 			}
-			if(!this.isOnlineClient()) {
-				this.theWorld.tick();
-			}
-			
 		}
+
 	}
 
 	public final void generateLevel(int width, int worldShape, int depth, int height) {
@@ -1117,6 +1111,7 @@ public final class Minecraft implements Runnable {
             } else {
                 this.playerController = new PlayerControllerSP(this);
             }
+            
     		try {
     			BufferedReader bufferedReader2;
     			Integer.parseInt((bufferedReader2 = new BufferedReader(new InputStreamReader((new URL(this.mcApplet.getDocumentBase() + "?n=" + this.session.username + "&i=" + this.session.sessionId)).openStream()))).readLine());
@@ -1134,9 +1129,6 @@ public final class Minecraft implements Runnable {
 	        }
 
 	        this.thePlayer = (EntityPlayerSP) world.findSubclassOf(EntityPlayerSP.class);
-			if(!this.isOnlineClient()) {
-				this.thePlayer = (EntityPlayerSP)theWorld.findSubclassOf(EntityPlayerSP.class);
-			}
 	        world.playerEntity = this.thePlayer;
 
 	        if (this.thePlayer == null) {
@@ -1166,12 +1158,10 @@ public final class Minecraft implements Runnable {
 	        } else {
 	            this.textureLavaFX.textureId = waterTextureId;
 	        }
-		}
 
 	    System.gc();
 	    }
-	
-	
+	}
 
 	public boolean isOnlineClient() {
 	    return theWorld != null && theWorld.networkMode;

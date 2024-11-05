@@ -842,6 +842,11 @@ public final class Minecraft implements Runnable {
 				}
 			}
 		}
+	    
+
+		if(!this.isOnlineClient()) {
+			this.theWorld.tick();
+		}
 	
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
 			label286:
@@ -1071,9 +1076,6 @@ public final class Minecraft implements Runnable {
 
 			if(!this.isGamePaused) {
 				this.effectRenderer.updateEffects();
-			}
-			if(!this.isOnlineClient()) {
-				this.theWorld.tick();
 			}
 			
 		}

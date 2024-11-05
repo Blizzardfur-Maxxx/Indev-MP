@@ -842,7 +842,6 @@ public final class Minecraft implements Runnable {
 				}
 			}
 		}
-	
 		if(this.currentScreen == null || this.currentScreen.allowUserInput) {
 			label286:
 			while(true) {
@@ -1019,7 +1018,6 @@ public final class Minecraft implements Runnable {
 									}
 								
 								}
-
 							}
 						}
 					}
@@ -1072,10 +1070,10 @@ public final class Minecraft implements Runnable {
 			if(!this.isGamePaused) {
 				this.effectRenderer.updateEffects();
 			}
+			
 			if(!this.isOnlineClient()) {
 				this.theWorld.tick();
 			}
-			
 		}
 	}
 
@@ -1170,8 +1168,7 @@ public final class Minecraft implements Runnable {
 
 	    System.gc();
 	    }
-	
-	
+	}
 
 	public boolean isOnlineClient() {
 	    return theWorld != null && theWorld.networkMode;
